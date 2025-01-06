@@ -3,7 +3,7 @@
  * Plugin Name:       Viget Blocks Toolkit
  * Plugin URI:        https://viget.com
  * Description:       Custom Block Registration and Helper functions.
- * Version:           1.0.4
+ * Version:           1.0.5
  * Requires at least: 5.7
  * Requires PHP:      8.1
  * Requires Plugins:  advanced-custom-fields-pro
@@ -18,7 +18,7 @@
  */
 
 // Plugin version.
-const VGTBT_VERSION = '1.0.4';
+const VGTBT_VERSION = '1.0.5';
 
 // Plugin path.
 define( 'VGTBT_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
