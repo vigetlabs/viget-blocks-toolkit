@@ -1,8 +1,6 @@
 # Viget Blocks Toolkit
 
-This is a toolkit for creating custom blocks with ACF Pro. It provides a simple way to create blocks with ACF Pro.
-
-This toolkit also includes a feature that adds icons to buttons.
+This toolkit was made to simplify the process of registering custom blocks with ACF Pro. It also adds several additional features to the block editor such as Block Icons and Breakpoint Visibility.
 
 ## Creating Custom Blocks in your Theme
 

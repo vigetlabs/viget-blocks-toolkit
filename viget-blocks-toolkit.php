@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Viget Blocks Toolkit
  * Plugin URI:        https://viget.com
- * Description:       Custom Block Registration and Helper functions.
+ * Description:       Simplifying Block Registration and other additional features.
  * Version:           1.0.5
  * Requires at least: 5.7
  * Requires PHP:      8.1
