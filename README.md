@@ -160,6 +160,12 @@ This block settings panel is available on any supported block in the Full Site E
 
 Returns an instance of the Viget Blocks Toolkit `Core` class.
 
+```php
+<?php
+// Retrieve a specific block icon array.
+vgtbt()->block_icons->get_icon( 'my-custom-icon' );
+```
+
 ### `block_attrs()`
 
 Outputs the block attributes as a string. Supported arguments:
