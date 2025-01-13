@@ -108,6 +108,8 @@ if ( ! function_exists( 'get_block_id' ) ) {
 	function get_block_id( array $block, bool $ignore_anchor = false ): string {
 		if ( ! empty( $block['anchor'] ) && ! $ignore_anchor ) {
 			$id = $block['anchor'];
+		} elseif ( ! empty( $block['blockId'] ) ) {
+			return $block['blockId'];
 		} else {
 			$prefix = str_replace( 'acf/', '', $block['name'] );
 			if ( empty( $block['id'] ) ) {
