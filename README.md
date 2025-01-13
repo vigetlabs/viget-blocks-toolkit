@@ -4,7 +4,7 @@ This toolkit was made to simplify the process of registering custom blocks with 
 
 ## Creating Custom Blocks in your Theme
 
-To create a block in your theme, simply create a `blocks` folder in the root of your theme directory. Each block should have its own folder and a `block.json` file. The `block.json` file should contain the [block configuration](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-metadata/). You can then use a `render.php` file (or `render.twig` file if Timber/Twig is supported) to render the block. By default, the blocks that support `jsx` will automatically render using the plugins `jsx.php` file.
+To create a block in your theme, simply create a `blocks` folder in the root of your theme directory. Each block should have its own folder and a `block.json` file. The `block.json` file should contain the [block configuration](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-metadata/). You can then use a `render.php` file (or `render.twig` file if Timber/Twig is supported) to render the block. By default, the blocks that support `jsx` will automatically render using the plugin's `jsx.php` file.
 
 ### Customizations
 
