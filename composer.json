@@ -1,0 +1,31 @@
+{
+  "name": "viget/viget-blocks-toolkit",
+  "description": "Simplifying Block Registration and other additional features.",
+  "keywords": [
+    "wordpress",
+    "components",
+    "acf",
+    "gutenberg",
+    "blocks",
+    "editor",
+    "toolkit"
+  ],
+  "type": "wordpress-plugin",
+  "homepage": "https://github.com/vigetlabs/viget-blocks-toolkit",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Viget",
+      "homepage": "https://viget.com/"
+    }
+  ],
+  "require": {
+    "composer/installers": "~1.0"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "composer/installers": true
+    }
+  }
+}

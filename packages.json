@@ -1,0 +1,11 @@
+{
+  "package": {
+    "name": "viget/viget-blocks-toolkit",
+    "version": "1.0.5",
+    "source": {
+      "url": "/root/path/not/relative/path/to/viget-blocks-toolkit/.git",
+      "type": "git",
+      "reference": "main"
+    }
+  }
+}
