@@ -36,17 +36,3 @@ $has_container = ! isset( $block['supports']['innerContainer'] ) || true === $bl
 	</div>
 	<?php endif; ?>
 </<?php echo $tag; ?>>
-
-$has_container = ! isset( $block['supports']['innerContainer'] ) || true === $block['supports']['innerContainer'];
-?>
-<<?php echo $tag; ?> <?php block_attrs( $block ); ?>>
-	<?php if ( $has_container ) : ?>
-	<div class="acf-block-inner__container">
-		<?php endif; ?>
-
-		<?php inner_blocks( $inner ); ?>
-
-		<?php if ( $has_container ) : ?>
-	</div>
-	<?php endif; ?>
-</<?php echo $tag; ?>>
