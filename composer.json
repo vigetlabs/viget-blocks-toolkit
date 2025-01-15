@@ -20,7 +20,7 @@
     }
   ],
   "require": {
-    "composer/installers": "~1.0"
+    "composer/installers": "*"
   },
   "config": {
     "sort-packages": true,
