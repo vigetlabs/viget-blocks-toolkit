@@ -1,6 +1,11 @@
 # Created by https://www.toptal.com/developers/gitignore/api/wordpress,phpstorm,macos,composer,windows,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=wordpress,phpstorm,macos,composer,windows,visualstudiocode
 
+### Viget Blocks Toolkit ###
+
+# Let's keep the build directory in the repo.
+!build/
+
 ### Composer ###
 composer.phar
 vendor
