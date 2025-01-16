@@ -14,6 +14,7 @@ import { useState } from '@wordpress/element';
 
 const excludeBlocks = [
     'core/rss',
+    'gravityforms/form',
 ];
 
 /**
