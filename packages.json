@@ -1,7 +1,7 @@
 {
   "package": {
     "name": "viget/viget-blocks-toolkit",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "source": {
       "url": "/root/path/not/relative/path/to/viget-blocks-toolkit/.git",
       "type": "git",
