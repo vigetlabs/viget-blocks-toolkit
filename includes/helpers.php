@@ -57,7 +57,8 @@ if ( ! function_exists( 'block_attrs' ) ) {
 			$attrs['style'] = $block_styles;
 		}
 
-		if ( ! array_key_exists( 'data-supports-jsx', $attrs ) && ! empty( $block['supports']['jsx'] ) ) {
+		$jsx_attr = apply_filters( 'vgtbt_block_jsx_attr', false );
+		if ( $jsx_attr && ! array_key_exists( 'data-supports-jsx', $attrs ) && ! empty( $block['supports']['jsx'] ) ) {
 			$attrs['data-supports-jsx'] = 'true';
 		}
 
