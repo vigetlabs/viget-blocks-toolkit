@@ -34,7 +34,7 @@ add_filter(
 /**
  * Parse InnerBlocks Template
  *
- * @param string $output
+ * @param string $output The output.
  *
  * @return string
  */
@@ -58,7 +58,9 @@ function vgtbt_parse_inner_blocks( string $output ): string {
 			'innerBlocks' => $block_array[2] ?? [],
 		];
 
-		$block    = vgtbt_add_sample_data( $block );
+		$block = vgtbt_add_sample_data( $block );
+
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$content .= apply_filters( 'the_content', trim( render_block( $block ) ) );
 		$content  = vgtbt_parse_inner_blocks( $content );
 		$content  = vgtbt_fill_empty_tags( $content );
@@ -66,14 +68,14 @@ function vgtbt_parse_inner_blocks( string $output ): string {
 
 	$content = str_replace( '$', '\$', $content );
 
-	// Replace the InnerBlocks tag with the parsed content
+	// Replace the InnerBlocks tag with the parsed content.
 	return preg_replace( '/<InnerBlocks[^>]*\/>/i', $content, $output );
 }
 
 /**
  * Get Sample Block properties
  *
- * @param array $block
+ * @param array $block The block array.
  *
  * @return array
  */
@@ -95,7 +97,7 @@ function vgtbt_get_sample_props( array $block ): array {
 /**
  * Return Sample Parts Kit Data
  *
- * @param array $field
+ * @param array $field The field array.
  *
  * @return string|array
  */
@@ -130,15 +132,15 @@ function vgtbt_get_sample_data( array $field ): string|array {
 			'width'       => 600,
 			'height'      => 400,
 			'sizes'       => [
-				'thumbnail'           => 'https://placehold.co/150x150/EEE/31343C',
-				'thumbnail-width'     => 150,
-				'thumbnail-height'    => 150,
-				'medium'              => 'https://placehold.co/226x300/EEE/31343C',
-				'medium-width'        => 226,
-				'medium-height'       => 300,
-				'large'               => 'https://placehold.co/771x1024/EEE/31343C',
-				'large-width'         => 771,
-				'large-height'        => 1024,
+				'thumbnail'        => 'https://placehold.co/150x150/EEE/31343C',
+				'thumbnail-width'  => 150,
+				'thumbnail-height' => 150,
+				'medium'           => 'https://placehold.co/226x300/EEE/31343C',
+				'medium-width'     => 226,
+				'medium-height'    => 300,
+				'large'            => 'https://placehold.co/771x1024/EEE/31343C',
+				'large-width'      => 771,
+				'large-height'     => 1024,
 			],
 		];
 	}
@@ -153,16 +155,16 @@ function vgtbt_get_sample_data( array $field ): string|array {
 /**
  * Add Sample Data to Block
  *
- * @param array $block
+ * @param array $block The block array.
  *
  * @return array
  */
 function vgtbt_add_sample_data( array $block ): array {
 	$supported = [
 		'core/image'     => [
-			'url'    => vgtbt_get_sample_data( [ 'type' => 'image' ] )[ 'url' ],
-			'width'  => vgtbt_get_sample_data( [ 'type' => 'image' ] )[ 'width' ],
-			'height' => vgtbt_get_sample_data( [ 'type' => 'image' ] )[ 'height' ],
+			'url'    => vgtbt_get_sample_data( [ 'type' => 'image' ] )['url'],
+			'width'  => vgtbt_get_sample_data( [ 'type' => 'image' ] )['width'],
+			'height' => vgtbt_get_sample_data( [ 'type' => 'image' ] )['height'],
 		],
 		'core/heading'   => [
 			'content' => vgtbt_get_sample_data( [ 'type' => 'text' ] ),
@@ -195,7 +197,7 @@ function vgtbt_add_sample_data( array $block ): array {
 /**
  * Add sample content to empty paragraph, heading, summary, etc.
  *
- * @param string $content
+ * @param string $content The content.
  *
  * @return string
  */

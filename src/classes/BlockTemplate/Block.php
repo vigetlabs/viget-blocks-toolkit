@@ -42,7 +42,7 @@ class Block extends Template {
 	 * @param array   $attributes Attributes.
 	 * @param Block[] $inner_blocks Inner blocks.
 	 *
-	 * @throws Exception
+	 * @throws Exception Exception thrown when block is not registered.
 	 */
 	public function __construct( string $block, array $attributes = [], array $inner_blocks = [] ) {
 		$registered = \WP_Block_Type_Registry::get_instance()->get_registered( $block );
@@ -51,7 +51,7 @@ class Block extends Template {
 			throw new Exception( 'Block not registered' );
 		}
 
-		$this->block = $block;
+		$this->block    = $block;
 		$this->wp_block = $registered;
 
 		foreach ( $attributes as $attribute => $value ) {
@@ -78,10 +78,10 @@ class Block extends Template {
 	 * Set Attribute
 	 *
 	 * @param string $key Key.
-	 * @param mixed $value Value.
+	 * @param mixed  $value Value.
 	 *
 	 * @return Block
-	 * @throws Exception
+	 * @throws Exception Exception thrown when attribute is not supported.
 	 */
 	public function attr( string $key, mixed $value ): Block {
 		$supported = $this->get_supported_attributes();
@@ -98,11 +98,11 @@ class Block extends Template {
 	/**
 	 * Alias method for attr()
 	 *
-	 * @param string $key
-	 * @param mixed $value
+	 * @param string $key Key.
+	 * @param mixed  $value Value.
 	 *
 	 * @return Block
-	 * @throws Exception
+	 * @throws Exception Exception thrown when attribute is not supported.
 	 */
 	public function attribute( string $key, mixed $value ): Block {
 		return $this->attr( $key, $value );
@@ -139,7 +139,7 @@ class Block extends Template {
 	 * @param Block|string $block Template block.
 	 *
 	 * @return Block
-	 * @throws Exception
+	 * @throws Exception Exception thrown when block is not allowed.
 	 */
 	public function add( Block|string $block ): Block {
 		$allowed    = $this->get_allowed_blocks();

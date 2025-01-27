@@ -21,6 +21,8 @@ class BlockRegistration {
 	const BLOCK_IDS_TRANSIENT = 'vgtbt_block_ids';
 
 	/**
+	 * Cached array of blocks.
+	 *
 	 * @var array
 	 */
 	public static array $blocks = [];
@@ -36,13 +38,13 @@ class BlockRegistration {
 	 * Register ACF Blocks.
 	 */
 	public static function init(): void {
-		// Automate block registration
+		// Automate block registration.
 		self::register_blocks();
 
-		// Set default block render callback for ACF blocks
+		// Set default block render callback for ACF blocks.
 		self::set_default_callback();
 
-		// Disable inner blocks wrapper
+		// Disable inner blocks wrapper.
 		self::disable_inner_blocks_wrap();
 
 		// Allow for core block style de-registration.
@@ -51,10 +53,10 @@ class BlockRegistration {
 		// Allow for core block variation de-registration.
 		self::unregister_block_variations();
 
-		// Register block patterns within block folders
+		// Register block patterns within block folders.
 		self::register_block_patterns();
 
-		// Reset block IDs on a new request
+		// Reset block IDs on a new request.
 		self::reset_block_ids();
 
 		// Add unique, persistent IDs to each ACF block.
@@ -75,7 +77,7 @@ class BlockRegistration {
 				foreach ( $blocks as $block ) {
 					$include_path = $block['path'] . '/block.php';
 
-					// Autoload block.php within block directory
+					// Autoload block.php within block directory.
 					if ( file_exists( $include_path ) ) {
 						require_once $include_path;
 					}
@@ -191,7 +193,7 @@ class BlockRegistration {
 	 * Get blocks in directory recursively
 	 *
 	 * @param string $path  Path to search inside.
-	 * @param array  $blocks Passed by reference
+	 * @param array  $blocks Passed by reference.
 	 *
 	 * @return void
 	 */
@@ -213,7 +215,7 @@ class BlockRegistration {
 	/**
 	 * Convert path to URL
 	 *
-	 * @param string $path
+	 * @param string $path Path to convert to URL.
 	 *
 	 * @return string
 	 */
@@ -230,7 +232,7 @@ class BlockRegistration {
 	/**
 	 * Get block array
 	 *
-	 * @param string $block_name
+	 * @param string $block_name The name of the block.
 	 *
 	 * @return array|false
 	 */
@@ -252,8 +254,8 @@ class BlockRegistration {
 	/**
 	 * Get inner blocks template
 	 *
-	 * @param array $block
-	 * @param array $metadata
+	 * @param array $block The block array.
+	 * @param array $metadata The block metadata.
 	 *
 	 * @return array
 	 */
@@ -293,8 +295,8 @@ class BlockRegistration {
 	/**
 	 * Get path to block by name.
 	 *
-	 * @param string $block_name
-	 * @param string $return
+	 * @param string $block_name The block name.
+	 * @param string $return What should be returned.
 	 *
 	 * @return false|string
 	 */
@@ -344,14 +346,14 @@ class BlockRegistration {
 	/**
 	 * Render Twig block
 	 *
-	 * @param string     $template
-	 * @param array      $block
-	 * @param string     $content
-	 * @param bool       $is_preview
-	 * @param int        $post_id
-	 * @param ?WP_Block  $wp_block
-	 * @param array|bool $block_context
-	 * @param bool       $is_ajax_render
+	 * @param string     $template The template filename.
+	 * @param array      $block The block array.
+	 * @param string     $content The content.
+	 * @param bool       $is_preview If in preview mode.
+	 * @param int        $post_id The post ID.
+	 * @param ?WP_Block  $wp_block The WP Block instance.
+	 * @param array|bool $block_context The block context.
+	 * @param bool       $is_ajax_render If is in AJAX render.
 	 *
 	 * @return void
 	 */
@@ -498,7 +500,7 @@ class BlockRegistration {
 	/**
 	 * Store a block ID to check for duplicates
 	 *
-	 * @param string $block_id
+	 * @param string $block_id The Block ID.
 	 *
 	 * @return void
 	 */
@@ -514,7 +516,7 @@ class BlockRegistration {
 	/**
 	 * Check if a block ID already exists
 	 *
-	 * @param string $block_id
+	 * @param string $block_id The Block ID.
 	 *
 	 * @return bool
 	 */

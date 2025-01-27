@@ -24,9 +24,9 @@ if ( ! function_exists( 'block_attrs' ) ) {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array  $block
-	 * @param string $custom_class
-	 * @param array  $attrs
+	 * @param array  $block The block array.
+	 * @param string $custom_class A custom class.
+	 * @param array  $attrs Array of attributes.
 	 */
 	function block_attrs( array $block, string $custom_class = '', array $attrs = [] ): void {
 		$id = ! empty( $attrs['id'] ) ? $attrs['id'] : get_block_id( $block );
@@ -101,8 +101,8 @@ if ( ! function_exists( 'get_block_id' ) ) {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $block
-	 * @param bool $ignore_anchor
+	 * @param array $block The block array.
+	 * @param bool  $ignore_anchor IF anchor should be ignored.
 	 *
 	 * @return string
 	 */
@@ -129,8 +129,8 @@ if ( ! function_exists( 'get_block_class' ) ) {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $block
-	 * @param string $custom_class
+	 * @param array  $block The block array.
+	 * @param string $custom_class Any custom classes.
 	 *
 	 * @return string
 	 */
@@ -173,8 +173,8 @@ if ( ! function_exists( 'vgtbt_render_block' ) ) {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $block_name
-	 * @param array $props
+	 * @param string $block_name The block name.
+	 * @param array  $props Block properties.
 	 */
 	function vgtbt_render_block( string $block_name, array $props = [] ): void {
 		if ( ! str_starts_with( $block_name, 'acf/' ) ) {
@@ -207,7 +207,7 @@ if ( ! function_exists( 'get_block_from_blocks' ) ) {
 	 * @since 1.0.0
 	 *
 	 * @param string $name The name of block to retrieve.
-	 * @param array $blocks Array of blocks to search through.
+	 * @param array  $blocks Array of blocks to search through.
 	 *
 	 * @return array|false
 	 */
@@ -234,7 +234,7 @@ if ( ! function_exists( 'get_block_fields' ) ) {
 	/**
 	 * Get fields for a block
 	 *
-	 * @param string $block_name
+	 * @param string $block_name The block name.
 	 *
 	 * @return array
 	 */
@@ -276,13 +276,13 @@ if ( ! function_exists( 'get_field_property' ) ) {
 	/**
 	 * Get a property from a field.
 	 *
-	 * @param string $selector
-	 * @param string $property
-	 * @param string|null $group_id
+	 * @param string  $selector The field selector.
+	 * @param string  $property The field property.
+	 * @param ?string $group_id The Group ID.
 	 *
 	 * @return string
 	 */
-	function get_field_property( string $selector, string $property, string $group_id = null ): string {
+	function get_field_property( string $selector, string $property, ?string $group_id = null ): string {
 		if ( null !== $group_id ) {
 			$fields = acf_get_fields( $group_id );
 			foreach ( $fields as $field_array ) {
@@ -344,8 +344,8 @@ if ( ! function_exists( 'print_admin_message' ) ) {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $notice
-	 * @param string $class
+	 * @param string $notice The message.
+	 * @param string $class The class name.
 	 *
 	 * @return void
 	 */
@@ -400,7 +400,7 @@ if ( ! function_exists( 'get_core_classes' ) ) {
 	/**
 	 * Get core block classes
 	 *
-	 * @param array $block
+	 * @param array $block The block array.
 	 *
 	 * @return array
 	 */
@@ -431,7 +431,7 @@ if ( ! function_exists( 'get_core_styles' ) ) {
 	/**
 	 * Get core block styles
 	 *
-	 * @param array $block
+	 * @param array $block The block array.
 	 *
 	 * @return string
 	 */

@@ -20,6 +20,8 @@ class BlockIcons {
 	const ICONS_CHECKSUM = 'vgtbt_icons_checksum';
 
 	/**
+	 * If the icon filter is disabled.
+	 *
 	 * @var bool
 	 */
 	private bool $disable_icon_filter = false;
@@ -78,7 +80,7 @@ class BlockIcons {
 	/**
 	 * Get all available icons.
 	 *
-	 * @param bool $from_file
+	 * @param bool $from_file File path to get icons.
 	 *
 	 * @return array
 	 */
@@ -190,7 +192,7 @@ class BlockIcons {
 	/**
 	 * Get an icon
 	 *
-	 * @param string $slug
+	 * @param string $slug The icon slug.
 	 *
 	 * @return array
 	 */
@@ -209,8 +211,8 @@ class BlockIcons {
 	/**
 	 * Render icons on frontend.
 	 *
-	 * @param string $block_content
-	 * @param array $block
+	 * @param string $block_content The block content.
+	 * @param array  $block The block array.
 	 *
 	 * @return string
 	 */
@@ -242,10 +244,8 @@ class BlockIcons {
 			if ( $p->next_tag( $query ) ) {
 				$p->add_class( $icon_class );
 			}
-		} else {
-			if ( $p->next_tag() ) {
-				$p->add_class( $icon_class );
-			}
+		} elseif ( $p->next_tag() ) {
+			$p->add_class( $icon_class );
 		}
 
 		$block_content = $p->get_updated_html();
@@ -329,8 +329,8 @@ class BlockIcons {
 	 * @return string
 	 */
 	private function editor_css(): string {
-		$icons = $this->get_icons();
-		$css   = '';
+		$icons     = $this->get_icons();
+		$css       = '';
 		$selectors = apply_filters(
 			'vgtbt_button_icons_editor_css_selectors',
 			[
@@ -375,7 +375,7 @@ class BlockIcons {
 			$css .= '}' . PHP_EOL;
 		}
 
-		// Manually adjust a few of the icons
+		// Manually adjust a few of the icons.
 		$css .= '.button-icon-picker__button.button-icon-picker__icon-chevron-left-small span svg,.button-icon-picker__button.button-icon-picker__icon-chevron-right-small span svg,
 	 .button-icon-picker__button.button-icon-picker__icon-external-arrow span svg {max-height: 60%}';
 		$css .= '.button-icon-picker__button.button-icon-picker__icon-previous span svg,.button-icon-picker__button.button-icon-picker__icon-next span svg {max-height: 80%}';
@@ -396,7 +396,7 @@ class BlockIcons {
 				$checksum = md5( json_encode( $icons ) );
 				$path     = $this->get_icons_file_path( true );
 
-				if ( file_exists( $path ) && $checksum === get_transient( self::ICONS_CHECKSUM ) ) {
+				if ( file_exists( $path ) && get_transient( self::ICONS_CHECKSUM ) === $checksum ) {
 					return;
 				}
 
@@ -431,7 +431,7 @@ class BlockIcons {
 	/**
 	 * Get path to the icons JSON file.
 	 *
-	 * @param bool $write_file
+	 * @param bool $write_file The file path.
 	 *
 	 * @return string
 	 */

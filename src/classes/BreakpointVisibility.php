@@ -29,7 +29,7 @@ class BreakpointVisibility {
 		add_filter(
 			'render_block',
 			function ( string $block_content, array $block ): string {
-				// Skip if no visibility settings
+				// Skip if no visibility settings.
 				if ( is_admin() || empty( $block['attrs']['breakpointVisibility'] ) ) {
 					return $block_content;
 				}
@@ -38,11 +38,11 @@ class BreakpointVisibility {
 				$block_id   = uniqid();
 				$attributes = [];
 
-				// Add data-block attribute
+				// Add data-block attribute.
 				$attributes[]  = sprintf( 'data-block="%s"', esc_attr( $block_id ) );
 				$block_content = trim( $block_content );
 
-				// Add standard breakpoint attributes if not using custom
+				// Add standard breakpoint attributes if not using custom.
 				if ( empty( $visibility['useCustom'] ) ) {
 					if ( ! empty( $visibility['desktop'] ) ) {
 						$attributes[] = 'data-visibility-desktop="hide"';
@@ -55,7 +55,7 @@ class BreakpointVisibility {
 					}
 				}
 
-				// Apply attributes to the outermost element
+				// Apply attributes to the outermost element.
 				if ( preg_match( '/^<([a-zA-Z0-9\-]+)([^>]*)>/', $block_content, $matches ) >= 0 ) {
 					$block_content = preg_replace(
 						'/^<([a-zA-Z0-9\-]+)([^>]*)>/',
@@ -91,11 +91,11 @@ class BreakpointVisibility {
 	/**
 	 * Generate custom CSS for the block
 	 *
-	 * @param string $block_id    Block's Unique ID
-	 * @param string $width        Breakpoint width
-	 * @param string $unit         CSS unit
-	 * @param string $action       'show' or 'hide'
-	 * @param bool   $mobile_first Whether to use mobile-first approach
+	 * @param string $block_id     Block's Unique ID.
+	 * @param string $width        Breakpoint width.
+	 * @param string $unit         CSS unit.
+	 * @param string $action       'show' or 'hide'.
+	 * @param bool   $mobile_first Whether to use mobile-first approach.
 	 *
 	 * @return string
 	 */
@@ -110,8 +110,8 @@ class BreakpointVisibility {
 			? "@media (min-width: {$width}{$unit})"
 			: "@media (max-width: {$width}{$unit})";
 
-		$display         = $action === 'show' ? 'block' : 'none';
-		$initial_display = $action === 'show' ? 'none' : 'block';
+		$display         = 'show' === $action ? 'block' : 'none';
+		$initial_display = 'show' === $action ? 'none' : 'block';
 
 		return "
 			/* Base styles */

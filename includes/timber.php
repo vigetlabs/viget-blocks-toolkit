@@ -25,6 +25,5 @@ add_action(
 				return $functions;
 			}
 		);
-
 	}
 );
