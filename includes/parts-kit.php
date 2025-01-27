@@ -8,7 +8,7 @@
 use Viget\VigetBlocksToolkit\Block_Registration;
 
 add_filter(
-	'viget_parts_kit_block_%',
+	'vgtpk_parts_kit_block_%',
 	function ( string $output, string $block_name ): string {
 		$block = Block_Registration::get_block( $block_name );
 
@@ -19,7 +19,7 @@ add_filter(
 		if ( ! empty( $block['path'] ) ) {
 			$include = $block['path'] . '/block.php';
 
-			// Autoload block.php within block directory
+			// Autoload block.php within block directory.
 			if ( file_exists( $include ) ) {
 				require_once $include;
 			}
@@ -39,12 +39,12 @@ add_filter(
  * @return string
  */
 function vgtbt_parse_inner_blocks( string $output ): string {
-	// Check if InnerBlocks tag has a template attribute with regular expression
+	// Check if InnerBlocks tag has a template attribute with regular expression.
 	if ( ! preg_match( '/<InnerBlocks[^>]*template="([^"]*)"[^>]*>/i', $output, $matches ) ) {
 		return $output;
 	}
 
-	// Get the template attribute value
+	// Get the template attribute value.
 	$template = $matches[1];
 	$template = htmlspecialchars_decode( $template );
 	$template = json_decode( $template, true );
