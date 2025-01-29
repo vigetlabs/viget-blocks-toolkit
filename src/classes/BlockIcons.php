@@ -3,12 +3,13 @@
  * Block Icons Support
  *
  * Inspired by Nick Diego's Enable Button Icons plugin.
+ *
  * @link https://github.com/ndiego/enable-button-icons
  *
- * @package VigetBlocksToolkit
+ * @package Viget\BlocksToolkit
  */
 
-namespace Viget\VigetBlocksToolkit;
+namespace Viget\BlocksToolkit;
 
 use WP_HTML_Tag_Processor;
 
@@ -182,11 +183,11 @@ class BlockIcons {
 		}
 
 		/**
-		 * Filter the available button icons.
+		 * Filter the available block icons.
 		 *
-		 * @param array $icons The available button icons.
+		 * @param array $icons The available block icons.
 		 */
-		return apply_filters( 'vgtbt_button_icons', $icons );
+		return apply_filters( 'vgtbt_block_icons', $icons );
 	}
 
 	/**

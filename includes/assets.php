@@ -2,8 +2,10 @@
 /**
  * Assets
  *
- * @package VigetBlocksToolkit
+ * @package Viget\BlocksToolkit
  */
+
+namespace Viget\BlocksToolkit;
 
 add_action(
 	'admin_enqueue_scripts',

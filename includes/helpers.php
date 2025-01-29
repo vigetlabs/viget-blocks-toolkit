@@ -2,10 +2,10 @@
 /**
  * Helper functions
  *
- * @package VigetBlocksToolkit
+ * @package Viget\BlocksToolkit
  */
 
-use Viget\VigetBlocksToolkit\Core;
+use Viget\BlocksToolkit\Core;
 
 if ( ! function_exists( 'vgtbt' ) ) {
 	/**
@@ -13,7 +13,7 @@ if ( ! function_exists( 'vgtbt' ) ) {
 	 *
 	 * @return Core
 	 */
-	function vgtbt(): Core {
+	function vgtbt(): Core { // phpcs:ignore
 		return Core::instance();
 	}
 }
@@ -28,7 +28,7 @@ if ( ! function_exists( 'block_attrs' ) ) {
 	 * @param string $custom_class A custom class.
 	 * @param array  $attrs Array of attributes.
 	 */
-	function block_attrs( array $block, string $custom_class = '', array $attrs = [] ): void {
+	function block_attrs( array $block, string $custom_class = '', array $attrs = [] ): void { // phpcs:ignore
 		$id = ! empty( $attrs['id'] ) ? $attrs['id'] : get_block_id( $block );
 		$id = apply_filters( 'vgtbt_block_id_attr', $id, $block );
 
@@ -80,6 +80,12 @@ if ( ! function_exists( 'block_attrs' ) ) {
 			unset( $attrs['id'] );
 		}
 
+		$block_supports = WP_Block_Supports::get_instance();
+
+		if ( is_null( $block_supports::$block_to_render ) ) {
+			$attrs = array_merge( $attrs, $extra );
+		}
+
 		foreach ( $attrs as $key => $value ) {
 			if ( is_null( $value ) ) {
 				continue;
@@ -90,6 +96,10 @@ if ( ! function_exists( 'block_attrs' ) ) {
 		echo ' '; // Prep for additional block_attrs.
 
 		do_action( 'vgtbt_block_attr', $block );
+
+		if ( is_null( $block_supports::$block_to_render ) ) {
+			return;
+		}
 
 		echo wp_kses_data( get_block_wrapper_attributes( $extra ) );
 	}
@@ -106,7 +116,7 @@ if ( ! function_exists( 'get_block_id' ) ) {
 	 *
 	 * @return string
 	 */
-	function get_block_id( array $block, bool $ignore_anchor = false ): string {
+	function get_block_id( array $block, bool $ignore_anchor = false ): string { // phpcs:ignore
 		if ( ! empty( $block['anchor'] ) && ! $ignore_anchor ) {
 			$id = $block['anchor'];
 		} elseif ( ! empty( $block['blockId'] ) ) {
@@ -134,7 +144,7 @@ if ( ! function_exists( 'get_block_class' ) ) {
 	 *
 	 * @return string
 	 */
-	function get_block_class( array $block, string $custom_class = '' ): string {
+	function get_block_class( array $block, string $custom_class = '' ): string { // phpcs:ignore
 		$classes = [
 			'wp-block',
 			'acf-block',
@@ -178,7 +188,7 @@ if ( ! function_exists( 'vgtbt_render_block' ) ) {
 	 */
 	function vgtbt_render_block( string $block_name, array $props = [] ): void {
 		if ( ! str_starts_with( $block_name, 'acf/' ) ) {
-			$block_name = 'acf/' . $block_name;
+			$block_name = "acf/$block_name";
 		}
 
 		$block = array_merge(
@@ -211,7 +221,7 @@ if ( ! function_exists( 'get_block_from_blocks' ) ) {
 	 *
 	 * @return array|false
 	 */
-	function get_block_from_blocks( string $name, array $blocks ): array|false {
+	function get_block_from_blocks( string $name, array $blocks ): array|false { // phpcs:ignore
 		foreach ( $blocks as $block ) {
 			if ( $name === $block['blockName'] ) {
 				return $block;
@@ -238,9 +248,9 @@ if ( ! function_exists( 'get_block_fields' ) ) {
 	 *
 	 * @return array
 	 */
-	function get_block_fields( string $block_name ): array {
+	function get_block_fields( string $block_name ): array { // phpcs:ignore
 		if ( ! str_starts_with( $block_name, 'acf/' ) ) {
-			$block_name = 'acf/' . $block_name;
+			$block_name = "acf/$block_name";
 		}
 
 		$field_groups = acf_get_field_groups();
@@ -282,7 +292,7 @@ if ( ! function_exists( 'get_field_property' ) ) {
 	 *
 	 * @return string
 	 */
-	function get_field_property( string $selector, string $property, ?string $group_id = null ): string {
+	function get_field_property( string $selector, string $property, ?string $group_id = null ): string { // phpcs:ignore
 		if ( null !== $group_id ) {
 			$fields = acf_get_fields( $group_id );
 			foreach ( $fields as $field_array ) {
@@ -314,15 +324,17 @@ if ( ! function_exists( 'inner_blocks' ) ) {
 	 * @since 1.0.0
 	 *
 	 * @param array $props {
-	 *    @type array  $allowedBlocks Allowed blocks
-	 *    @type array  $template      Block Template
-	 *    @type string $templateLock  Template Lock
-	 *    @type string $className     Class Name
+	 *     The properties array.
+	 *
+	 *     @type array  $allowedBlocks The allowed blocks.
+	 *     @type array  $template The block template.
+	 *     @type string $templateLock The template lock.
+	 *     @type string $className The class name.
 	 * }
 	 *
 	 * @return void
 	 */
-	function inner_blocks( array $props = [] ): void {
+	function inner_blocks( array $props = [] ): void { // phpcs:ignore
 		$json_encode = [ 'allowedBlocks', 'template' ];
 		$attributes  = '';
 
@@ -333,7 +345,7 @@ if ( ! function_exists( 'inner_blocks' ) ) {
 
 		printf(
 			'<InnerBlocks%s />',
-			$attributes
+			$attributes // phpcs:ignore
 		);
 	}
 }
@@ -349,7 +361,7 @@ if ( ! function_exists( 'print_admin_message' ) ) {
 	 *
 	 * @return void
 	 */
-	function print_admin_message( string $notice = '', string $class = 'vgtbt-admin-message' ): void {
+	function print_admin_message( string $notice = '', string $class = 'vgtbt-admin-message' ): void { // phpcs:ignore
 		if ( ! is_admin() || ! $notice ) {
 			return;
 		}
@@ -370,7 +382,7 @@ if ( ! function_exists( 'is_acf_saving_field' ) ) {
 	 *
 	 * @return bool
 	 */
-	function is_acf_saving_field(): bool {
+	function is_acf_saving_field(): bool { // phpcs:ignore
 		global $pagenow;
 
 		if ( doing_action( 'acf/update_field_group' ) ) {
@@ -381,12 +393,12 @@ if ( ! function_exists( 'is_acf_saving_field' ) ) {
 			return false;
 		}
 
-		if ( empty( $_GET['post'] ) || empty( $_GET['action'] ) ) {
+		if ( empty( $_GET['post'] ) || empty( $_GET['action'] ) ) { // phpcs:ignore
 			return false;
 		}
 
-		$post_id = sanitize_text_field( wp_unslash( $_GET['post'] ) );
-		$action  = sanitize_text_field( wp_unslash( $_GET['action'] ) );
+		$post_id = sanitize_text_field( wp_unslash( $_GET['post'] ) ); // phpcs:ignore
+		$action  = sanitize_text_field( wp_unslash( $_GET['action'] ) ); // phpcs:ignore
 
 		if ( 'edit' === $action && 'acf-field-group' === get_post_type( $post_id ) ) {
 			return true;
@@ -404,7 +416,7 @@ if ( ! function_exists( 'get_core_classes' ) ) {
 	 *
 	 * @return array
 	 */
-	function get_core_classes( array $block ): array {
+	function get_core_classes( array $block ): array { // phpcs:ignore
 		$classes = [];
 
 		if ( ! empty( $block['backgroundColor'] ) ) {
@@ -435,7 +447,7 @@ if ( ! function_exists( 'get_core_styles' ) ) {
 	 *
 	 * @return string
 	 */
-	function get_core_styles( array $block ): string {
+	function get_core_styles( array $block ): string { // phpcs:ignore
 		if ( ! empty( $block['style'] ) ) {
 			$styles = wp_style_engine_get_styles( $block['style'] );
 			return $styles['css'];

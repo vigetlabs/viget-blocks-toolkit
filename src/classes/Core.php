@@ -2,10 +2,10 @@
 /**
  * Core API
  *
- * @package VigetBlocksToolkit
+ * @package Viget\BlocksToolkit
  */
 
-namespace Viget\VigetBlocksToolkit;
+namespace Viget\BlocksToolkit;
 
 /**
  * Core API

@@ -106,7 +106,7 @@
             <property name="prefixes" type="array">
                 <element value="VGTBT_"/>
                 <element value="vgtbt_"/>
-                <element value="VigetBlocksToolkit"/>
+                <element value="Viget\BlocksToolkit"/>
             </property>
         </properties>
     </rule>

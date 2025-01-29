@@ -2,10 +2,10 @@
 /**
  * ACF Block Registration
  *
- * @package VigetBlocksToolkit
+ * @package Viget\BlocksToolkit
  */
 
-namespace Viget\VigetBlocksToolkit;
+namespace Viget\BlocksToolkit;
 
 use Timber\Timber;
 use WP_Block;

@@ -4,10 +4,10 @@
  *
  * @link https://developer.wordpress.org/block-editor/reference-guides/block-api/block-templates/
  *
- * @package ACFFormBlocks
+ * @package Viget\BlocksToolkit
  */
 
-namespace Viget\VigetBlocksToolkit\BlockTemplate;
+namespace Viget\BlocksToolkit\BlockTemplate;
 
 use Exception;
 

@@ -2,13 +2,15 @@
 /**
  * Timber Integration
  *
- * @package VigetBlocksToolkit
+ * @package Viget\BlocksToolkit
  */
+
+namespace Viget\BlocksToolkit;
 
 add_action(
 	'after_setup_theme',
 	function () {
-		if ( ! class_exists( 'Timber\Timber' ) ) {
+		if ( ! class_exists( '\Timber\Timber' ) ) {
 			return;
 		}
 

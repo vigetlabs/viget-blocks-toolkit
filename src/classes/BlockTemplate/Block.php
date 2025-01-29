@@ -2,10 +2,10 @@
 /**
  * Template Block
  *
- * @package ACFFormBlocks
+ * @package Viget\BlocksToolkit
  */
 
-namespace Viget\VigetBlocksToolkit\BlockTemplate;
+namespace Viget\BlocksToolkit\BlockTemplate;
 
 use Exception;
 
@@ -86,8 +86,15 @@ class Block extends Template {
 	public function attr( string $key, mixed $value ): Block {
 		$supported = $this->get_supported_attributes();
 
-		if ( ! in_array( $key, $supported ) ) {
-			throw new Exception( 'Unsupported block attribute: ' . $key . '. Must be one of: ' . implode( ', ', $supported ) );
+		if ( ! in_array( $key, $supported, true ) ) {
+			throw new Exception(
+				sprintf(
+					// translators: %1$s represents the attribute key, %2$s lists the supported attributes.
+					esc_html__( 'Unsupported block attribute: %1$s. Must be one of: %2$s', 'viget-blocks-toolkit' ),
+					esc_html( $key ),
+					esc_html( implode( ', ', $supported ) )
+				)
+			);
 		}
 
 		$this->attributes[ $key ] = $value;
@@ -145,7 +152,7 @@ class Block extends Template {
 		$allowed    = $this->get_allowed_blocks();
 		$block_name = is_string( $block ) ? $block : $block->get_name();
 
-		if ( ! empty( $allowed ) && ! in_array( $block_name, $allowed ) ) {
+		if ( ! empty( $allowed ) && ! in_array( $block_name, $allowed, true ) ) {
 			throw new Exception( 'Block not allowed' );
 		}
 

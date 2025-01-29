@@ -5,7 +5,7 @@
  * @package VigetBlocksToolkit
  */
 
-use Viget\VigetBlocksToolkit\Block_Registration;
+use Viget\BlocksToolkit\Block_Registration;
 
 add_filter(
 	'vgtpk_parts_kit_block_%',

@@ -2,10 +2,10 @@
 /**
  * ACF Block Settings
  *
- * @package VigetBlocksToolkit
+ * @package Viget\BlocksToolkit
  */
 
-namespace Viget\VigetBlocksToolkit;
+namespace Viget\BlocksToolkit;
 
 /**
  * Settings Class
@@ -13,6 +13,8 @@ namespace Viget\VigetBlocksToolkit;
 class Settings {
 
 	/**
+	 * Paths to look for blocks.
+	 *
 	 * @var array
 	 */
 	public static array $paths = [];
@@ -91,15 +93,15 @@ class Settings {
 	 * @return false|string
 	 */
 	public static function get_posted_block(): false|string {
-		if ( empty( $_POST['acf_field_group'] ) || ! is_array( $_POST['acf_field_group'] ) || empty( $_POST['acf_field_group']['location'] ) ) {
+		if ( empty( $_POST['acf_field_group'] ) || ! is_array( $_POST['acf_field_group'] ) || empty( $_POST['acf_field_group']['location'] ) ) { // phpcs:ignore
 			return false;
 		}
 
-		if ( count( $_POST['acf_field_group']['location'] ) > 1 ) {
+		if ( count( $_POST['acf_field_group']['location'] ) > 1 ) { // phpcs:ignore
 			return false;
 		}
 
-		foreach ( $_POST['acf_field_group']['location'] as $group_key => $group ) {
+		foreach ( $_POST['acf_field_group']['location'] as $group_key => $group ) { // phpcs:ignore
 			if ( empty( $group ) ) {
 				continue;
 			}

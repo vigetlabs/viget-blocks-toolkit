@@ -2,10 +2,10 @@
 /**
  * Breakpoint Visibility Support
  *
- * @package VigetBlocksToolkit
+ * @package Viget\BlocksToolkit
  */
 
-namespace Viget\VigetBlocksToolkit;
+namespace Viget\BlocksToolkit;
 
 /**
  * Breakpoint Visibility Class
