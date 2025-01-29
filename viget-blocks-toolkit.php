@@ -14,7 +14,7 @@
  * Text Domain:       viget-blocks-toolkit
  * Domain Path:       /languages
  *
- * @package VigetBlocksToolkit
+ * @package Viget\BlocksToolkit
  */
 
 // Plugin version.

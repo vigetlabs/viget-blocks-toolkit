@@ -67,7 +67,7 @@ class BreakpointVisibility {
 
 				if ( ! empty( $visibility['useCustom'] ) ) {
 					$custom = $visibility['customBreakpoint'];
-					$css = self::generate_custom_breakpoint_css(
+					$css    = self::generate_custom_breakpoint_css(
 						$block_id,
 						$custom['width'] ?? '768',
 						$custom['unit'] ?? 'px',

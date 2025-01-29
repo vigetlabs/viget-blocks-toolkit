@@ -18,7 +18,7 @@ class BlockRegistration {
 	/**
 	 * Keep track of all block IDs
 	 */
-	const BLOCK_IDS_TRANSIENT = 'vgtbt_block_ids';
+	private const BLOCK_IDS_TRANSIENT = 'vgtbt_block_ids';
 
 	/**
 	 * Cached array of blocks.

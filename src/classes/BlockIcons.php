@@ -18,7 +18,7 @@ use WP_HTML_Tag_Processor;
  */
 class BlockIcons {
 
-	const ICONS_CHECKSUM = 'vgtbt_icons_checksum';
+	private const ICONS_CHECKSUM = 'vgtbt_icons_checksum';
 
 	/**
 	 * If the icon filter is disabled.
