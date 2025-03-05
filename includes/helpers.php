@@ -253,6 +253,10 @@ if ( ! function_exists( 'get_block_fields' ) ) {
 			$block_name = "acf/$block_name";
 		}
 
+		if ( ! function_exists( 'acf_get_field_groups' ) ) {
+			return [];
+		}
+
 		$field_groups = acf_get_field_groups();
 		$fields       = [];
 
@@ -293,6 +297,10 @@ if ( ! function_exists( 'get_field_property' ) ) {
 	 * @return string
 	 */
 	function get_field_property( string $selector, string $property, ?string $group_id = null ): string { // phpcs:ignore
+		if ( ! function_exists( 'acf_get_fields' ) ) {
+			return '';
+		}
+
 		if ( null !== $group_id ) {
 			$fields = acf_get_fields( $group_id );
 			foreach ( $fields as $field_array ) {

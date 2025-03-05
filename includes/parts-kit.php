@@ -5,12 +5,12 @@
  * @package VigetBlocksToolkit
  */
 
-use Viget\BlocksToolkit\Block_Registration;
+use Viget\BlocksToolkit\BlockRegistration;
 
 add_filter(
 	'vgtpk_parts_kit_block_%',
 	function ( string $output, string $block_name ): string {
-		$block = Block_Registration::get_block( $block_name );
+		$block = BlockRegistration::get_block( $block_name );
 
 		if ( ! $block ) {
 			return $output;

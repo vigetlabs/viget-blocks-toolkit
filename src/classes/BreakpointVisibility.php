@@ -18,6 +18,9 @@ class BreakpointVisibility {
 	public function __construct() {
 		// Add block breakpoint visibility CSS.
 		self::breakpoint_visibility();
+
+		// Localize JS vars.
+		$this->localize_js_vars();
 	}
 
 	/**
@@ -125,5 +128,41 @@ class BreakpointVisibility {
 				}
 			}
 		";
+	}
+
+	/**
+	 * Localize JS vars.
+	 *
+	 * @return void
+	 */
+	private function localize_js_vars(): void {
+		add_action(
+			'enqueue_block_editor_assets',
+			function () {
+				wp_localize_script(
+					'vgtbt-editor-scripts',
+					'vgtbtBreakpointVisibility',
+					[
+						'excludeBlocks' => $this->get_exclude_blocks(),
+					]
+				);
+			},
+			20
+		);
+	}
+
+	/**
+	 * Get exclude blocks.
+	 *
+	 * @return array
+	 */
+	private function get_exclude_blocks(): array {
+		return apply_filters(
+			'vgtbt_breakpoint_visibility_exclude_blocks',
+			[
+				'core/rss',
+				'gravityforms/form',
+			]
+		);
 	}
 }

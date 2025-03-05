@@ -1,3 +1,5 @@
+/** global vgtbtBreakpointVisibility */
+
 import {
     ToggleControl,
     PanelBody,
@@ -12,10 +14,7 @@ import { __ } from '@wordpress/i18n';
 import { InspectorControls } from '@wordpress/block-editor';
 import { useState } from '@wordpress/element';
 
-const excludeBlocks = [
-    'core/rss',
-    'gravityforms/form',
-];
+const excludeBlocks = vgtbtBreakpointVisibility.excludeBlocks;
 
 /**
  * Add breakpoint visibility controls to block

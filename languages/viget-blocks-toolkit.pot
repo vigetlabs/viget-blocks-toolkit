@@ -1,0 +1,204 @@
+# Copyright (C) 2025 Viget
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Viget Blocks Toolkit 1.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/viget-blocks-toolkit\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-03-05T18:09:13+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: viget-blocks-toolkit\n"
+
+#. Plugin Name of the plugin
+#: viget-blocks-toolkit.php
+msgid "Viget Blocks Toolkit"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: viget-blocks-toolkit.php
+msgid "https://viget.com"
+msgstr ""
+
+#. Description of the plugin
+#: viget-blocks-toolkit.php
+msgid "Simplifying Block Registration and other additional features."
+msgstr ""
+
+#. Author of the plugin
+#: viget-blocks-toolkit.php
+msgid "Viget"
+msgstr ""
+
+#: src/classes/BlockIcons.php:96
+msgid "Arrow Left"
+msgstr ""
+
+#: src/classes/BlockIcons.php:101
+msgid "Arrow Right"
+msgstr ""
+
+#: src/classes/BlockIcons.php:105
+msgid "Chevron Left"
+msgstr ""
+
+#: src/classes/BlockIcons.php:110
+msgid "Chevron Left Small"
+msgstr ""
+
+#: src/classes/BlockIcons.php:115
+msgid "Chevron Right"
+msgstr ""
+
+#: src/classes/BlockIcons.php:119
+msgid "Chevron Right Small"
+msgstr ""
+
+#: src/classes/BlockIcons.php:123
+msgid "Cloud"
+msgstr ""
+
+#: src/classes/BlockIcons.php:127
+msgid "Cloud Upload"
+msgstr ""
+
+#: src/classes/BlockIcons.php:131
+msgid "Comment Author Avatar"
+msgstr ""
+
+#: src/classes/BlockIcons.php:135
+msgid "Download"
+msgstr ""
+
+#: src/classes/BlockIcons.php:139
+msgid "External"
+msgstr ""
+
+#: src/classes/BlockIcons.php:143
+msgid "External Arrow"
+msgstr ""
+
+#: src/classes/BlockIcons.php:147
+msgid "Help"
+msgstr ""
+
+#: src/classes/BlockIcons.php:151
+msgid "Info"
+msgstr ""
+
+#: src/classes/BlockIcons.php:155
+msgid "Lock Outline"
+msgstr ""
+
+#: src/classes/BlockIcons.php:159
+msgid "Login"
+msgstr ""
+
+#: src/classes/BlockIcons.php:163
+msgid "Next"
+msgstr ""
+
+#: src/classes/BlockIcons.php:167
+msgid "Previous"
+msgstr ""
+
+#: src/classes/BlockIcons.php:172
+msgid "Shuffle"
+msgstr ""
+
+#: src/classes/BlockIcons.php:176
+msgid "WordPress"
+msgstr ""
+
+#: src/classes/BlockIcons.php:411
+#: build/index.js:1
+#: src/features/block-icons.js:87
+msgid "Icon"
+msgstr ""
+
+#. translators: %1$s represents the attribute key, %2$s lists the supported attributes.
+#: src/classes/BlockTemplate/Block.php:93
+msgid "Unsupported block attribute: %1$s. Must be one of: %2$s"
+msgstr ""
+
+#: views/default.php:13
+msgid "Default Block template"
+msgstr ""
+
+#: views/default.php:19
+msgid "Block data available"
+msgstr ""
+
+#: views/jsx.php:15
+msgid "Type / to choose a block"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/block-icons.js:118
+msgid "Show icon on left"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:82
+msgid "Responsive"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:87
+msgid "Hide on Desktop"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:93
+msgid "Hide on Tablet"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:99
+msgid "Hide on Mobile"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:108
+msgid "Use Custom Breakpoint"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:122
+msgid "Breakpoint Width"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:129
+msgid "Unit"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:142
+msgid "Visibility Action"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:147
+msgid "Show"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:148
+msgid "Hide"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:151
+msgid "Mobile First"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:152
+msgid "When enabled, applies to screens smaller than breakpoint"
+msgstr ""

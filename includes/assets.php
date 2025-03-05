@@ -29,7 +29,8 @@ add_action(
 			'vgtbt-editor-scripts',
 			VGTBT_PLUGIN_URL . 'build/index.js',
 			$dependencies,
-			$asset_file['version']
+			$asset_file['version'],
+			[ 'in_footer' => true ]
 		);
 
 		wp_register_style(

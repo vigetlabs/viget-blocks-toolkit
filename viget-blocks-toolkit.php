@@ -1,12 +1,11 @@
 <?php
 /**
  * Plugin Name:       Viget Blocks Toolkit
- * Plugin URI:        https://viget.com
- * Description:       Simplifying Block Registration and other additional features.
- * Version:           1.0.9
+ * Plugin URI:        https://github.com/vigetlabs/viget-blocks-toolkit
+ * Description:       Simplifying Block Registration and other block editor related features.
+ * Version:           1.1.0
  * Requires at least: 5.7
  * Requires PHP:      8.1
- * Requires Plugins:  advanced-custom-fields-pro
  * Author:            Viget
  * Author URI:        https://viget.com
  * License:           GPL v2 or later
@@ -18,7 +17,7 @@
  */
 
 // Plugin version.
-const VGTBT_VERSION = '1.0.9';
+const VGTBT_VERSION = '1.1.0';
 
 // Plugin path.
 define( 'VGTBT_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
