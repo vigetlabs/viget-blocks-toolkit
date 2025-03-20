@@ -2,7 +2,7 @@
 Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
 Requires at least: 5.7
-Tested up to: 6.7.2
+Tested up to: 6.7
 Stable tag: 1.1.0
 Requires PHP: 8.1
 License: GPLv2 or later
