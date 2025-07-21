@@ -112,6 +112,8 @@ class BlockRegistration {
 						$block['url'] = self::path_to_url( $block['path'] );
 					}
 
+					$block['tagName'] = $metadata['tagName'] ?? 'section';
+
 					// Pass the block template data to the block.
 					$block['template'] = self::get_inner_blocks( $block, $metadata );
 
