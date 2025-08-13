@@ -18,7 +18,7 @@ if ( ! isset( $block_template ) && empty( $block['template'] ) ) {
 	];
 }
 
-$tag   = $block['tagName'] ?? 'section';
+$tag   = $block['tagName'];
 $inner = [
 	'template' => $block['template'] ?? $block_template ?? [],
 ];

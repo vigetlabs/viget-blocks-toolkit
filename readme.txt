@@ -2,8 +2,8 @@
 Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
 Requires at least: 5.7
-Tested up to: 6.7.2
-Stable tag: 1.1.0
+Tested up to: 6.8
+Stable tag: 1.1.1
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,6 +29,11 @@ No. There are several features of this plugin that can be used without Advanced 
 3. Media Position Example
 
 == Changelog ==
+
+= 1.1.1 =
+* Bumps Tested up to version to 6.8.
+* Fixes a bug where the `block.json` `tagName` was not supported correctly.
+* Fixes a bug when the core function `wp_style_engine_get_styles` does not return the `css` array key index.
 
 = 1.1.0 =
 * Initial Release

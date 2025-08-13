@@ -456,11 +456,16 @@ if ( ! function_exists( 'get_core_styles' ) ) {
 	 * @return string
 	 */
 	function get_core_styles( array $block ): string { // phpcs:ignore
-		if ( ! empty( $block['style'] ) ) {
-			$styles = wp_style_engine_get_styles( $block['style'] );
-			return $styles['css'];
+		if ( empty( $block['style'] ) || ! function_exists( 'wp_style_engine_get_styles' ) ) {
+			return '';
 		}
 
-		return '';
+		$styles = wp_style_engine_get_styles( $block['style'] );
+
+		if ( empty( $styles['css'] ) ) {
+			return '';
+		}
+
+		return $styles['css'];
 	}
 }
