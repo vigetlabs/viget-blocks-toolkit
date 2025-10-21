@@ -55,6 +55,13 @@ class Core {
 		$this->bp_visibility           = new BreakpointVisibility();
 		$this->navigation_slug_handler = new NavigationSlugHandler();
 		$this->block_schema            = new BlockSchema();
+
+		// Initialize GitHub updater
+		new \GitHub_Plugin_Updater(
+			VGTBT_PLUGIN_FILE,
+			'vigetlabs',
+			'viget-blocks-toolkit'
+		);
 	}
 
 	/**
