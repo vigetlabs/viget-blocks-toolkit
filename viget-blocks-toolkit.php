@@ -22,7 +22,6 @@ const VGTBT_VERSION = '1.1.1';
 // Plugin file.
 define( 'VGTBT_PLUGIN_FILE', __FILE__ );
 
-
 // Plugin path.
 define( 'VGTBT_PLUGIN_PATH', plugin_dir_path( VGTBT_PLUGIN_FILE ) );
 
