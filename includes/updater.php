@@ -8,9 +8,6 @@
  * @package Viget\BlocksToolkit
  */
 
-use stdClass;
-use WP_Upgrader;
-
 /**
  * GitHub Plugin Updater Class
  */
@@ -66,33 +63,33 @@ class GitHub_Plugin_Updater {
 	 * @param string $github_repo GitHub repository name.
 	 */
 	public function __construct( $plugin_file, $github_owner, $github_repo ) {
-		// Only run in the admin area.
-		if ( ! is_admin() ) {
-			return;
-		}
+		add_action(
+			'admin_init',
+			function() use ( $plugin_file, $github_owner, $github_repo ) {
+				$this->plugin_file     = $plugin_file;
+				$this->github_owner    = $github_owner;
+				$this->github_repo     = $github_repo;
+				$this->plugin_basename = plugin_basename( $plugin_file );
 
-		$this->plugin_file     = $plugin_file;
-		$this->github_owner    = $github_owner;
-		$this->github_repo     = $github_repo;
-		$this->plugin_basename = plugin_basename( $plugin_file );
+				// Get plugin data.
+				$plugin_data          = get_plugin_data( $plugin_file );
+				$this->plugin_slug    = dirname( $this->plugin_basename );
+				$this->plugin_version = $plugin_data['Version'];
 
-		// Get plugin data.
-		$plugin_data          = get_plugin_data( $plugin_file );
-		$this->plugin_slug    = dirname( $this->plugin_basename );
-		$this->plugin_version = $plugin_data['Version'];
-
-		// Hook into WordPress.
-		add_filter( 'pre_set_site_transient_update_plugins', [ $this, 'check_for_update' ] );
-		add_filter( 'plugins_api', [ $this, 'plugin_info' ], 10, 3 );
-		add_action( 'upgrader_process_complete', [ $this, 'purge_cache' ], 10, 2 );
+				// Hook into WordPress.
+				add_filter( 'pre_set_site_transient_update_plugins', [ $this, 'check_for_update' ] );
+				add_filter( 'plugins_api', [ $this, 'plugin_info' ], 10, 3 );
+				add_action( 'upgrader_process_complete', [ $this, 'purge_cache' ], 10, 2 );
+			}
+		);
 	}
 
 	/**
 	 * Check for plugin updates.
 	 *
-	 * @param stdClass $transient Update transient object.
+	 * @param object $transient Update transient object.
 	 *
-	 * @return stdClass Modified transient object.
+	 * @return object Modified transient object.
 	 */
 	public function check_for_update( $transient ) {
 		if ( empty( $transient->checked ) ) {
@@ -165,7 +162,7 @@ class GitHub_Plugin_Updater {
 			'author_profile'    => $release_info->author->html_url,
 			'last_updated'      => $release_info->published_at,
 			'homepage'          => $release_info->html_url,
-			'short_description' => 'Latest version from GitHub',
+			'short_description' => esc_html__( 'Latest version from GitHub', 'viget-blocks-toolkit' ),
 			'sections'          => [
 				'changelog' => $this->format_changelog( $release_info->body ),
 			],
@@ -179,8 +176,8 @@ class GitHub_Plugin_Updater {
 	/**
 	 * Clear cache after successful update
 	 *
-	 * @param WP_Upgrader $upgrader Upgrader instance.
-	 * @param array       $options Update options.
+	 * @param \WP_Upgrader $upgrader Upgrader instance.
+	 * @param array        $options Update options.
 	 */
 	public function purge_cache( $upgrader, $options ) {
 		if ( 'update' !== $options['action'] || 'plugin' !== $options['type'] ) {
@@ -246,7 +243,7 @@ class GitHub_Plugin_Updater {
 	/**
 	 * Get download URL for the release package.
 	 *
-	 * @param stdClass $release_info Release information from GitHub API.
+	 * @param object $release_info Release information from GitHub API.
 	 *
 	 * @return string|false Download URL or false if not found.
 	 */
@@ -273,7 +270,7 @@ class GitHub_Plugin_Updater {
 	 */
 	private function format_changelog( $changelog ) {
 		if ( empty( $changelog ) ) {
-			return 'No changelog available.';
+			return esc_html__( 'No changelog available.', 'viget-blocks-toolkit' );
 		}
 
 		// Convert markdown links to HTML
