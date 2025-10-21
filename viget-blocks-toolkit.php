@@ -49,5 +49,8 @@ require_once 'src/classes/BlockIcons.php';
 // Breakpoint Visibility support.
 require_once 'src/classes/BreakpointVisibility.php';
 
+// Navigation Slug Handler.
+require_once 'src/classes/NavigationSlugHandler.php';
+
 // Initialize the plugin.
 vgtbt();

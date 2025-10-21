@@ -34,11 +34,19 @@ class Core {
 	public ?BreakpointVisibility $bp_visibility = null;
 
 	/**
+	 * Navigation Slug Handler
+	 *
+	 * @var ?NavigationSlugHandler
+	 */
+	public ?NavigationSlugHandler $navigation_slug_handler = null;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->block_icons   = new BlockIcons();
-		$this->bp_visibility = new BreakpointVisibility();
+		$this->block_icons             = new BlockIcons();
+		$this->bp_visibility           = new BreakpointVisibility();
+		$this->navigation_slug_handler = new NavigationSlugHandler();
 	}
 
 	/**

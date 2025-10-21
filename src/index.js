@@ -16,3 +16,6 @@ import './features/media-position';
 
 // Breakpoint Visibility Support
 import './features/breakpoint-visibility';
+
+// Navigation Slug Reference Support
+import './features/navigation-slug';
