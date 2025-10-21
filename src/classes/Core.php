@@ -39,6 +39,13 @@ class Core {
 	public function __construct() {
 		$this->block_icons   = new BlockIcons();
 		$this->bp_visibility = new BreakpointVisibility();
+
+		// Initialize GitHub updater
+		new \GitHub_Plugin_Updater(
+			VGTBT_PLUGIN_FILE,
+			'vigetlabs',
+			'viget-blocks-toolkit'
+		);
 	}
 
 	/**

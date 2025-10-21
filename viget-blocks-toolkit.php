@@ -19,14 +19,21 @@
 // Plugin version.
 const VGTBT_VERSION = '1.1.1';
 
+// Plugin file.
+define( 'VGTBT_PLUGIN_FILE', __FILE__ );
+
+
 // Plugin path.
-define( 'VGTBT_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+define( 'VGTBT_PLUGIN_PATH', plugin_dir_path( VGTBT_PLUGIN_FILE ) );
 
 // Plugin URL.
-define( 'VGTBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'VGTBT_PLUGIN_URL', plugin_dir_url( VGTBT_PLUGIN_FILE ) );
 
 // Helper functions.
 require_once 'includes/helpers.php';
+
+// Plugin updater.
+require_once 'includes/updater.php';
 
 // Timber functions.
 require_once 'includes/timber.php';

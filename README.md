@@ -28,7 +28,7 @@ Adding the `mediaPosition` attribute will enable the Media Position toggle butto
 * Root level transformations will apply to all child blocks.
 * `reverse` will reverse the order of the child blocks.
 * `attributes` will modify the block's attributes.
-  * Each value will be determined based on the value of `mediaPosition`. See example below. 
+  * Each value will be determined based on the value of `mediaPosition`. See example below.
 * Nested `innerBlocks` will apply transformations only to child blocks when present within the parent block.
 
 In the following example scenario:
@@ -171,7 +171,7 @@ vgtbt()->block_icons->get_icon( 'my-custom-icon' );
 Outputs the block attributes as a string. Supported arguments:
 
 * `$block` array - The block data.
-* `$custom_class` string - Additional classes to add to the block. 
+* `$custom_class` string - Additional classes to add to the block.
 * `$attrs` array - Additional attributes to add to the block.
 
 ### `inner_blocks()`
@@ -214,7 +214,7 @@ add_filter(
 			'icon'        => '<svg ... ></svg>',
 			'defaultLeft' => false, // Optional, defaults icon to align left.
 		];
-		
+
 		return $icons;
 	}
 );
@@ -282,3 +282,7 @@ add_filter(
 	}
 );
 ```
+
+## Auto-Updates
+
+This plugin automatically checks for updates from GitHub releases every 12 hours and can be updated directly from the WordPress dashboard.
