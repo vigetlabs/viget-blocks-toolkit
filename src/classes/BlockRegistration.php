@@ -7,6 +7,7 @@
 
 namespace Viget\BlocksToolkit;
 
+use stdClass;
 use Timber\Timber;
 use WP_Block;
 
@@ -102,7 +103,7 @@ class BlockRegistration {
 					return $metadata;
 				}
 
-				$metadata['acf']['renderCallback'] = function ( array $block, string $content = '', bool $is_preview = false, int $post_id = 0, ?WP_Block $wp_block = null, array|bool $context = [], bool $is_ajax_render = false ) use ( $metadata ): void {
+				$metadata['acf']['renderCallback'] = function ( array $block, string $content = '', bool $is_preview = false, int $post_id = 0, WP_Block|stdClass|null $wp_block = null, array|bool $context = [], bool $is_ajax_render = false ) use ( $metadata ): void {
 					$block_name    = str_replace( 'acf/', '', $block['name'] );
 					$block['slug'] = sanitize_title( $block_name );
 					if ( empty( $block['path'] ) ) {
