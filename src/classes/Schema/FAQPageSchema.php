@@ -168,8 +168,10 @@ class FAQPageSchema extends BaseSchema {
 		array_shift( $item_parts );
 
 		foreach ( $item_parts as $item_html ) {
-			if ( preg_match( '/<[^>]*class="[^"]*wp-block-accordion-panel[^"]*"[^>]*>(.*?)(?=<\/[^>]*wp-block-accordion-item|<\/[^>]*wp-block-accordion[^>]*>|$)/is', $item_html, $panel_match ) ) {
-				$answers[] = $this->extract_text_content( $panel_match[1] );
+			// Match the opening panel tag and capture the tag name and inner content.
+			// Pattern matches: opening tag with panel class, captures tag name, then captures content until matching closing tag.
+			if ( preg_match( '/<(\w+)[^>]*class="[^"]*wp-block-accordion-panel[^"]*"[^>]*>(.*?)<\/\1>/is', $item_html, $panel_match ) ) {
+				$answers[] = $this->extract_html_content( $panel_match[2] );
 			}
 		}
 
@@ -190,6 +192,28 @@ class FAQPageSchema extends BaseSchema {
 		}
 
 		return $faq_items;
+	}
+
+	/**
+	 * Extract HTML content from HTML string, preserving HTML tags.
+	 * Sanitizes the HTML to ensure only safe tags are included.
+	 * Strips all HTML attributes, leaving only tag structure and content.
+	 *
+	 * @param string $html The HTML string.
+	 * @return string The extracted HTML content, sanitized and without attributes.
+	 */
+	private function extract_html_content( string $html ): string {
+		// Sanitize HTML using wp_kses_post to allow safe HTML tags.
+		$html = wp_kses_post( $html );
+
+		// Strip all attributes from HTML tags, keeping only the tag structure.
+		// Pattern matches: opening tag name, any attributes, optional self-closing slash, closing bracket.
+		$html = preg_replace( '/<(\w+)([^>]*?)>/', '<$1>', $html );
+
+		// Normalize whitespace - replace multiple spaces/newlines with single space.
+		$html = preg_replace( '/\s+/', ' ', $html );
+
+		return trim( $html );
 	}
 
 	/**
