@@ -7,79 +7,97 @@
 
 namespace Viget\BlocksToolkit;
 
-use WP_HTML_Tag_Processor;
+use Viget\BlocksToolkit\Schema\BaseSchema;
+use Viget\BlocksToolkit\Schema\FAQPageSchema;
 
 /**
  * Block Schema Class
+ * Coordinates schema type handlers and manages output.
  */
 class BlockSchema {
+
+	/**
+	 * Array of registered schema handlers.
+	 *
+	 * @var BaseSchema[]
+	 */
+	private $schema_handlers = [];
 
 	/**
 	 * Initialize the class.
 	 */
 	public function __construct() {
-		$this->add_render_hooks();
+		$this->register_schema_handlers();
+		$this->add_output_hooks();
 	}
 
 	/**
-	 * Add render hooks for blocks with schema support.
+	 * Register schema type handlers.
 	 *
 	 * @return void
 	 */
-	private function add_render_hooks(): void {
-		add_filter(
-			'render_block_core/accordion',
-			[ $this, 'render_accordion_faqs' ],
-			10,
-			2
-		);
+	private function register_schema_handlers(): void {
+		// Register FAQPage schema handler.
+		$faq_handler = new FAQPageSchema();
+		$this->schema_handlers[] = $faq_handler;
+		$faq_handler->register_hooks();
+
+		// Register Rank Math JSON-LD filter for all handlers.
+		add_filter( 'rank_math/json_ld', [ $this, 'filter_rank_math_json_ld' ], 20 );
 	}
 
 	/**
-	 * Render FAQ Schema for accordion blocks.
+	 * Add hooks for outputting JSON-LD schemas.
+	 * Outputs just before the closing </body> tag.
 	 *
-	 * @param string $block_content The block content.
-	 * @param array  $block         The block array.
-	 *
-	 * @return string
+	 * @return void
 	 */
-	public function render_accordion_faqs( string $block_content, array $block ): string {
-		// Check if FAQ Schema is enabled via attribute.
-		if ( empty( $block['attrs']['useFaqSchema'] ) ) {
-			return $block_content;
+	private function add_output_hooks(): void {
+		// Output our combined JSON-LD schemas.
+		add_action( 'wp_print_footer_scripts', [ $this, 'render_all_json_ld' ], 20 );
+	}
+
+	/**
+	 * Filter Rank Math JSON-LD to allow schema handlers to extract their data.
+	 *
+	 * @param array $data The Rank Math schema data.
+	 *
+	 * @return array Filtered schema data.
+	 */
+	public function filter_rank_math_json_ld( array $data ): array {
+		// Let each schema handler filter the Rank Math data.
+		foreach ( $this->schema_handlers as $handler ) {
+			$data = $handler->filter_rank_math_json_ld( $data );
 		}
 
-		$processor = new WP_HTML_Tag_Processor( $block_content );
+		return $data;
+	}
 
-		// Add attributes to wrapping accordion block.
-		$processor->set_attribute( 'itemscope', true );
-		$processor->set_attribute( 'itemtype', 'https://schema.org/FAQPage' );
-
-		// Loop through accordion items and add attributes.
-		while ( $processor->next_tag( [ 'class_name' => 'wp-block-accordion-item' ] ) ) {
-			$processor->set_attribute( 'itemscope', true );
-			$processor->set_attribute( 'itemprop', 'mainEntity' );
-			$processor->set_attribute( 'itemtype', 'https://schema.org/Question' );
-
-			// Add attributes to the title element.
-			if ( $processor->next_tag( [ 'class_name' => 'wp-block-accordion-heading__toggle-title' ] ) ) {
-				$processor->set_attribute( 'itemprop', 'name' );
+	/**
+	 * Render all collected JSON-LD schemas.
+	 * Outputs just before the closing </body> tag.
+	 *
+	 * @return void
+	 */
+	public function render_all_json_ld(): void {
+		// Collect schema data from all handlers.
+		foreach ( $this->schema_handlers as $handler ) {
+			$schema_data = $handler->get_schema_data();
+			if ( empty( $schema_data ) ) {
+				continue;
 			}
 
-			// Add attributes to the panel.
-			if ( $processor->next_tag( [ 'class_name' => 'wp-block-accordion-panel' ] ) ) {
-				$processor->set_attribute( 'itemscope', true );
-				$processor->set_attribute( 'itemprop', 'acceptedAnswer' );
-				$processor->set_attribute( 'itemtype', 'https://schema.org/Answer' );
-
-				// Add attribute to first paragraph.
-				if ( $processor->next_tag( 'p' ) ) {
-					$processor->set_attribute( 'itemprop', 'text' );
-				}
+			if ( $handler->is_rank_math_processed() ) {
+				continue;
 			}
+
+			$json = wp_json_encode( $schema_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
+			printf(
+				'<script type="application/ld+json" id="vgtbt-schema-%s">%s</script>' . "\n",
+				esc_attr( $schema_data['@type'] ),
+				$json
+			);
 		}
-
-		return $processor->get_updated_html();
 	}
 }
 
