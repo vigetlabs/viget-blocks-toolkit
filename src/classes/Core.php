@@ -41,12 +41,20 @@ class Core {
 	public ?NavigationSlugHandler $navigation_slug_handler = null;
 
 	/**
+	 * Block Schema
+	 *
+	 * @var ?BlockSchema
+	 */
+	public ?BlockSchema $block_schema = null;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		$this->block_icons             = new BlockIcons();
 		$this->bp_visibility           = new BreakpointVisibility();
 		$this->navigation_slug_handler = new NavigationSlugHandler();
+		$this->block_schema            = new BlockSchema();
 	}
 
 	/**

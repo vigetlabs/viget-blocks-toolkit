@@ -52,5 +52,10 @@ require_once 'src/classes/BreakpointVisibility.php';
 // Navigation Slug Handler.
 require_once 'src/classes/NavigationSlugHandler.php';
 
+// Block Schema support.
+require_once 'src/classes/Schema/BaseSchema.php';
+require_once 'src/classes/Schema/FAQPageSchema.php';
+require_once 'src/classes/BlockSchema.php';
+
 // Initialize the plugin.
 vgtbt();
