@@ -2,8 +2,8 @@
 Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
 Requires at least: 5.7
-Tested up to: 6.8
-Stable tag: 1.1.3
+Tested up to: 6.9
+Stable tag: 1.1.4
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,6 +29,10 @@ No. There are several features of this plugin that can be used without Advanced 
 3. Media Position Example
 
 == Changelog ==
+
+= 1.1.4 =
+
+* Changes Responsive display styles to use `inherit` instead of `block`.
 
 = 1.1.3 =
 
