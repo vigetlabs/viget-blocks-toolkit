@@ -1,3 +1,11 @@
+= 1.1.5 =
+
+* Added Block Icon support for `core/navigation-submenu` block.
+* Added (bool) `hasInnerBlocks` to `$block` array.
+* Added `vgtbt_block_data` filter on `$block` array.
+* Fixed a race condition preventing using some filters.
+* Fixed a bug that cascaded icons too deep while in the editor.
+
 = 1.1.4 =
 
 * Changes Responsive display styles to use `inherit` instead of `block`.

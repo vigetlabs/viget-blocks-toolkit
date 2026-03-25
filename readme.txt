@@ -3,7 +3,7 @@ Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
 Requires at least: 5.7
 Tested up to: 6.9
-Stable tag: 1.1.4
+Stable tag: 1.1.5
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,6 +29,14 @@ No. There are several features of this plugin that can be used without Advanced 
 3. Media Position Example
 
 == Changelog ==
+
+= 1.1.5 =
+
+* Added Block Icon support for `core/navigation-submenu` block.
+* Added (bool) `hasInnerBlocks` to `$block` array.
+* Added `vgtbt_block_data` filter on `$block` array.
+* Fixed a race condition preventing using some filters.
+* Fixed a bug that cascaded icons too deep while in the editor.
 
 = 1.1.4 =
 

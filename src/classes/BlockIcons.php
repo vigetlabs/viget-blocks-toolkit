@@ -60,6 +60,7 @@ class BlockIcons {
 				'core/read-more',
 				'core/query-pagination-next',
 				'core/query-pagination-previous',
+				'core/navigation-submenu',
 			]
 		);
 	}
@@ -68,14 +69,19 @@ class BlockIcons {
 	 * Render icons on the frontend.
 	 */
 	private function add_render_hooks(): void {
-		foreach ( $this->get_supported_blocks() as $block_name ) {
-			add_filter(
-				"render_block_{$block_name}",
-				[ $this, 'render_frontend_icons' ],
-				10,
-				2
-			);
-		}
+		add_action(
+			'init',
+			function () {
+				foreach ( $this->get_supported_blocks() as $block_name ) {
+					add_filter(
+						"render_block_{$block_name}",
+						[ $this, 'render_frontend_icons' ],
+						10,
+						2
+					);
+				}
+			}
+		);
 	}
 
 	/**
@@ -233,6 +239,7 @@ class BlockIcons {
 
 		$position_left = $block['attrs']['iconPositionLeft'] ?? false;
 		$icon_class    = 'has-icon__' . $icon['value'];
+		$tag_name      = 'a';
 
 		// Append the icon class to the block.
 		$p = new WP_HTML_Tag_Processor( $block_content );
@@ -245,6 +252,17 @@ class BlockIcons {
 			if ( $p->next_tag( $query ) ) {
 				$p->add_class( $icon_class );
 			}
+		} elseif ( 'core/navigation-submenu' === $block['blockName'] ) {
+			$tag_name = 'button';
+			if ( $p->next_tag(
+				[
+					'tag_name'   => $tag_name,
+					'class_name' => 'wp-block-navigation-item__content',
+				]
+			) ) {
+				$p->add_class( $icon_class );
+
+			}
 		} elseif ( $p->next_tag() ) {
 			$p->add_class( $icon_class );
 		}
@@ -252,7 +270,7 @@ class BlockIcons {
 		$block_content = $p->get_updated_html();
 		$block_content = str_replace( '$', '\$', $block_content );
 
-		$pattern = '/(<a[^>]*>)(.*?)(<\/a>)/i';
+		$pattern = '/(<' . $tag_name . '[^>]*>)(.*?)(<\/' . $tag_name . '>)/i';
 		$markup  = sprintf(
 			'<span class="wp-block-%s__link-icon has-icon__%s" aria-hidden="true">%s</span>',
 			esc_attr( $block_name ),
@@ -335,9 +353,9 @@ class BlockIcons {
 		$selectors = apply_filters(
 			'vgtbt_button_icons_editor_css_selectors',
 			[
-				'.wp-block-button__link',
+				'> .wp-block-button__link',
 				'.wp-block-post-excerpt__more-link',
-				'.wp-block-navigation-item__content',
+				'> .wp-block-navigation-item__content',
 			]
 		);
 

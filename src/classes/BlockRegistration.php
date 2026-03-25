@@ -118,6 +118,24 @@ class BlockRegistration {
 					// Pass the block template data to the block.
 					$block['template'] = self::get_inner_blocks( $block, $metadata );
 
+					// Check for inner blocks.
+					$block['hasInnerBlocks'] = \strlen( trim( str_replace( '<p></p>', '', $content ) ) ) > 0;
+
+					/**
+					 * Filter the block data.
+					 *
+					 * @param array $block The block data.
+					 * @param string $content The content.
+					 * @param bool $is_preview Whether the block is in preview mode.
+					 * @param int $post_id The post ID.
+					 * @param \WP_Block $wp_block The WP Block instance.
+					 * @param array|bool $context The block context.
+					 * @param bool $is_ajax_render Whether the block is being rendered in AJAX.
+					 *
+					 * @return array
+					 */
+					$block = apply_filters( 'vgtbt_block_data', $block, $content, $is_preview, $post_id, $wp_block, $context, $is_ajax_render );
+
 					$twig = $block['path'] . '/render.twig';
 
 					if ( class_exists( '\Timber\Timber' ) && file_exists( $twig ) ) {
