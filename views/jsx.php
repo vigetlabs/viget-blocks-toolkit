@@ -18,9 +18,16 @@ if ( ! isset( $block_template ) && empty( $block['template'] ) ) {
 	];
 }
 
-$tag   = $block['tagName'];
+$tag = $block['tagName'];
+
+// `??` treats an empty array as set; use explicit empty check so defaults apply when the
+// template is [] (e.g. before blockPattern markup is resolved).
+$resolved_template = ! empty( $block['template'] )
+	? $block['template']
+	: ( $block_template ?? [] );
+
 $inner = [
-	'template' => $block['template'] ?? $block_template ?? [],
+	'template' => $resolved_template,
 ];
 
 $has_container = ! isset( $block['supports']['innerContainer'] ) || true === $block['supports']['innerContainer'];

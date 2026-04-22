@@ -39,6 +39,7 @@ require_once 'src/classes/Core.php';
 
 // Block Registration class.
 require_once 'src/classes/BlockRegistration.php';
+require_once 'src/classes/BlockPatternResolver.php';
 
 // Block Settings class.
 require_once 'src/classes/Settings.php';

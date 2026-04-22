@@ -1,5 +1,3 @@
-/** global vgtbtIcons */
-
 /**
  * External dependencies
  */
@@ -8,24 +6,12 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { addFilter } from '@wordpress/hooks';
 import { InspectorControls } from '@wordpress/block-editor';
-import {
-	Button,
-	PanelBody,
-	PanelRow,
-	ToggleControl,
-	__experimentalGrid as Grid, // eslint-disable-line
-} from '@wordpress/components';
+import { PanelBody } from '@wordpress/components';
+import { __ } from '@wordpress/i18n';
 
-const icons = vgtbtIcons.json;
-
-/**
- * All available icons.
- * (Order determines presentation order)
- */
-export const ICONS = icons;
+import { IconPickerPanel, isIconToolbarBlock } from './icon-picker-panel';
 
 /**
  * Add the attributes needed for button icons.
@@ -34,18 +20,20 @@ export const ICONS = icons;
  * @param {Object} settings
  */
 function addAttributes(settings) {
-	if (!vgtbtIcons.supportedBlocks.includes(settings.name)) {
+	const iconSettings = window.vgtbtIcons || {};
+	if (!iconSettings.supportedBlocks?.includes(settings.name)) {
 		return settings;
 	}
 
-	// Add the block visibility attributes.
 	const iconAttributes = {
 		icon: {
 			type: 'string',
+			role: 'content',
 		},
 		iconPositionLeft: {
 			type: 'boolean',
 			default: false,
+			role: 'content',
 		},
 	};
 
@@ -66,18 +54,18 @@ addFilter(
 
 /**
  * Filter the BlockEdit object and add icon inspector controls to button blocks.
+ * Floating toolbar controls live in breakpoint-visibility.js (combined toolbar).
  *
  * @since 0.1.0
  * @param {Object} BlockEdit
  */
 function addInspectorControls(BlockEdit) {
 	return (props) => {
-		if (!vgtbtIcons.supportedBlocks.includes(props.name)) {
+		if (!isIconToolbarBlock(props.name)) {
 			return <BlockEdit {...props} />;
 		}
 
 		const { attributes, setAttributes } = props;
-		const { icon: currentIcon, iconPositionLeft } = attributes;
 
 		return (
 			<>
@@ -88,42 +76,10 @@ function addInspectorControls(BlockEdit) {
 						className="button-icon-picker"
 						initialOpen={true}
 					>
-						<PanelRow>
-							<Grid className="button-icon-picker__grid" columns="5" gap="0">
-								{ICONS.map((icon, index) => (
-									<Button
-										key={index}
-										label={icon?.label}
-										isPressed={currentIcon === icon.value}
-										className={"button-icon-picker__button button-icon-picker__icon-" + icon.value }
-										onClick={() =>
-											setAttributes({
-												// Allow user to disable icons.
-												icon: currentIcon === icon.value ? null : icon.value,
-												iconPositionLeft: iconPositionLeft || icon?.defaultLeft,
-											})
-										}
-									>
-										<span
-											dangerouslySetInnerHTML={{
-												__html: icon.icon ?? icon.value,
-											}}
-										/>
-									</Button>
-								))}
-							</Grid>
-						</PanelRow>
-						<PanelRow>
-							<ToggleControl
-								label={__('Show icon on left', 'viget-blocks-toolkit')}
-								checked={iconPositionLeft}
-								onChange={() => {
-									setAttributes({
-										iconPositionLeft: !iconPositionLeft,
-									});
-								}}
-							/>
-						</PanelRow>
+						<IconPickerPanel
+							attributes={attributes}
+							setAttributes={setAttributes}
+						/>
 					</PanelBody>
 				</InspectorControls>
 			</>
@@ -147,7 +103,7 @@ function addClasses(BlockListBlock) {
 	return (props) => {
 		const { name, attributes } = props;
 
-		if (!vgtbtIcons.supportedBlocks.includes(name) || !attributes?.icon) {
+		if (!isIconToolbarBlock(name) || !attributes?.icon) {
 			return <BlockListBlock {...props} />;
 		}
 

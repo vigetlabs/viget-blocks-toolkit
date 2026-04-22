@@ -1,3 +1,64 @@
+// Floating toolbar: icon + responsive dropdowns (breakpoint-visibility.js).
+.vgtbt-toolbar-dropdown__content {
+	min-width: 360px;
+	max-width: min(420px, 92vw);
+}
+
+.vgtbt-toolbar-dropdown__body {
+	padding: 16px;
+
+	// Icon picker: give cells room so SVGs aren’t clipped; force visible ink.
+	.button-icon-picker__grid {
+		width: 100%;
+	}
+
+	.button-icon-picker__button {
+		box-sizing: border-box;
+		min-width: 48px;
+		min-height: 48px;
+		width: 100%;
+		justify-content: center;
+		color: #1e1e1e;
+
+		svg {
+			display: block;
+			max-width: 28px;
+			max-height: 28px;
+			flex-shrink: 0;
+			color: inherit;
+			fill: currentColor;
+			stroke: currentColor;
+		}
+	}
+
+	// Toggle rows: keep labels from squeezing into single-character columns.
+	.components-toggle-control {
+		width: 100%;
+	}
+
+	.components-base-control__field {
+		align-items: flex-start;
+	}
+
+	.components-form-toggle {
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+}
+
+.vgtbt-toolbar-icon-trigger__glyph {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+
+	svg {
+		width: 20px;
+		height: 20px;
+	}
+}
+
 // Add icons to Button blocks and style appropriately.
 *[class*="has-icon__"] {
 	&.wp-block-read-more,

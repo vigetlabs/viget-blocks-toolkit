@@ -36,11 +36,21 @@ class BlockRegistration {
 	public static array $block_ids = [];
 
 	/**
+	 * Whether block pattern markup has been attached to the editor script handle.
+	 *
+	 * @var bool
+	 */
+	private static bool $block_patterns_script_data_registered = false;
+
+	/**
 	 * Register ACF Blocks.
 	 */
 	public static function init(): void {
 		// Automate block registration.
 		self::register_blocks();
+
+		// Localize block pattern markup for editor seeding.
+		self::localize_block_patterns_for_editor();
 
 		// Set default block render callback for ACF blocks.
 		self::set_default_callback();
@@ -115,8 +125,23 @@ class BlockRegistration {
 
 					$block['tagName'] = $metadata['tagName'] ?? 'section';
 
+					$block['blockPattern'] = self::resolve_runtime_attribute( $block, $metadata, 'blockPattern', '' );
+					$block['templateLock'] = self::resolve_runtime_attribute( $block, $metadata, 'templateLock', '' );
+					$block['lock']         = self::resolve_runtime_lock( $block, $metadata );
+					$block['sync']         = (bool) self::resolve_runtime_attribute( $block, $metadata, 'sync', false );
+
 					// Pass the block template data to the block.
 					$block['template'] = self::get_inner_blocks( $block, $metadata );
+
+					if ( $block['sync'] && ! empty( $block['blockPattern'] ) ) {
+						$pattern_markup = BlockPatternResolver::resolve( (string) $block['blockPattern'], (string) $block['path'] );
+						if ( '' !== trim( $pattern_markup ) ) {
+							if ( ! empty( $block['lock'] ) && is_array( $block['lock'] ) ) {
+								$pattern_markup = self::merge_default_lock_in_markup( $pattern_markup, $block['lock'] );
+							}
+							$content = $pattern_markup;
+						}
+					}
 
 					// Check for inner blocks.
 					$block['hasInnerBlocks'] = \strlen( trim( str_replace( '<p></p>', '', $content ) ) ) > 0;
@@ -157,7 +182,9 @@ class BlockRegistration {
 						}
 					}
 
+					$GLOBALS['vgtbt_current_block_template_lock'] = $block['templateLock'];
 					require $render;
+					unset( $GLOBALS['vgtbt_current_block_template_lock'] );
 				};
 
 				return $metadata;
@@ -278,25 +305,370 @@ class BlockRegistration {
 	 * @return array
 	 */
 	public static function get_inner_blocks( array $block, array $metadata = [] ): array {
+		$template = [];
 		if ( ! empty( $metadata['acf']['template'] ) ) {
-			return $metadata['acf']['template'];
+			$template = $metadata['acf']['template'];
 		} elseif ( ! empty( $metadata['acf']['innerBlocks'] ) ) {
-			return $metadata['acf']['innerBlocks'];
+			$template = $metadata['acf']['innerBlocks'];
 		}
 
-		$json_path = $block['path'] . '/template.json';
+		if ( empty( $template ) ) {
+			$json_path = $block['path'] . '/template.json';
 
-		if ( ! file_exists( $json_path ) ) {
-			return [];
+			if ( file_exists( $json_path ) ) {
+				$json = json_decode( file_get_contents( $json_path ), true );
+				if ( ! empty( $json['template'] ) ) {
+					$template = $json['template'];
+				}
+			}
 		}
 
-		$json = json_decode( file_get_contents( $json_path ), true );
+		if ( ! empty( $block['blockPattern'] ) ) {
+			$pattern_slug = trim( (string) $block['blockPattern'] );
+			$block_path   = isset( $block['path'] ) ? (string) $block['path'] : '';
+			$markup       = BlockPatternResolver::resolve( $pattern_slug, $block_path );
 
-		if ( empty( $json['template'] ) ) {
-			return [];
+			if ( '' !== trim( $markup ) ) {
+				$parsed = parse_blocks( $markup );
+				$built  = self::parsed_blocks_to_inner_template( $parsed );
+				if ( ! empty( $built ) ) {
+					$template = $built;
+				} else {
+					$template = [];
+				}
+			} else {
+				$template = [];
+			}
 		}
 
-		return $json['template'];
+		if ( ! empty( $block['lock'] ) && is_array( $block['lock'] ) ) {
+			$template = self::merge_default_lock_recursive( $template, $block['lock'] );
+		}
+
+		return $template;
+	}
+
+	/**
+	 * Convert parse_blocks() output into InnerBlocks `template` array shape.
+	 *
+	 * @param array $parsed_blocks Parsed blocks from parse_blocks().
+	 *
+	 * @return array
+	 */
+	public static function parsed_blocks_to_inner_template( array $parsed_blocks ): array {
+		$out = [];
+
+		foreach ( $parsed_blocks as $parsed ) {
+			if ( empty( $parsed['blockName'] ) || ! is_string( $parsed['blockName'] ) ) {
+				continue;
+			}
+
+			$attrs = ( isset( $parsed['attrs'] ) && is_array( $parsed['attrs'] ) ) ? $parsed['attrs'] : [];
+			$entry = array(
+				$parsed['blockName'],
+				$attrs,
+			);
+
+			if ( ! empty( $parsed['innerBlocks'] ) && is_array( $parsed['innerBlocks'] ) ) {
+				$inner = self::parsed_blocks_to_inner_template( $parsed['innerBlocks'] );
+				if ( ! empty( $inner ) ) {
+					$entry[] = $inner;
+				}
+			}
+
+			$out[] = $entry;
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Add block pattern markup data for editor seeding.
+	 *
+	 * Attaches localized data on {@see 'allowed_block_types_all'} so it runs before
+	 * `_wp_get_iframed_editor_assets()` (which needs the data when the Site Editor builds
+	 * settings before {@see 'enqueue_block_editor_assets'}).
+	 *
+	 * @return void
+	 */
+	public static function localize_block_patterns_for_editor(): void {
+		add_filter(
+			'allowed_block_types_all',
+			static function ( $allowed ) {
+				self::register_block_patterns_script_data();
+				return $allowed;
+			},
+			0,
+			2
+		);
+	}
+
+	/**
+	 * Localize pattern markup onto the editor script handle (once per request).
+	 *
+	 * @return void
+	 */
+	public static function register_block_patterns_script_data(): void {
+		if ( self::$block_patterns_script_data_registered ) {
+			return;
+		}
+
+		if ( ! wp_script_is( 'vgtbt-editor-iframe', 'registered' ) ) {
+			return;
+		}
+
+		self::$block_patterns_script_data_registered = true;
+
+		$all_blocks = self::get_all_blocks();
+		$payload    = [];
+
+		foreach ( $all_blocks as $metadata ) {
+			$block_name = $metadata['name'] ?? '';
+			if ( '' === $block_name ) {
+				continue;
+			}
+
+			if ( ! str_contains( $block_name, '/' ) ) {
+				$block_name = 'acf/' . sanitize_title( $block_name );
+			}
+
+			$pattern_slugs = self::get_block_pattern_slugs( $metadata );
+			if ( empty( $pattern_slugs ) ) {
+				continue;
+			}
+
+			$patterns = [];
+			foreach ( $pattern_slugs as $slug ) {
+				$markup = BlockPatternResolver::resolve( $slug, $metadata['path'] );
+				if ( '' === trim( $markup ) ) {
+					continue;
+				}
+
+				$patterns[ $slug ] = $markup;
+			}
+
+			if ( empty( $patterns ) ) {
+				continue;
+			}
+
+			$payload[ $block_name ] = [
+				'patterns'       => $patterns,
+				'defaultPattern' => self::get_attribute_default( $metadata, 'blockPattern', '' ),
+				'defaultLock'    => self::resolve_metadata_lock( $metadata ),
+			];
+		}
+
+		if ( empty( $payload ) ) {
+			return;
+		}
+
+		wp_localize_script(
+			'vgtbt-editor-iframe',
+			'vgtbtBlockPatterns',
+			[
+				'blocks' => $payload,
+			]
+		);
+	}
+
+	/**
+	 * Resolve a runtime attribute from block attrs or metadata defaults.
+	 *
+	 * @param array  $block Block data.
+	 * @param array  $metadata Block metadata.
+	 * @param string $attribute Attribute name.
+	 * @param mixed  $fallback Fallback value.
+	 *
+	 * @return mixed
+	 */
+	public static function resolve_runtime_attribute( array $block, array $metadata, string $attribute, mixed $fallback ): mixed {
+		if ( array_key_exists( $attribute, $block ) ) {
+			return $block[ $attribute ];
+		}
+
+		return self::get_attribute_default( $metadata, $attribute, $fallback );
+	}
+
+	/**
+	 * Resolve runtime lock object.
+	 *
+	 * @param array $block Block data.
+	 * @param array $metadata Block metadata.
+	 *
+	 * @return array
+	 */
+	public static function resolve_runtime_lock( array $block, array $metadata ): array {
+		$defaults = self::resolve_metadata_lock( $metadata );
+
+		if ( array_key_exists( 'lock', $block ) && is_array( $block['lock'] ) ) {
+			if ( empty( $block['lock'] ) ) {
+				return $defaults;
+			}
+
+			return array_merge( $defaults, $block['lock'] );
+		}
+
+		return $defaults;
+	}
+
+	/**
+	 * Resolve metadata default lock.
+	 *
+	 * @param array $metadata Block metadata.
+	 *
+	 * @return array
+	 */
+	public static function resolve_metadata_lock( array $metadata ): array {
+		$from_supports = [];
+		if ( ! empty( $metadata['supports']['lock'] ) && is_array( $metadata['supports']['lock'] ) ) {
+			$from_supports = $metadata['supports']['lock'];
+		}
+
+		$from_attr = self::get_attribute_default( $metadata, 'lock', [] );
+		if ( ! is_array( $from_attr ) ) {
+			$from_attr = [];
+		}
+
+		// Attribute defaults override supports (per-key) when both are set.
+		return array_merge( $from_supports, $from_attr );
+	}
+
+	/**
+	 * Get attribute default value from block metadata.
+	 *
+	 * @param array  $metadata Block metadata.
+	 * @param string $attribute Attribute name.
+	 * @param mixed  $fallback Fallback value.
+	 *
+	 * @return mixed
+	 */
+	public static function get_attribute_default( array $metadata, string $attribute, mixed $fallback ): mixed {
+		if ( empty( $metadata['attributes'][ $attribute ] ) || ! is_array( $metadata['attributes'][ $attribute ] ) ) {
+			return $fallback;
+		}
+
+		if ( ! array_key_exists( 'default', $metadata['attributes'][ $attribute ] ) ) {
+			return $fallback;
+		}
+
+		return $metadata['attributes'][ $attribute ]['default'];
+	}
+
+	/**
+	 * Get distinct blockPattern slugs from defaults + variations.
+	 *
+	 * @param array $metadata Block metadata.
+	 *
+	 * @return array
+	 */
+	public static function get_block_pattern_slugs( array $metadata ): array {
+		$slugs = [];
+
+		$default = self::get_attribute_default( $metadata, 'blockPattern', '' );
+		if ( is_string( $default ) && '' !== trim( $default ) ) {
+			$slugs[] = trim( $default );
+		}
+
+		if ( ! empty( $metadata['variations'] ) && is_array( $metadata['variations'] ) ) {
+			foreach ( $metadata['variations'] as $variation ) {
+				$slug = $variation['attributes']['blockPattern'] ?? '';
+				if ( is_string( $slug ) && '' !== trim( $slug ) ) {
+					$slugs[] = trim( $slug );
+				}
+			}
+		}
+
+		return array_values( array_unique( $slugs ) );
+	}
+
+	/**
+	 * Apply default lock recursively to a template array.
+	 *
+	 * @param array $template Block template array.
+	 * @param array $lock Default lock values.
+	 *
+	 * @return array
+	 */
+	public static function merge_default_lock_recursive( array $template, array $lock ): array {
+		if ( empty( $template ) || empty( $lock ) ) {
+			return $template;
+		}
+
+		foreach ( $template as $index => $template_block ) {
+			if ( ! is_array( $template_block ) || empty( $template_block[0] ) ) {
+				continue;
+			}
+
+			if ( empty( $template_block[1] ) || ! is_array( $template_block[1] ) ) {
+				$template_block[1] = [];
+			}
+
+			if ( empty( $template_block[1]['lock'] ) ) {
+				$template_block[1]['lock'] = $lock;
+			}
+
+			if ( ! empty( $template_block[2] ) && is_array( $template_block[2] ) ) {
+				$template_block[2] = self::merge_default_lock_recursive( $template_block[2], $lock );
+			}
+
+			$template[ $index ] = $template_block;
+		}
+
+		return $template;
+	}
+
+	/**
+	 * Apply default lock recursively to serialized block markup.
+	 *
+	 * @param string $markup Block markup.
+	 * @param array  $lock Default lock values.
+	 *
+	 * @return string
+	 */
+	public static function merge_default_lock_in_markup( string $markup, array $lock ): string {
+		if ( '' === trim( $markup ) || empty( $lock ) ) {
+			return $markup;
+		}
+
+		$blocks = parse_blocks( $markup );
+		if ( empty( $blocks ) || ! is_array( $blocks ) ) {
+			return $markup;
+		}
+
+		$with_lock = self::merge_default_lock_in_parsed_blocks( $blocks, $lock );
+		return serialize_blocks( $with_lock );
+	}
+
+	/**
+	 * Apply default lock recursively to parsed blocks.
+	 *
+	 * @param array $blocks Parsed blocks.
+	 * @param array $lock Default lock values.
+	 *
+	 * @return array
+	 */
+	public static function merge_default_lock_in_parsed_blocks( array $blocks, array $lock ): array {
+		foreach ( $blocks as $index => $parsed_block ) {
+			if ( empty( $parsed_block['blockName'] ) ) {
+				continue;
+			}
+
+			if ( empty( $parsed_block['attrs'] ) || ! is_array( $parsed_block['attrs'] ) ) {
+				$parsed_block['attrs'] = [];
+			}
+
+			if ( empty( $parsed_block['attrs']['lock'] ) ) {
+				$parsed_block['attrs']['lock'] = $lock;
+			}
+
+			if ( ! empty( $parsed_block['innerBlocks'] ) && is_array( $parsed_block['innerBlocks'] ) ) {
+				$parsed_block['innerBlocks'] = self::merge_default_lock_in_parsed_blocks( $parsed_block['innerBlocks'], $lock );
+			}
+
+			$blocks[ $index ] = $parsed_block;
+		}
+
+		return $blocks;
 	}
 
 	/**

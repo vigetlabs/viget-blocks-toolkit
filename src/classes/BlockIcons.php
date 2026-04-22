@@ -309,12 +309,23 @@ class BlockIcons {
 					]
 				);
 
+			},
+			20
+		);
+
+		add_action(
+			'enqueue_block_assets',
+			function () {
+				if ( ! function_exists( '\Viget\BlocksToolkit\vgtbt_is_iframed_editor_asset_pass' ) || ! \Viget\BlocksToolkit\vgtbt_is_iframed_editor_asset_pass() ) {
+					return;
+				}
+
 				wp_add_inline_style(
-					'vgtbt-editor-styles',
+					'vgtbt-block-styles',
 					$this->editor_css()
 				);
 			},
-			20
+			40
 		);
 	}
 

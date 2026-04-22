@@ -30,6 +30,14 @@ No. There are several features of this plugin that can be used without Advanced 
 
 == Changelog ==
 
+= 1.1.6 =
+
+* Added `blockPattern` support for ACF blocks with registered-pattern and local `patterns/` resolution.
+* Added editor seeding from pattern markup (preserving real inner block content) and default lock propagation via `lock` attributes.
+* Added `templateLock` passthrough support for ACF InnerBlocks usage.
+* Added optional `sync` behavior to render pattern markup at runtime.
+* Added toolbar fallbacks for Icon and Responsive controls in content-only editing contexts.
+
 = 1.1.5 =
 
 * Added Block Icon support for `core/navigation-submenu` block.

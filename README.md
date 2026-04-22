@@ -110,9 +110,52 @@ This is an example of a `block.json` file with all the supported customizations.
 }
 ```
 
-#### `template.json`
+#### `blockPattern`
 
-If there is a `template.json` file present, the contents of `template` will be used as the `innerBlocks` template. Here's an example that will start with a heading and paragraph block:
+You can set a `blockPattern` attribute default in `block.json` to seed `<InnerBlocks />` from block markup instead of `template.json`.
+
+Resolution order:
+
+1. Registered pattern slug (exact match).
+2. If the value contains `/`, the basename is checked as a registered slug.
+3. If still not found, look for a local file in `patterns/`:
+   - `{slug}.php`
+   - `{slug}.html`
+   - `{slug}.twig` (when Timber is available)
+
+Both namespaced (`wp-starter/cta-default`) and basename (`cta-default`) values are supported.
+
+#### `templateLock`
+
+Set a `templateLock` attribute default in `block.json` to pass through to `<InnerBlocks />`.
+
+When set to `"contentOnly"`, the toolkit automatically passes that lock value to `inner_blocks()` render calls so ACF blocks can behave like content-only container blocks.
+
+#### `lock`
+
+Set a default `lock` object on the parent block and it will be recursively applied to seeded child blocks unless a child already defines its own `lock` value.
+
+```json
+{
+  "attributes": {
+    "lock": {
+      "type": "object",
+      "default": {
+        "move": false,
+        "remove": true
+      }
+    }
+  }
+}
+```
+
+#### `sync`
+
+Set a `sync` attribute to `true` when the `blockPattern` markup should be the render-time source of truth (instead of saved inner block content). This is optional and defaults to `false`.
+
+#### `template.json` fallback
+
+If there is a `template.json` file present, the contents of `template` are used as the `innerBlocks` template when `blockPattern` is not provided. Example:
 
 ```json
 {
@@ -147,12 +190,18 @@ The `$block` variable also has some additional values:
 $block['url'] // The URL to the block folder.
 $block['path'] // The path to the block folder.
 $block['template'] // The template.json file contents.
+$block['templateLock'] // The runtime template lock value for inner blocks.
+$block['blockPattern'] // The block pattern slug used for editor seeding/render sync.
+$block['lock'] // Default lock object propagated to nested blocks.
+$block['sync'] // Whether render-time pattern sync is enabled.
 $block['slug'] // The slug of the block, without the `acf/` prefix.
 ```
 
 ## Breakpoint Visibility
 
 This block settings panel is available on any supported block in the Full Site Editor and in post block editor. It allows you to set visibility for each block at different breakpoints, so blocks can be hidden or shown based on the screen size. There is a setting to also specify a breakpoint and whether the block should be hidden or shown at that breakpoint.
+
+When a parent block is using `templateLock: "contentOnly"`, quick visibility and icon controls remain available in block toolbar controls.
 
 ## Main Helper Functions
 
