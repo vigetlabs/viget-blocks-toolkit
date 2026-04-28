@@ -81,14 +81,7 @@ function ResponsivePanelFields({
 
 			{visibility.useCustom && (
 				<>
-					<div
-						style={{
-							display: 'grid',
-							gridTemplateColumns: '2fr 1fr',
-							gap: '8px',
-							alignItems: 'start',
-						}}
-					>
+					<div className="vgtbt-toolbar-responsive__grid">
 						<NumberControl
 							label={__('Breakpoint Width', 'viget-blocks-toolkit')}
 							value={visibility.customBreakpoint.width}
@@ -139,13 +132,33 @@ function ResponsivePanelFields({
 	);
 }
 
-const toolbarDropdownProps = {
-	contentClassName: 'vgtbt-toolbar-dropdown__content',
+const toolbarDropdownBase = {
 	popoverProps: {
 		placement: 'bottom-start',
-		className: 'vgtbt-toolbar-dropdown-popover',
 		focusOnMount: 'firstElement',
 	},
+};
+
+const iconToolbarDropdownProps = {
+	...toolbarDropdownBase,
+	popoverProps: {
+		...toolbarDropdownBase.popoverProps,
+		className:
+			'vgtbt-toolbar-dropdown-popover vgtbt-toolbar-dropdown-popover--icon',
+	},
+	contentClassName:
+		'vgtbt-toolbar-dropdown__content vgtbt-toolbar-dropdown__content--icon',
+};
+
+const responsiveToolbarDropdownProps = {
+	...toolbarDropdownBase,
+	popoverProps: {
+		...toolbarDropdownBase.popoverProps,
+		className:
+			'vgtbt-toolbar-dropdown-popover vgtbt-toolbar-dropdown-popover--responsive',
+	},
+	contentClassName:
+		'vgtbt-toolbar-dropdown__content vgtbt-toolbar-dropdown__content--responsive',
 };
 
 /**
@@ -213,30 +226,23 @@ const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
 					<ToolbarGroup>
 						{showIconToolbar && (
 							<Dropdown
-								{...toolbarDropdownProps}
+								{...iconToolbarDropdownProps}
 								renderToggle={({ isOpen, onToggle }) => (
 									<ToolbarButton
-										icon={
-											typeof iconDisplay.icon === 'string'
-												? iconDisplay.icon
-												: undefined
-										}
 										label={iconDisplay.label}
 										onClick={onToggle}
 										aria-expanded={isOpen}
 										className={
 											currentIcon
-												? 'vgtbt-toolbar-icon-trigger is-active'
+												? 'vgtbt-toolbar-icon-trigger vgtbt-toolbar-icon-trigger--has-selection'
 												: 'vgtbt-toolbar-icon-trigger'
 										}
 									>
-										{typeof iconDisplay.icon !== 'string'
-											? iconDisplay.icon
-											: null}
+										{iconDisplay.icon}
 									</ToolbarButton>
 								)}
 								renderContent={() => (
-									<div className="vgtbt-toolbar-dropdown__body">
+									<div className="vgtbt-toolbar-dropdown__body vgtbt-toolbar-dropdown__body--icon">
 										<IconPickerPanel
 											attributes={attributes}
 											setAttributes={setAttributes}
@@ -246,9 +252,14 @@ const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
 							/>
 						)}
 						<Dropdown
-							{...toolbarDropdownProps}
+							{...responsiveToolbarDropdownProps}
 							renderToggle={({ isOpen, onToggle }) => (
 								<ToolbarButton
+									className={
+										isVisibilitySet || isOpen
+											? 'vgtbt-toolbar-responsive-trigger vgtbt-toolbar-responsive-trigger--active'
+											: 'vgtbt-toolbar-responsive-trigger'
+									}
 									icon="smartphone"
 									label={__('Responsive', 'viget-blocks-toolkit')}
 									onClick={onToggle}
@@ -256,7 +267,7 @@ const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
 								/>
 							)}
 							renderContent={() => (
-								<div className="vgtbt-toolbar-dropdown__body">
+								<div className="vgtbt-toolbar-dropdown__body vgtbt-toolbar-dropdown__body--responsive">
 									<ResponsivePanelFields
 										visibility={visibility}
 										updateVisibility={updateVisibility}
