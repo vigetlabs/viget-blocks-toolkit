@@ -29,11 +29,16 @@ $inner = [
 
 $has_container = ! isset( $block['supports']['innerContainer'] ) || true === $block['supports']['innerContainer'];
 
+// Get the block attributes.
+ob_start();
+block_attrs( $block );
+$block_attrs = ob_get_clean();
+
 // Open the block.
 printf(
 	'<%s %s>',
 	esc_html( $tag ),
-	block_attrs( $block )
+	$block_attrs
 );
 
 // Open the container if it is supported.
