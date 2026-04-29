@@ -162,6 +162,7 @@ class BreakpointVisibility {
 			[
 				'core/rss',
 				'gravityforms/form',
+				'core/breadcrumbs',
 			]
 		);
 	}
