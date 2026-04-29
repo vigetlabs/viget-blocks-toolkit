@@ -18,7 +18,8 @@ if ( ! isset( $block_template ) && empty( $block['template'] ) ) {
 	];
 }
 
-$tag = $block['tagName'];
+$tag           = $block['tagName'];
+$has_container = isset( $block['supports']['innerContainer'] ) && true === $block['supports']['innerContainer'];
 
 // Set the inner blocks template.
 $inner = [
@@ -26,8 +27,6 @@ $inner = [
 		? $block['template']
 		: ( $block_template ?? [] )
 ];
-
-$has_container = ! isset( $block['supports']['innerContainer'] ) || true === $block['supports']['innerContainer'];
 
 // Get the block attributes.
 ob_start();

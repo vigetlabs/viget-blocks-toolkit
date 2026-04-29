@@ -95,3 +95,8 @@
 		display: none !important;
 	}
 }
+
+// Content-only templates: wrap inner blocks in a Group but make it layout-neutral.
+.acf-block-content-only-wrapper {
+	display: contents;
+}

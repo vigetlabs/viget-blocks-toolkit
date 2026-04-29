@@ -352,3 +352,9 @@ $vgtbt-toolbar-accent: var(
 div[id^="portal/tooltip-"] {
 	pointer-events: none;
 }
+
+// Content-only templates: wrap inner blocks in a Group but make it layout-neutral.
+.acf-block-content-only-wrapper {
+	display: contents;
+	pointer-events: none;
+}

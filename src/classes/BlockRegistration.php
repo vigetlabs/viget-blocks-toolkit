@@ -126,11 +126,20 @@ class BlockRegistration {
 						$block['url'] = self::path_to_url( $block['path'] );
 					}
 
-					$block['tagName'] = $metadata['tagName'] ?? 'section';
+					if ( empty( $block['supports'] ) ) {
+						$block['supports'] = [];
+					}
 
+					$block['tagName']      = $metadata['tagName'] ?? 'section';
 					$block['blockPattern'] = self::resolve_runtime_attribute( $block, $metadata, 'blockPattern', '' );
 					$block['templateLock'] = self::resolve_runtime_attribute( $block, $metadata, 'templateLock', '' );
 					$block['lock']         = self::resolve_runtime_lock( $block, $metadata );
+
+					$block['supports']['innerContainer'] = self::resolve_runtime_attribute( $block, $metadata, 'innerContainer', false );
+
+					if ( is_admin() && $block['templateLock'] === 'contentOnly' ) {
+						$block['supports']['innerContainer'] = false;
+					}
 
 					// Pass the block template data to the block.
 					$block['template'] = self::get_inner_blocks( $block, $metadata );
@@ -176,6 +185,11 @@ class BlockRegistration {
 							return $props;
 						}
 
+						// For `contentOnly`, we inject a Core/Group wrapper that handles the contentOnly template lock.
+						if ( 'contentOnly' === $block['templateLock'] ) {
+							return $props;
+						}
+
 						$props['templateLock'] = $block['templateLock'];
 						return $props;
 					};
@@ -209,6 +223,29 @@ class BlockRegistration {
 
 		if ( ! empty( $block['lock'] ) && is_array( $block['lock'] ) ) {
 			$block['template'] = self::merge_default_lock_recursive( $block['template'], $block['lock'] );
+		}
+
+		// Inject a Group wrapper for contentOnly templates.
+		if ( 'contentOnly' === $block['templateLock'] ) {
+			if ( is_admin() || true === $block['supports']['innerContainer'] ) {
+				$block['template'] = [
+					[
+						'core/group',
+						[
+							'className'    => 'acf-block-inner__container acf-block-content-only-wrapper',
+							'templateLock' => 'contentOnly',
+							'metadata'     => [
+								'name' => __( 'Content Wrapper', 'viget-blocks-toolkit' )
+							],
+							'lock'         => [
+								'move'   => true,
+								'remove' => true,
+							],
+						],
+						$block['template'],
+					],
+				];
+			}
 		}
 
 		return $block;
@@ -500,9 +537,10 @@ class BlockRegistration {
 			}
 
 			$payload[ $block_name ] = [
-				'patterns'       => $patterns,
-				'defaultPattern' => self::get_attribute_default( $metadata, 'blockPattern', '' ),
-				'defaultLock'    => self::resolve_metadata_lock( $metadata ),
+				'patterns'            => $patterns,
+				'defaultPattern'      => self::get_attribute_default( $metadata, 'blockPattern', '' ),
+				'defaultLock'         => self::resolve_metadata_lock( $metadata ),
+				'defaultTemplateLock' => self::get_attribute_default( $metadata, 'templateLock', '' ),
 			];
 		}
 

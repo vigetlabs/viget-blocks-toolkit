@@ -1,4 +1,4 @@
-import { parse } from '@wordpress/blocks';
+import { createBlock, parse } from '@wordpress/blocks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { useEffect, useRef } from '@wordpress/element';
@@ -101,6 +101,26 @@ const resolvePatternSlug = (attributes, blockConfig) => {
 		: '';
 };
 
+const resolveTemplateLock = (attributes, blockConfig) => {
+	const raw = attributes?.templateLock;
+	if (raw !== undefined && raw !== null && String(raw).trim() !== '') {
+		return String(raw).trim();
+	}
+	return blockConfig.defaultTemplateLock
+		? String(blockConfig.defaultTemplateLock).trim()
+		: '';
+};
+
+const wrapContentOnlyGroup = (blocks) =>
+	createBlock(
+		'core/group',
+		{
+			className: 'acf-block-inner__container acf-block-content-only-wrapper',
+			templateLock: 'contentOnly',
+		},
+		blocks,
+	);
+
 const withBlockPatternSeed = createHigherOrderComponent((BlockEdit) => {
 	return (props) => {
 		const { clientId, name, attributes } = props;
@@ -140,11 +160,18 @@ const withBlockPatternSeed = createHigherOrderComponent((BlockEdit) => {
 			const defaultLock = getDefaultLock(attributes, blockConfig);
 			const withLock = applyDefaultLockToBlocks(parsedBlocks, defaultLock);
 
-			replaceInnerBlocks(clientId, withLock, false);
+			const templateLock = resolveTemplateLock(attributes, blockConfig);
+			const wrapped =
+				templateLock === 'contentOnly'
+					? [wrapContentOnlyGroup(withLock)]
+					: withLock;
+
+			replaceInnerBlocks(clientId, wrapped, false);
 			lastAppliedPatternSlug.current = patternSlug;
 		}, [
 			attributes?.blockPattern,
 			attributes?.lock,
+			attributes?.templateLock,
 			attributes,
 			name,
 			clientId,
