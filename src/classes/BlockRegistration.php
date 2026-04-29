@@ -113,6 +113,9 @@ class BlockRegistration {
 					return $metadata;
 				}
 
+				// Prepare the block template with cascading modifiers.
+				add_filter( 'vgtbt_block_data', [ self::class, 'prepare_template' ] );
+
 				$metadata['acf']['renderCallback'] = function ( array $block, string $content = '', bool $is_preview = false, int $post_id = 0, WP_Block|stdClass|null $wp_block = null, array|bool $context = [], bool $is_ajax_render = false ) use ( $metadata ): void {
 					$block_name    = str_replace( 'acf/', '', $block['name'] );
 					$block['slug'] = sanitize_title( $block_name );
@@ -128,20 +131,9 @@ class BlockRegistration {
 					$block['blockPattern'] = self::resolve_runtime_attribute( $block, $metadata, 'blockPattern', '' );
 					$block['templateLock'] = self::resolve_runtime_attribute( $block, $metadata, 'templateLock', '' );
 					$block['lock']         = self::resolve_runtime_lock( $block, $metadata );
-					$block['sync']         = (bool) self::resolve_runtime_attribute( $block, $metadata, 'sync', false );
 
 					// Pass the block template data to the block.
 					$block['template'] = self::get_inner_blocks( $block, $metadata );
-
-					if ( $block['sync'] && ! empty( $block['blockPattern'] ) ) {
-						$pattern_markup = BlockPatternResolver::resolve( (string) $block['blockPattern'], (string) $block['path'] );
-						if ( '' !== trim( $pattern_markup ) ) {
-							if ( ! empty( $block['lock'] ) && is_array( $block['lock'] ) ) {
-								$pattern_markup = self::merge_default_lock_in_markup( $pattern_markup, $block['lock'] );
-							}
-							$content = $pattern_markup;
-						}
-					}
 
 					// Check for inner blocks.
 					$block['hasInnerBlocks'] = \strlen( trim( str_replace( '<p></p>', '', $content ) ) ) > 0;
@@ -171,26 +163,87 @@ class BlockRegistration {
 					$render = $block['path'] . '/render.php';
 
 					if ( ! file_exists( $render ) ) {
-						if ( ! wp_get_current_user() ) {
-							return;
-						}
-
 						if ( ! empty( $block['supports']['jsx'] ) ) {
-							$render = VGTBT_PLUGIN_PATH . '/views/jsx.php';
+							$render = VGTBT_PLUGIN_PATH . 'views/jsx.php';
 						} else {
-							$render = VGTBT_PLUGIN_PATH . '/views/default.php';
+							$render = VGTBT_PLUGIN_PATH . 'views/default.php';
 						}
 					}
 
-					$GLOBALS['vgtbt_current_block_template_lock'] = $block['templateLock'];
+					// Apply the template lock to the inner blocks props.
+					$template_lock_filter = function ( array $props ) use ( $block ) {
+						if ( empty( $block['templateLock'] ) ) {
+							return $props;
+						}
+
+						$props['templateLock'] = $block['templateLock'];
+						return $props;
+					};
+
+					add_filter( 'vgtbt_inner_blocks_props', $template_lock_filter );
 					require $render;
-					unset( $GLOBALS['vgtbt_current_block_template_lock'] );
+					remove_filter( 'vgtbt_inner_blocks_props', $template_lock_filter );
 				};
 
 				return $metadata;
 			},
 			5
 		);
+	}
+
+	/**
+	 * Prepare the block template with cascading modifiers.
+	 *
+	 * @param array $block The block.
+	 *
+	 * @return array
+	 */
+	public static function prepare_template( array $block ): array {
+		if ( empty( $block['template'] ) ) {
+			return $block;
+		}
+
+		if ( 'contentOnly' === $block['templateLock'] ) {
+			$block['template'] = self::modify_role_attribute_recursive( $block['template'] );
+		}
+
+		if ( ! empty( $block['lock'] ) && is_array( $block['lock'] ) ) {
+			$block['template'] = self::merge_default_lock_recursive( $block['template'], $block['lock'] );
+		}
+
+		return $block;
+	}
+
+	/**
+	 * Recursively add the role attribute to the inner blocks of the template.
+	 *
+	 * @param array  $inner_blocks The inner blocks.
+	 * @param string $role The role to add.
+	 *
+	 * @return array
+	 */
+	public static function modify_role_attribute_recursive( array $inner_blocks, string $role = 'content' ): array {
+		foreach ( $inner_blocks as $index => $inner_block ) {
+			if ( ! is_array( $inner_block ) ) {
+				continue;
+			}
+
+			if ( empty( $inner_block[1] ) || ! is_array( $inner_block[1] ) ) {
+				$inner_block[1] = [];
+			}
+
+			if ( empty( $inner_block[1]['role'] ) ) {
+				$inner_block[1]['role'] = $role;
+			}
+
+			if ( ! empty( $inner_block[2] ) && is_array( $inner_block[2] ) ) {
+				$inner_block[2] = self::modify_role_attribute_recursive( $inner_block[2], $role );
+			}
+
+			$inner_blocks[ $index ] = $inner_block;
+		}
+
+		return $inner_blocks;
 	}
 
 	/**
@@ -306,12 +359,15 @@ class BlockRegistration {
 	 */
 	public static function get_inner_blocks( array $block, array $metadata = [] ): array {
 		$template = [];
+
+		// First check for template in the block metadata.
 		if ( ! empty( $metadata['acf']['template'] ) ) {
 			$template = $metadata['acf']['template'];
 		} elseif ( ! empty( $metadata['acf']['innerBlocks'] ) ) {
 			$template = $metadata['acf']['innerBlocks'];
 		}
 
+		// If no template in the metadata, check for template.json in the block directory.
 		if ( empty( $template ) ) {
 			$json_path = $block['path'] . '/template.json';
 
@@ -323,26 +379,23 @@ class BlockRegistration {
 			}
 		}
 
-		if ( ! empty( $block['blockPattern'] ) ) {
-			$pattern_slug = trim( (string) $block['blockPattern'] );
-			$block_path   = isset( $block['path'] ) ? (string) $block['path'] : '';
-			$markup       = BlockPatternResolver::resolve( $pattern_slug, $block_path );
-
-			if ( '' !== trim( $markup ) ) {
-				$parsed = parse_blocks( $markup );
-				$built  = self::parsed_blocks_to_inner_template( $parsed );
-				if ( ! empty( $built ) ) {
-					$template = $built;
-				} else {
-					$template = [];
-				}
-			} else {
-				$template = [];
-			}
+		// If no template in the metadata or template.json, check for a block pattern.
+		if ( empty( $block['blockPattern'] ) ) {
+			return $template;
 		}
 
-		if ( ! empty( $block['lock'] ) && is_array( $block['lock'] ) ) {
-			$template = self::merge_default_lock_recursive( $template, $block['lock'] );
+		$pattern_slug = trim( (string) $block['blockPattern'] );
+		$block_path   = isset( $block['path'] ) ? (string) $block['path'] : '';
+		$markup       = BlockPatternResolver::resolve( $pattern_slug, $block_path );
+
+		if ( '' === trim( $markup ) ) {
+			return $template;
+		}
+
+		$parsed = parse_blocks( $markup );
+		$built  = self::parsed_blocks_to_inner_template( $parsed );
+		if ( ! empty( $built ) ) {
+			return $built;
 		}
 
 		return $template;
@@ -413,7 +466,10 @@ class BlockRegistration {
 			return;
 		}
 
-		if ( ! wp_script_is( 'vgtbt-editor-iframe', 'registered' ) ) {
+		$iframe_registered = wp_script_is( 'vgtbt-editor-iframe', 'registered' );
+		$editor_registered = wp_script_is( 'vgtbt-editor-scripts', 'registered' );
+
+		if ( ! $iframe_registered && ! $editor_registered ) {
 			return;
 		}
 
@@ -433,11 +489,7 @@ class BlockRegistration {
 			}
 
 			$pattern_slugs = self::get_block_pattern_slugs( $metadata );
-			if ( empty( $pattern_slugs ) ) {
-				continue;
-			}
-
-			$patterns = [];
+			$patterns      = [];
 			foreach ( $pattern_slugs as $slug ) {
 				$markup = BlockPatternResolver::resolve( $slug, $metadata['path'] );
 				if ( '' === trim( $markup ) ) {
@@ -445,10 +497,6 @@ class BlockRegistration {
 				}
 
 				$patterns[ $slug ] = $markup;
-			}
-
-			if ( empty( $patterns ) ) {
-				continue;
 			}
 
 			$payload[ $block_name ] = [
@@ -462,13 +510,19 @@ class BlockRegistration {
 			return;
 		}
 
-		wp_localize_script(
-			'vgtbt-editor-iframe',
-			'vgtbtBlockPatterns',
-			[
-				'blocks' => $payload,
-			]
-		);
+		$data = [
+			'blocks' => $payload,
+		];
+
+		// Localize onto both the iframe canvas bundle and the main editor bundle.
+		// The iframe uses it for seeding; the main editor uses it for sync/upgrade UX.
+		if ( $iframe_registered ) {
+			wp_localize_script( 'vgtbt-editor-iframe', 'vgtbtBlockPatterns', $data );
+		}
+
+		if ( $editor_registered ) {
+			wp_localize_script( 'vgtbt-editor-scripts', 'vgtbtBlockPatterns', $data );
+		}
 	}
 
 	/**
@@ -519,18 +573,10 @@ class BlockRegistration {
 	 * @return array
 	 */
 	public static function resolve_metadata_lock( array $metadata ): array {
-		$from_supports = [];
 		if ( ! empty( $metadata['supports']['lock'] ) && is_array( $metadata['supports']['lock'] ) ) {
-			$from_supports = $metadata['supports']['lock'];
+			return $metadata['supports']['lock'];
 		}
-
-		$from_attr = self::get_attribute_default( $metadata, 'lock', [] );
-		if ( ! is_array( $from_attr ) ) {
-			$from_attr = [];
-		}
-
-		// Attribute defaults override supports (per-key) when both are set.
-		return array_merge( $from_supports, $from_attr );
+		return [];
 	}
 
 	/**
