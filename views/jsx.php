@@ -20,26 +20,37 @@ if ( ! isset( $block_template ) && empty( $block['template'] ) ) {
 
 $tag = $block['tagName'];
 
-// `??` treats an empty array as set; use explicit empty check so defaults apply when the
-// template is [] (e.g. before blockPattern markup is resolved).
-$resolved_template = ! empty( $block['template'] )
-	? $block['template']
-	: ( $block_template ?? [] );
-
+// Set the inner blocks template.
 $inner = [
-	'template' => $resolved_template,
+	'template' => ! empty( $block['template'] )
+		? $block['template']
+		: ( $block_template ?? [] )
 ];
 
 $has_container = ! isset( $block['supports']['innerContainer'] ) || true === $block['supports']['innerContainer'];
-?>
-<<?php echo esc_html( $tag ); ?> <?php block_attrs( $block ); ?>>
-	<?php if ( $has_container ) : ?>
-	<div class="acf-block-inner__container">
-		<?php endif; ?>
 
-		<?php inner_blocks( $inner ); ?>
+// Open the block.
+printf(
+	'<%s %s>',
+	esc_html( $tag ),
+	block_attrs( $block )
+);
 
-		<?php if ( $has_container ) : ?>
-	</div>
-	<?php endif; ?>
-</<?php echo esc_html( $tag ); ?>>
+// Open the container if it is supported.
+if ( $has_container ) {
+	echo '<div class="acf-block-inner__container">';
+}
+
+// Render the inner blocks.
+inner_blocks( $inner );
+
+// Close the container if it was opened.
+if ( $has_container ) {
+	echo '</div>';
+}
+
+// Close the block.
+printf(
+	'</%s>',
+	esc_html( $tag )
+);
