@@ -17,7 +17,12 @@ const MediaPosition = BlockEdit => {
 
 		const mediaPositionSupport = getBlockSupport( props.name, 'mediaPosition', false );
 
-		if ( ! mediaPositionSupport?.transformations ) {
+		// Support either `transformations` or `transforms` (block.json schema uses `supports.*` and
+		// different projects may name this key differently).
+		const transformations =
+			mediaPositionSupport?.transformations || mediaPositionSupport?.transforms;
+
+		if ( ! Array.isArray( transformations ) || ! transformations.length ) {
 			return <BlockEdit {...props} />;
 		}
 
@@ -139,7 +144,7 @@ const MediaPosition = BlockEdit => {
 
 			// Transform blocks using the new position value
 			const transformedBlocks = innerBlocks.map(block =>
-				transformBlock(block, mediaPositionSupport.transformations, null, position)
+				transformBlock(block, transformations, null, position)
 			);
 
 			// Update attributes and blocks together
