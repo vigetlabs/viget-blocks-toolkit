@@ -10,6 +10,7 @@ module.exports = {
 
 	entry: {
 		'index' : path.resolve( process.cwd(), 'src/index.js' ),
+		'iframe-editor' : path.resolve( process.cwd(), 'src/iframe-editor.js' ),
 		'editor' : path.resolve( process.cwd(), 'src/editor.scss' ),
 		'style': path.resolve( process.cwd(), 'src/index.scss' ),
 	},

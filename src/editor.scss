@@ -1,3 +1,275 @@
+// Floating toolbar: icon + responsive dropdowns (breakpoint-visibility.js).
+.vgtbt-toolbar-dropdown__content--icon {
+	min-width: 280px;
+	max-width: min(420px, 92vw);
+}
+
+.vgtbt-toolbar-dropdown__content--responsive {
+	box-sizing: border-box;
+	width: 240px;
+	min-width: 240px;
+	max-width: min(240px, 92vw);
+}
+
+// Popover inner shell must stretch to the dropdown min-width (core defaults ~ fit-content).
+.vgtbt-toolbar-dropdown-popover--responsive,
+.vgtbt-toolbar-dropdown-popover--icon {
+	.components-popover__content {
+		box-sizing: border-box;
+		width: 100%;
+		min-width: 100%;
+	}
+}
+
+.vgtbt-toolbar-dropdown__body {
+	padding: 0;
+}
+
+// Icon grid inside toolbar popover
+.vgtbt-toolbar-dropdown__body--icon {
+	.button-icon-picker__grid {
+		width: 100%;
+		padding: 8px;
+	}
+
+	.button-icon-picker__button {
+		box-sizing: border-box;
+		min-width: 48px;
+		min-height: 48px;
+		width: 100%;
+		justify-content: center;
+		color: #1e1e1e;
+		box-shadow: none;
+
+		svg {
+			display: block;
+			max-width: 28px;
+			max-height: 28px;
+			flex-shrink: 0;
+		}
+
+		// Avoid “double stroke” look: do not paint stroke on filled SVG icons.
+		svg path {
+			fill: currentColor;
+			stroke: none;
+		}
+
+		&.is-pressed,
+		&[aria-pressed="true"] {
+			background-color: var(
+				--wp-components-color-accent,
+				var(--wp-admin-theme-color, #3858e9)
+			);
+			border-color: transparent;
+			color: #fff;
+
+			svg path {
+				fill: currentColor;
+			}
+		}
+	}
+
+	.components-toggle-control {
+		width: 100%;
+		padding: 8px 12px 12px;
+	}
+
+	.components-base-control__field {
+		align-items: flex-start;
+	}
+
+	.components-form-toggle {
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+}
+
+// Responsive controls spacing (toolbar popover only)
+.vgtbt-toolbar-dropdown__body--responsive {
+	padding: 4px;
+	overflow-x: hidden;
+
+	> * + * {
+		margin-top: 12px;
+	}
+
+	hr {
+		margin: 14px 0;
+		border: 0;
+		border-top: 1px solid #ddd;
+	}
+
+	.components-toggle-control {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.components-base-control__field {
+		align-items: flex-start;
+	}
+
+	.components-form-toggle {
+		flex-shrink: 0;
+		margin-top: 2px;
+	}
+
+	.components-toggle-group-control {
+		max-width: 100%;
+	}
+
+	// Same row as block sidebar: width + unit (240px panel still fits).
+	.vgtbt-toolbar-responsive__grid {
+		grid-template-columns: 2fr 1fr;
+	}
+}
+
+// Custom breakpoint width + unit (default: single column where grid is used without a width context).
+.vgtbt-toolbar-responsive__grid {
+	display: grid;
+	gap: 8px;
+	align-items: start;
+	grid-template-columns: 1fr;
+}
+
+// Inspector sidebars: width + unit on one row.
+.block-editor-block-inspector .vgtbt-toolbar-responsive__grid,
+.edit-site-block-inspector .vgtbt-toolbar-responsive__grid {
+	grid-template-columns: 2fr 1fr;
+}
+
+// Toolbar trigger: custom SVG (send / selected icon)
+.vgtbt-toolbar-icon-trigger.components-toolbar-button {
+	box-sizing: border-box;
+	color: currentColor;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 0;
+	vertical-align: middle;
+
+	.vgtbt-toolbar-icon-trigger__glyph {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		flex-shrink: 0;
+		line-height: 0;
+
+		svg {
+			display: block;
+			flex-shrink: 0;
+			width: 20px;
+			height: 20px;
+			margin: 0;
+			vertical-align: middle;
+		}
+	}
+
+	// Optical vertical center (path sits high in the 24×24 viewBox).
+	.vgtbt-toolbar-icon-trigger__glyph--send svg {
+		transform: translateY(1px);
+	}
+
+	&.vgtbt-toolbar-icon-trigger--has-selection .vgtbt-toolbar-icon-trigger__glyph svg {
+		transform: translateY(0.5px);
+	}
+
+	&.components-toolbar-button.is-pressed,
+	&.components-toolbar-button[aria-expanded="true"] {
+		background: var(
+			--wp-components-color-accent,
+			var(--wp-admin-theme-color, #3858e9)
+		);
+		color: #fff;
+		padding-block: 2px;
+		padding-inline: 4px;
+
+		.vgtbt-toolbar-icon-trigger__glyph svg path {
+			fill: currentColor;
+		}
+	}
+}
+
+// Responsive toolbar: no full-height blue fill on open/active.
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.is-pressed,
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"],
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active {
+	background: transparent !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+}
+
+// Icon accent: core + other layers often beat plain `color` on `.components-toolbar-button__icon`.
+// Use !important for configured / open states, then repeat for :hover so hover never loses to those layers.
+$vgtbt-toolbar-accent: var(
+	--wp-components-color-accent,
+	var(--wp-admin-theme-color, #3858e9)
+);
+
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
+	.components-toolbar-button__icon,
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
+	.components-toolbar-button__icon {
+	color: $vgtbt-toolbar-accent !important;
+}
+
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
+	.components-toolbar-button__icon::before,
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
+	.components-toolbar-button__icon::before {
+	color: $vgtbt-toolbar-accent !important;
+}
+
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
+	.components-toolbar-button__icon
+	svg,
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
+	.components-toolbar-button__icon
+	svg {
+	fill: $vgtbt-toolbar-accent !important;
+}
+
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
+	> svg,
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
+	> svg {
+	fill: $vgtbt-toolbar-accent !important;
+}
+
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover
+	.components-toolbar-button__icon,
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover
+	.components-toolbar-button__icon::before {
+	color: $vgtbt-toolbar-accent !important;
+}
+
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover
+	.components-toolbar-button__icon
+	svg,
+.block-editor-block-contextual-toolbar
+	.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover > svg {
+	fill: $vgtbt-toolbar-accent !important;
+}
+
+.vgtbt-toolbar-icon-trigger__glyph--send svg path {
+	fill: currentColor;
+}
+
 // Add icons to Button blocks and style appropriately.
 *[class*="has-icon__"] {
 	&.wp-block-read-more,
@@ -78,5 +350,11 @@
 }
 
 div[id^="portal/tooltip-"] {
+	pointer-events: none;
+}
+
+// Content-only templates: wrap inner blocks in a Group but make it layout-neutral.
+.acf-block-content-only-wrapper {
+	display: contents;
 	pointer-events: none;
 }

@@ -346,6 +346,8 @@ if ( ! function_exists( 'inner_blocks' ) ) {
 		$json_encode = [ 'allowedBlocks', 'template' ];
 		$attributes  = '';
 
+		$props = apply_filters( 'vgtbt_inner_blocks_props', $props );
+
 		foreach ( $props as $attr => $value ) {
 			$attr_value  = in_array( $attr, $json_encode, true ) ? wp_json_encode( $value ) : $value;
 			$attributes .= ' ' . esc_attr( $attr ) . '="' . esc_attr( $attr_value ) . '"';

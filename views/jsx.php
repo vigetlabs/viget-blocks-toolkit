@@ -18,21 +18,43 @@ if ( ! isset( $block_template ) && empty( $block['template'] ) ) {
 	];
 }
 
-$tag   = $block['tagName'];
+$tag           = $block['tagName'];
+$has_container = isset( $block['supports']['innerContainer'] ) && true === $block['supports']['innerContainer'];
+
+// Set the inner blocks template.
 $inner = [
-	'template' => $block['template'] ?? $block_template ?? [],
+	'template' => ! empty( $block['template'] )
+		? $block['template']
+		: ( $block_template ?? [] )
 ];
 
-$has_container = ! isset( $block['supports']['innerContainer'] ) || true === $block['supports']['innerContainer'];
-?>
-<<?php echo esc_html( $tag ); ?> <?php block_attrs( $block ); ?>>
-	<?php if ( $has_container ) : ?>
-	<div class="acf-block-inner__container">
-		<?php endif; ?>
+// Get the block attributes.
+ob_start();
+block_attrs( $block );
+$block_attrs = ob_get_clean();
 
-		<?php inner_blocks( $inner ); ?>
+// Open the block.
+printf(
+	'<%s %s>',
+	esc_html( $tag ),
+	$block_attrs
+);
 
-		<?php if ( $has_container ) : ?>
-	</div>
-	<?php endif; ?>
-</<?php echo esc_html( $tag ); ?>>
+// Open the container if it is supported.
+if ( $has_container ) {
+	echo '<div class="acf-block-inner__container">';
+}
+
+// Render the inner blocks.
+inner_blocks( $inner );
+
+// Close the container if it was opened.
+if ( $has_container ) {
+	echo '</div>';
+}
+
+// Close the block.
+printf(
+	'</%s>',
+	esc_html( $tag )
+);
