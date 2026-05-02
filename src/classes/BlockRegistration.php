@@ -130,6 +130,11 @@ class BlockRegistration {
 						$block['supports'] = [];
 					}
 
+					// Merge declared supports from metadata so features like `contentRole` are available during rendering/template prep.
+					if ( ! empty( $metadata['supports'] ) && is_array( $metadata['supports'] ) ) {
+						$block['supports'] = array_merge( $metadata['supports'], $block['supports'] );
+					}
+
 					$block['tagName']      = $metadata['tagName'] ?? 'section';
 					$block['blockPattern'] = self::resolve_runtime_attribute( $block, $metadata, 'blockPattern', '' );
 					$block['templateLock'] = self::resolve_runtime_attribute( $block, $metadata, 'templateLock', '' );
@@ -137,7 +142,7 @@ class BlockRegistration {
 
 					$block['supports']['innerContainer'] = self::resolve_runtime_attribute( $block, $metadata, 'innerContainer', false );
 
-					if ( is_admin() && $block['templateLock'] === 'contentOnly' ) {
+					if ( is_admin() && self::block_is_content_only_mode( $block ) ) {
 						$block['supports']['innerContainer'] = false;
 					}
 
@@ -181,12 +186,12 @@ class BlockRegistration {
 
 					// Apply the template lock to the inner blocks props.
 					$template_lock_filter = function ( array $props ) use ( $block ) {
-						if ( empty( $block['templateLock'] ) ) {
+						if ( '' === trim( (string) ( $block['templateLock'] ?? '' ) ) && ! self::supports_content_role( $block ) ) {
 							return $props;
 						}
 
 						// For `contentOnly`, we inject a Core/Group wrapper that handles the contentOnly template lock.
-						if ( 'contentOnly' === $block['templateLock'] ) {
+						if ( self::block_is_content_only_mode( $block ) ) {
 							return $props;
 						}
 
@@ -217,7 +222,7 @@ class BlockRegistration {
 			return $block;
 		}
 
-		if ( 'contentOnly' === $block['templateLock'] ) {
+		if ( self::block_is_content_only_mode( $block ) ) {
 			$block['template'] = self::modify_role_attribute_recursive( $block['template'] );
 		}
 
@@ -225,8 +230,8 @@ class BlockRegistration {
 			$block['template'] = self::merge_default_lock_recursive( $block['template'], $block['lock'] );
 		}
 
-		// Inject a Group wrapper for contentOnly templates.
-		if ( 'contentOnly' === $block['templateLock'] ) {
+		// Inject a Group wrapper for content-only templates (`templateLock: contentOnly`, or `supports.contentRole` as an alias).
+		if ( self::block_is_content_only_mode( $block ) ) {
 			if ( is_admin() || true === $block['supports']['innerContainer'] ) {
 				$block['template'] = [
 					[
@@ -541,6 +546,7 @@ class BlockRegistration {
 				'defaultPattern'      => self::get_attribute_default( $metadata, 'blockPattern', '' ),
 				'defaultLock'         => self::resolve_metadata_lock( $metadata ),
 				'defaultTemplateLock' => self::get_attribute_default( $metadata, 'templateLock', '' ),
+				'defaultContentRole'  => self::supports_content_role( [ 'supports' => $metadata['supports'] ?? [] ] ),
 			];
 		}
 
@@ -615,6 +621,36 @@ class BlockRegistration {
 			return $metadata['supports']['lock'];
 		}
 		return [];
+	}
+
+	/**
+	 * Whether the block opts into "content role" via supports.
+	 *
+	 * @param array $block Block data (expects a `supports` array).
+	 *
+	 * @return bool
+	 */
+	public static function supports_content_role( array $block ): bool {
+		return ! empty( $block['supports']['contentRole'] );
+	}
+
+	/**
+	 * Whether this block should use the content-only inner template pipeline.
+	 *
+	 * Note: explicit `templateLock` wins when set; `supports.contentRole` acts as an alias when `templateLock` is empty.
+	 *
+	 * @param array $block Block data.
+	 *
+	 * @return bool
+	 */
+	public static function block_is_content_only_mode( array $block ): bool {
+		$template_lock = isset( $block['templateLock'] ) ? (string) $block['templateLock'] : '';
+
+		if ( '' !== trim( $template_lock ) ) {
+			return 'contentOnly' === $template_lock;
+		}
+
+		return self::supports_content_role( $block );
 	}
 
 	/**

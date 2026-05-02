@@ -182,6 +182,13 @@ const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
 					if (parent?.attributes?.templateLock === 'contentOnly') {
 						return true;
 					}
+
+					const parentType = parent?.name
+						? select('core/blocks').getBlockType(parent.name)
+						: null;
+					if (parentType?.supports?.contentRole) {
+						return true;
+					}
 				}
 				return false;
 			},
@@ -224,14 +231,18 @@ const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
 			});
 		};
 
+		const visibilityClassName = isVisibilitySet
+			? 'has-breakpoint-visibility'
+			: '';
+
 		const blockProps = {
 			...props,
-			className:
-				`${props.className || ''} ${isVisibilitySet ? 'has-breakpoint-visibility' : ''}`.trim(),
+			className: `${props.className || ''} ${visibilityClassName}`.trim(),
 			'data-visibility': isVisibilitySet ? 'true' : 'false',
 		};
 
-		const showIconToolbar = showToolbarControls && isIconToolbarBlock(props.name);
+		const showIconToolbar =
+			showToolbarControls && isIconToolbarBlock(props.name);
 		const { icon: currentIcon } = attributes;
 		const iconDisplay = getToolbarIconDisplay(currentIcon);
 

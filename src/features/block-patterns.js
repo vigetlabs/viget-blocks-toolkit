@@ -101,14 +101,25 @@ const resolvePatternSlug = (attributes, blockConfig) => {
 		: '';
 };
 
-const resolveTemplateLock = (attributes, blockConfig) => {
+const resolveEffectiveTemplateLock = (attributes, blockConfig) => {
 	const raw = attributes?.templateLock;
 	if (raw !== undefined && raw !== null && String(raw).trim() !== '') {
 		return String(raw).trim();
 	}
-	return blockConfig.defaultTemplateLock
+
+	const defaultTemplateLock = blockConfig?.defaultTemplateLock
 		? String(blockConfig.defaultTemplateLock).trim()
 		: '';
+
+	if (defaultTemplateLock) {
+		return defaultTemplateLock;
+	}
+
+	if (blockConfig?.defaultContentRole) {
+		return 'contentOnly';
+	}
+
+	return '';
 };
 
 const wrapContentOnlyGroup = (blocks) =>
@@ -160,7 +171,10 @@ const withBlockPatternSeed = createHigherOrderComponent((BlockEdit) => {
 			const defaultLock = getDefaultLock(attributes, blockConfig);
 			const withLock = applyDefaultLockToBlocks(parsedBlocks, defaultLock);
 
-			const templateLock = resolveTemplateLock(attributes, blockConfig);
+			const templateLock = resolveEffectiveTemplateLock(
+				attributes,
+				blockConfig,
+			);
 			const wrapped =
 				templateLock === 'contentOnly'
 					? [wrapContentOnlyGroup(withLock)]
