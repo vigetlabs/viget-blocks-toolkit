@@ -3,7 +3,7 @@ Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
 Requires at least: 5.7
 Tested up to: 6.9
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -36,6 +36,7 @@ No. There are several features of this plugin that can be used without Advanced 
 * Added editor seeding from pattern markup (preserving real inner block content) and default lock propagation via `lock` attributes.
 * Added `templateLock` passthrough support for ACF InnerBlocks usage.
 * Added toolbar fallbacks for Icon and Responsive controls in content-only editing contexts.
+* Added GitHub plugin updater.
 
 = 1.1.5 =
 
