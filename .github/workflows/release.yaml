@@ -18,12 +18,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Build plugin ZIP
+        run: |
+          PLUGIN_SLUG="viget-blocks-toolkit"
+          DIST_DIR="dist"
+          PACKAGE_DIR="${DIST_DIR}/${PLUGIN_SLUG}"
+
+          rm -rf "${DIST_DIR}"
+          mkdir -p "${PACKAGE_DIR}"
+
+          rsync -a ./ "${PACKAGE_DIR}/" \
+            --exclude "dist/" \
+            --exclude ".git/" \
+            --exclude ".github/" \
+            --exclude "node_modules/" \
+            --exclude ".cursor/" \
+            --exclude ".DS_Store" \
+            --exclude "*.log"
+
+          (cd "${DIST_DIR}" && zip -r "${PLUGIN_SLUG}.zip" "${PLUGIN_SLUG}")
+
       - name: Create GitHub Release
         run: |
           gh release create "$TAG" --verify-tag \
             --title "$TAG: $(date '+%Y-%m-%d')" \
             --generate-notes \
-            --latest
+            --latest \
+            "dist/viget-blocks-toolkit.zip#Viget Blocks Toolkit"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
