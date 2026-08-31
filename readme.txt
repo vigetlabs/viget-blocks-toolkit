@@ -3,7 +3,7 @@ Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
 Requires at least: 5.7
 Tested up to: 6.9
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,6 +29,10 @@ No. There are several features of this plugin that can be used without Advanced 
 3. Media Position Example
 
 == Changelog ==
+
+= 1.1.8 =
+
+* Re-releases 1.1.7. A `1.1.7` tag was previously published to Packagist pointing at an earlier commit, and Packagist stable versions are immutable, so that version could not be corrected. Composer users should install 1.1.8 or later; Packagist's 1.1.7 does not contain the changes listed below.
 
 = 1.1.7 =
 
