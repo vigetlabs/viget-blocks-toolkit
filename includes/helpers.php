@@ -35,11 +35,12 @@ if ( ! function_exists( 'block_attrs' ) ) {
 		$id = apply_filters( 'vgtbt_block_id_attr', $id, $block );
 
 		/*
-		 * The unique html id attribute is opt-in. It is rendered when the block
-		 * declares `supports.id`, when an editor-set anchor exists, or when an id
-		 * is passed directly to block_attrs().
+		 * The generated html id attribute is opt-in. It is rendered when the block
+		 * declares `supports.autoId`, when an editor-set anchor exists, or when an
+		 * id is passed directly to block_attrs(). Core's `anchor` support works
+		 * independently and requires no autoId declaration.
 		 */
-		$has_id = $explicit_id || ! empty( $block['anchor'] ) || ! empty( $block['supports']['id'] );
+		$has_id = $explicit_id || ! empty( $block['anchor'] ) || ! empty( $block['supports']['autoId'] );
 
 		/**
 		 * Filter whether the block renders an html id attribute.

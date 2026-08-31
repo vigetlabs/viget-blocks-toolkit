@@ -34,7 +34,7 @@ No. There are several features of this plugin that can be used without Advanced 
 
 * Fixed `innerContainer` being ignored when declared under `supports` in block.json, which dropped the container div from blocks that had explicitly opted in.
 * Added the `vgtbt_default_inner_container` filter to set the default globally for blocks that don't declare a value.
-* Changed the unique html `id` attribute on blocks to be opt-in. Blocks no longer render an `id` unless they declare `supports.id` in block.json, an editor-set anchor is present, or an id is passed to `block_attrs()`. Added the `vgtbt_default_block_id` and `vgtbt_block_has_id` filters to control this globally or per block.
+* Changed the generated html `id` attribute on blocks to be opt-in via `supports.autoId`. Blocks no longer render a generated `id` unless they declare `autoId`, an editor-set anchor is present, or an id is passed to `block_attrs()`. Core's `anchor` support is unaffected and still needs no declaration. Added the `vgtbt_default_auto_id` and `vgtbt_block_has_id` filters to control this globally or per block.
 * Fixed `update-pot` excluding the `src` directory, which holds the plugin's PHP classes. 23 translatable strings were missing from the POT file, including everything in `includes/updater.php`.
 * Updated build dependencies to resolve reported security advisories (86 to 50, all critical severity cleared). Build tooling only; no bundled runtime code changed.
 * Regenerated `languages/viget-blocks-toolkit.pot`, which had been stale since 1.1.0.

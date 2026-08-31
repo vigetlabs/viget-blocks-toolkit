@@ -17,23 +17,27 @@ Useful when using the built-in render file for `jsx` supported blocks, `tagName`
 ##### innerContainer
 You can disable the inner container wrapper by setting the value of `innerContainer` in `supports` to `false`.
 
-##### id
+##### autoId
 
-Blocks do **not** render a unique html `id` attribute by default. Opt in by setting `id` in `supports` to `true`:
+Blocks do **not** render a generated html `id` attribute by default. Opt in by setting `autoId` in `supports` to `true`:
 
 ```json
 "supports": {
-  "id": true
+  "autoId": true
 }
 ```
 
-When enabled, `block_attrs()` outputs an `id` built from the block name and ACF's block id (for example `id="hero_67f3a1b2c4d5e"`), giving each instance a stable anchor target for in-page links and scoped styles. When disabled, no `id` is written.
+When enabled, `block_attrs()` outputs an `id` built from the block name and ACF's block id (for example `id="hero_67f3a1b2c4d5e"`), giving every instance a stable target for in-page links and scoped styles without anyone having to type one. When disabled, no generated `id` is written.
 
-Three things render the attribute regardless of this setting:
+> **`autoId` is not required for the HTML anchor field.** Core's `anchor` support is separate: it adds the **HTML anchor** field under the block's Advanced panel and renders whatever the editor types there. That works on its own, and an anchor always wins over a generated id.
+
+Three things render an `id` regardless of this setting:
 
 * An anchor set by the editor in the block's **Advanced** panel.
 * An `id` passed directly to `block_attrs()`, e.g. `block_attrs( $block, '', [ 'id' => 'contact' ] )`.
-* The `vgtbt_default_block_id` or `vgtbt_block_has_id` filters (see [Hooks](#hooks)).
+* The `vgtbt_default_auto_id` or `vgtbt_block_has_id` filters (see [Hooks](#hooks)).
+
+The value resolves in this order: editor anchor, then the [`blockId`](#blockid) attribute, then a generated `blockname_acfid` string.
 
 ##### blockId
 
@@ -114,7 +118,7 @@ This is an example of a `block.json` file with all the supported customizations.
     }
   },
   "supports": {
-    "id": true,
+    "autoId": true,
     "innerContainer": false,
     "mediaPosition": {
       "transformations": [
@@ -242,7 +246,7 @@ Outputs the block attributes as a string. Supported arguments:
 * `$custom_class` string - Additional classes to add to the block.
 * `$attrs` array - Additional attributes to add to the block.
 
-Passing an `id` in `$attrs` always renders that id, regardless of the `supports.id` setting.
+Passing an `id` in `$attrs` always renders that id, regardless of the `supports.autoId` setting.
 
 ### `inner_blocks()`
 
@@ -263,19 +267,19 @@ Sets the default for `supports.innerContainer` on blocks that don't declare one.
 add_filter( 'vgtbt_default_inner_container', '__return_true' );
 ```
 
-### `vgtbt_default_block_id` (Filter)
+### `vgtbt_default_auto_id` (Filter)
 
-Sets the default for `supports.id` on blocks that don't declare one. Defaults to `false`. Use this to turn unique html ids on globally:
+Sets the default for `supports.autoId` on blocks that don't declare one. Defaults to `false`. Use this to turn generated html ids on globally, which restores the pre-1.1.7 behavior:
 
 ```php
-add_filter( 'vgtbt_default_block_id', '__return_true' );
+add_filter( 'vgtbt_default_auto_id', '__return_true' );
 ```
 
-Blocks that declare `supports.id` explicitly are unaffected by this filter.
+Blocks that declare `supports.autoId` explicitly are unaffected by this filter.
 
 ### `vgtbt_block_has_id` (Filter)
 
-Final say on whether an individual block renders its html `id` attribute, applied after the `supports.id` and anchor checks. Use this for per-block exceptions:
+Final say on whether an individual block renders its html `id` attribute, applied after the `supports.autoId` and anchor checks. Use this for per-block exceptions:
 
 ```php
 add_filter( 'vgtbt_block_has_id', function ( bool $has_id, array $block ): bool {
