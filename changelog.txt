@@ -1,3 +1,7 @@
+= 1.1.8 =
+
+* Re-releases 1.1.7. A `1.1.7` tag was previously published to Packagist pointing at an earlier commit, and Packagist stable versions are immutable, so that version could not be corrected. Composer users should install 1.1.8 or later; Packagist's 1.1.7 does not contain the changes listed below.
+
 = 1.1.7 =
 
 * Fixed `innerContainer` being ignored when declared under `supports` in block.json, which dropped the container div from blocks that had explicitly opted in.

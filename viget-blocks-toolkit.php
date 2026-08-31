@@ -3,7 +3,7 @@
  * Plugin Name:       Viget Blocks Toolkit
  * Plugin URI:        https://github.com/vigetlabs/viget-blocks-toolkit
  * Description:       Simplifying Block Registration and other block editor related features.
- * Version:           1.1.7
+ * Version:           1.1.8
  * Requires at least: 5.7
  * Requires PHP:      8.1
  * Author:            Viget
@@ -17,7 +17,7 @@
  */
 
 // Plugin version.
-const VGTBT_VERSION = '1.1.7';
+const VGTBT_VERSION = '1.1.8';
 
 // Plugin file.
 define( 'VGTBT_PLUGIN_FILE', __FILE__ );
