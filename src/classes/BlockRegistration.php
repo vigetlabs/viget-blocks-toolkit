@@ -140,7 +140,7 @@ class BlockRegistration {
 					$block['templateLock'] = self::resolve_runtime_attribute( $block, $metadata, 'templateLock', '' );
 					$block['lock']         = self::resolve_runtime_lock( $block, $metadata );
 
-					$block['supports']['innerContainer'] = self::resolve_runtime_attribute( $block, $metadata, 'innerContainer', false );
+					$block['supports']['innerContainer'] = self::resolve_inner_container( $block, $metadata );
 
 					if ( is_admin() && self::block_is_content_only_mode( $block ) ) {
 						$block['supports']['innerContainer'] = false;
@@ -585,6 +585,38 @@ class BlockRegistration {
 		}
 
 		return self::get_attribute_default( $metadata, $attribute, $fallback );
+	}
+
+	/**
+	 * Resolve the innerContainer support.
+	 *
+	 * Unlike blockPattern and templateLock, this is declared under `supports`
+	 * in block.json, so it needs its own lookup.
+	 *
+	 * @param array $block Block data.
+	 * @param array $metadata Block metadata.
+	 *
+	 * @return bool
+	 */
+	public static function resolve_inner_container( array $block, array $metadata ): bool {
+		if ( array_key_exists( 'innerContainer', $block ) ) {
+			return (bool) $block['innerContainer'];
+		}
+
+		if ( isset( $metadata['supports']['innerContainer'] ) ) {
+			return (bool) $metadata['supports']['innerContainer'];
+		}
+
+		/**
+		 * Filter the default innerContainer value for blocks that don't declare one.
+		 *
+		 * @param bool  $default  Whether to wrap inner blocks in a container div.
+		 * @param array $block    Block data.
+		 * @param array $metadata Block metadata.
+		 */
+		$default = (bool) apply_filters( 'vgtbt_default_inner_container', false, $block, $metadata );
+
+		return (bool) self::get_attribute_default( $metadata, 'innerContainer', $default );
 	}
 
 	/**

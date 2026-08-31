@@ -3,7 +3,7 @@ Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
 Requires at least: 5.7
 Tested up to: 6.9
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,6 +29,11 @@ No. There are several features of this plugin that can be used without Advanced 
 3. Media Position Example
 
 == Changelog ==
+
+= 1.1.7 =
+
+* Fixed `innerContainer` being ignored when declared under `supports` in block.json, which dropped the container div from blocks that had explicitly opted in.
+* Added the `vgtbt_default_inner_container` filter to set the default globally for blocks that don't declare a value.
 
 = 1.1.6 =
 

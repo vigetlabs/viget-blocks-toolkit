@@ -1,3 +1,8 @@
+= 1.1.7 =
+
+* Fixed `innerContainer` being ignored when declared under `supports` in block.json, which dropped the container div from blocks that had explicitly opted in.
+* Added the `vgtbt_default_inner_container` filter to set the default globally for blocks that don't declare a value.
+
 = 1.1.6 =
 
 * Added `blockPattern` support for ACF blocks with registered-pattern and local `patterns/` resolution.
