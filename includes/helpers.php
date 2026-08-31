@@ -29,17 +29,36 @@ if ( ! function_exists( 'block_attrs' ) ) {
 	 * @param array  $attrs Array of attributes.
 	 */
 	function block_attrs( array $block, string $custom_class = '', array $attrs = [] ): void { // phpcs:ignore
-		$id = ! empty( $attrs['id'] ) ? $attrs['id'] : get_block_id( $block );
+		$explicit_id = ! empty( $attrs['id'] );
+
+		$id = $explicit_id ? $attrs['id'] : get_block_id( $block );
 		$id = apply_filters( 'vgtbt_block_id_attr', $id, $block );
+
+		/*
+		 * The unique html id attribute is opt-in. It is rendered when the block
+		 * declares `supports.id`, when an editor-set anchor exists, or when an id
+		 * is passed directly to block_attrs().
+		 */
+		$has_id = $explicit_id || ! empty( $block['anchor'] ) || ! empty( $block['supports']['id'] );
+
+		/**
+		 * Filter whether the block renders an html id attribute.
+		 *
+		 * @param bool  $has_id Whether to render the id attribute.
+		 * @param array $block  Block data.
+		 */
+		$has_id = (bool) apply_filters( 'vgtbt_block_has_id', $has_id, $block );
 
 		if ( is_admin() ) {
 			if ( ! empty( $block['anchor'] ) ) {
 				$attrs['data-id'] = $block['anchor'];
-			} else {
+			} elseif ( $has_id && '' !== $id ) {
 				$attrs['data-id'] = $id;
 			}
-		} else {
+		} elseif ( $has_id && '' !== $id ) {
 			$attrs['id'] = $id;
+		} else {
+			unset( $attrs['id'] );
 		}
 
 		$block_class = get_block_class( $block, $custom_class );

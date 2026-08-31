@@ -17,6 +17,24 @@ Useful when using the built-in render file for `jsx` supported blocks, `tagName`
 ##### innerContainer
 You can disable the inner container wrapper by setting the value of `innerContainer` in `supports` to `false`.
 
+##### id
+
+Blocks do **not** render a unique html `id` attribute by default. Opt in by setting `id` in `supports` to `true`:
+
+```json
+"supports": {
+  "id": true
+}
+```
+
+When enabled, `block_attrs()` outputs an `id` built from the block name and ACF's block id (for example `id="hero_67f3a1b2c4d5e"`), giving each instance a stable anchor target for in-page links and scoped styles. When disabled, no `id` is written.
+
+Three things render the attribute regardless of this setting:
+
+* An anchor set by the editor in the block's **Advanced** panel.
+* An `id` passed directly to `block_attrs()`, e.g. `block_attrs( $block, '', [ 'id' => 'contact' ] )`.
+* The `vgtbt_default_block_id` or `vgtbt_block_has_id` filters (see [Hooks](#hooks)).
+
 ##### blockId
 
 Assign each block a unique, persistent `blockId` simply by adding the attribute to the `block.json` file.
@@ -96,6 +114,7 @@ This is an example of a `block.json` file with all the supported customizations.
     }
   },
   "supports": {
+    "id": true,
     "innerContainer": false,
     "mediaPosition": {
       "transformations": [
@@ -223,6 +242,8 @@ Outputs the block attributes as a string. Supported arguments:
 * `$custom_class` string - Additional classes to add to the block.
 * `$attrs` array - Additional attributes to add to the block.
 
+Passing an `id` in `$attrs` always renders that id, regardless of the `supports.id` setting.
+
 ### `inner_blocks()`
 
 Outputs the `<innerBlocks />` element of a block. Supported arguments:
@@ -233,6 +254,38 @@ Outputs the `<innerBlocks />` element of a block. Supported arguments:
   * `allowedBlocks` array - The allowed blocks for the inner blocks. This value is automatically `json_encode`d.
 
 ## Hooks
+
+### `vgtbt_default_inner_container` (Filter)
+
+Sets the default for `supports.innerContainer` on blocks that don't declare one. Defaults to `false`.
+
+```php
+add_filter( 'vgtbt_default_inner_container', '__return_true' );
+```
+
+### `vgtbt_default_block_id` (Filter)
+
+Sets the default for `supports.id` on blocks that don't declare one. Defaults to `false`. Use this to turn unique html ids on globally:
+
+```php
+add_filter( 'vgtbt_default_block_id', '__return_true' );
+```
+
+Blocks that declare `supports.id` explicitly are unaffected by this filter.
+
+### `vgtbt_block_has_id` (Filter)
+
+Final say on whether an individual block renders its html `id` attribute, applied after the `supports.id` and anchor checks. Use this for per-block exceptions:
+
+```php
+add_filter( 'vgtbt_block_has_id', function ( bool $has_id, array $block ): bool {
+	if ( 'acf/hero' === $block['name'] ) {
+		return true;
+	}
+
+	return $has_id;
+}, 10, 2 );
+```
 
 ### `vgtbt_block_locations` (Filter)
 

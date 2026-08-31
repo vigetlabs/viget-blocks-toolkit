@@ -1,17 +1,17 @@
-# Copyright (C) 2025 Viget
+# Copyright (C) 2026 Viget
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Viget Blocks Toolkit 1.1.0\n"
+"Project-Id-Version: Viget Blocks Toolkit 1.1.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/viget-blocks-toolkit\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-03-05T18:09:13+00:00\n"
+"POT-Creation-Date: 2026-08-31T02:00:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.10.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: viget-blocks-toolkit\n"
 
 #. Plugin Name of the plugin
@@ -20,14 +20,13 @@ msgid "Viget Blocks Toolkit"
 msgstr ""
 
 #. Plugin URI of the plugin
-#. Author URI of the plugin
 #: viget-blocks-toolkit.php
-msgid "https://viget.com"
+msgid "https://github.com/vigetlabs/viget-blocks-toolkit"
 msgstr ""
 
 #. Description of the plugin
 #: viget-blocks-toolkit.php
-msgid "Simplifying Block Registration and other additional features."
+msgid "Simplifying Block Registration and other block editor related features."
 msgstr ""
 
 #. Author of the plugin
@@ -35,94 +34,113 @@ msgstr ""
 msgid "Viget"
 msgstr ""
 
-#: src/classes/BlockIcons.php:96
+#. Author URI of the plugin
+#: viget-blocks-toolkit.php
+msgid "https://viget.com"
+msgstr ""
+
+#: includes/updater.php:230
+msgid "Latest version from GitHub"
+msgstr ""
+
+#: includes/updater.php:378
+msgid "No changelog available."
+msgstr ""
+
+#: src/classes/BlockIcons.php:102
 msgid "Arrow Left"
 msgstr ""
 
-#: src/classes/BlockIcons.php:101
+#: src/classes/BlockIcons.php:107
 msgid "Arrow Right"
 msgstr ""
 
-#: src/classes/BlockIcons.php:105
+#: src/classes/BlockIcons.php:111
 msgid "Chevron Left"
 msgstr ""
 
-#: src/classes/BlockIcons.php:110
+#: src/classes/BlockIcons.php:116
 msgid "Chevron Left Small"
 msgstr ""
 
-#: src/classes/BlockIcons.php:115
+#: src/classes/BlockIcons.php:121
 msgid "Chevron Right"
 msgstr ""
 
-#: src/classes/BlockIcons.php:119
+#: src/classes/BlockIcons.php:125
 msgid "Chevron Right Small"
 msgstr ""
 
-#: src/classes/BlockIcons.php:123
+#: src/classes/BlockIcons.php:129
 msgid "Cloud"
 msgstr ""
 
-#: src/classes/BlockIcons.php:127
+#: src/classes/BlockIcons.php:133
 msgid "Cloud Upload"
 msgstr ""
 
-#: src/classes/BlockIcons.php:131
+#: src/classes/BlockIcons.php:137
 msgid "Comment Author Avatar"
 msgstr ""
 
-#: src/classes/BlockIcons.php:135
+#: src/classes/BlockIcons.php:141
 msgid "Download"
 msgstr ""
 
-#: src/classes/BlockIcons.php:139
+#: src/classes/BlockIcons.php:145
 msgid "External"
 msgstr ""
 
-#: src/classes/BlockIcons.php:143
+#: src/classes/BlockIcons.php:149
 msgid "External Arrow"
 msgstr ""
 
-#: src/classes/BlockIcons.php:147
+#: src/classes/BlockIcons.php:153
 msgid "Help"
 msgstr ""
 
-#: src/classes/BlockIcons.php:151
+#: src/classes/BlockIcons.php:157
 msgid "Info"
 msgstr ""
 
-#: src/classes/BlockIcons.php:155
+#: src/classes/BlockIcons.php:161
 msgid "Lock Outline"
 msgstr ""
 
-#: src/classes/BlockIcons.php:159
+#: src/classes/BlockIcons.php:165
 msgid "Login"
 msgstr ""
 
-#: src/classes/BlockIcons.php:163
+#: src/classes/BlockIcons.php:169
 msgid "Next"
 msgstr ""
 
-#: src/classes/BlockIcons.php:167
+#: src/classes/BlockIcons.php:173
 msgid "Previous"
 msgstr ""
 
-#: src/classes/BlockIcons.php:172
+#: src/classes/BlockIcons.php:178
 msgid "Shuffle"
 msgstr ""
 
-#: src/classes/BlockIcons.php:176
+#: src/classes/BlockIcons.php:182
 msgid "WordPress"
 msgstr ""
 
-#: src/classes/BlockIcons.php:411
+#: src/classes/BlockIcons.php:440
 #: build/index.js:1
-#: src/features/block-icons.js:87
+#: src/features/block-icons.js:75
+#: src/features/icon-picker-panel.js:110
 msgid "Icon"
+msgstr ""
+
+#: src/classes/BlockRegistration.php:245
+msgid "Content Wrapper"
 msgstr ""
 
 #. translators: %1$s represents the attribute key, %2$s lists the supported attributes.
 #: src/classes/BlockTemplate/Block.php:93
+#, php-format
 msgid "Unsupported block attribute: %1$s. Must be one of: %2$s"
 msgstr ""
 
@@ -130,75 +148,92 @@ msgstr ""
 msgid "Default Block template"
 msgstr ""
 
-#: views/default.php:19
-msgid "Block data available"
-msgstr ""
-
 #: views/jsx.php:15
 msgid "Type / to choose a block"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/block-icons.js:118
+#: src/features/icon-picker-panel.js:91
 msgid "Show icon on left"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:82
-msgid "Responsive"
-msgstr ""
-
-#: build/index.js:1
-#: src/features/breakpoint-visibility.js:87
+#: src/features/breakpoint-visibility.js:57
 msgid "Hide on Desktop"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:93
+#: src/features/breakpoint-visibility.js:63
 msgid "Hide on Tablet"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:99
+#: src/features/breakpoint-visibility.js:69
 msgid "Hide on Mobile"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:108
+#: src/features/breakpoint-visibility.js:78
 msgid "Use Custom Breakpoint"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:122
+#: src/features/breakpoint-visibility.js:87
 msgid "Breakpoint Width"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:129
+#: src/features/breakpoint-visibility.js:94
 msgid "Unit"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:142
+#: src/features/breakpoint-visibility.js:107
 msgid "Visibility Action"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:147
+#: src/features/breakpoint-visibility.js:114
 msgid "Show"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:148
+#: src/features/breakpoint-visibility.js:118
 msgid "Hide"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:151
+#: src/features/breakpoint-visibility.js:122
 msgid "Mobile First"
 msgstr ""
 
 #: build/index.js:1
-#: src/features/breakpoint-visibility.js:152
+#: src/features/breakpoint-visibility.js:123
 msgid "When enabled, applies to screens smaller than breakpoint"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/breakpoint-visibility.js:292
+#: src/features/breakpoint-visibility.js:312
+msgid "Responsive"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/block-schema.js:62
+msgid "Add FAQPage Schema markup from "
+msgstr ""
+
+#: build/index.js:1
+#: src/features/block-schema.js:73
+msgid " to this accordion."
+msgstr ""
+
+#: build/index.js:1
+#: src/features/block-schema.js:81
+msgid "Schema"
+msgstr ""
+
+#: build/index.js:1
+#: src/features/block-schema.js:83
+msgid "FAQPage Schema"
 msgstr ""

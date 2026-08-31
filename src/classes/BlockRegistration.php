@@ -146,6 +146,8 @@ class BlockRegistration {
 						$block['supports']['innerContainer'] = false;
 					}
 
+					$block['supports']['id'] = self::resolve_block_id_support( $block, $metadata );
+
 					// Pass the block template data to the block.
 					$block['template'] = self::get_inner_blocks( $block, $metadata );
 
@@ -617,6 +619,39 @@ class BlockRegistration {
 		$default = (bool) apply_filters( 'vgtbt_default_inner_container', false, $block, $metadata );
 
 		return (bool) self::get_attribute_default( $metadata, 'innerContainer', $default );
+	}
+
+	/**
+	 * Resolve the id support.
+	 *
+	 * Controls whether the block renders a unique html `id` attribute. Declared
+	 * under `supports` in block.json, so it needs its own lookup.
+	 *
+	 * @param array $block Block data.
+	 * @param array $metadata Block metadata.
+	 *
+	 * @return bool
+	 */
+	public static function resolve_block_id_support( array $block, array $metadata ): bool {
+		// Note: $block['id'] is ACF's own block id, so it is never the toggle.
+		if ( isset( $block['supports']['id'] ) ) {
+			return (bool) $block['supports']['id'];
+		}
+
+		if ( isset( $metadata['supports']['id'] ) ) {
+			return (bool) $metadata['supports']['id'];
+		}
+
+		/**
+		 * Filter the default id support for blocks that don't declare one.
+		 *
+		 * @param bool  $default  Whether to output a unique html id attribute.
+		 * @param array $block    Block data.
+		 * @param array $metadata Block metadata.
+		 */
+		$default = (bool) apply_filters( 'vgtbt_default_block_id', false, $block, $metadata );
+
+		return (bool) self::get_attribute_default( $metadata, 'id', $default );
 	}
 
 	/**
