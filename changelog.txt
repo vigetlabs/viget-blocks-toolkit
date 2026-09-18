@@ -1,3 +1,10 @@
+= 1.1.9 =
+
+* Removed the client-specific "IAFF Icon" from the built-in icon library. `assets/icons.json` had been committed from a site where the `vgtbt_block_icons` filter was active, which also dropped the "WordPress" icon from the defaults. The file is now regenerated from the canonical list in `BlockIcons`, restoring "WordPress" and removing "IAFF Icon". Projects that need that icon should add it back via the `vgtbt_block_icons` filter.
+* Added `bin/sync-version.js` and `npm run release -- patch|minor|major`, so the plugin header, `VGTBT_VERSION` and readme.txt `Stable tag` are all driven by `package.json` instead of being hand-maintained in four places.
+* Removed `includes/parts-kit.php`. The Parts Kit integration was removed in 1.0.23 but the file was still shipped; nothing has loaded it since.
+* Bumped `Tested up to` to 7.1.
+
 = 1.1.8 =
 
 * Re-releases 1.1.7. A `1.1.7` tag was previously published to Packagist pointing at an earlier commit, and Packagist stable versions are immutable, so that version could not be corrected. Composer users should install 1.1.8 or later; Packagist's 1.1.7 does not contain the changes listed below.
