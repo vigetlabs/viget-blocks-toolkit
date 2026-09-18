@@ -1,0 +1,61 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "build(deps)"
+
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      composer:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      npm:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+    commit-message:
+      prefix: "build(deps)"
+      prefix-development: "build(deps-dev)"
+    ignore:
+      # Externalized to window.wp.*, so these track the minimum supported
+      # WordPress rather than latest. Move them when the floor moves.
+      - dependency-name: "@wordpress/block-editor"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/components"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/dom-ready"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/hooks"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/i18n"
+        update-types: ["version-update:semver-major"]
