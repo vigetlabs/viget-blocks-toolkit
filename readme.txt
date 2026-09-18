@@ -1,7 +1,7 @@
 === Viget Blocks Toolkit ===
 Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
-Requires at least: 5.7
+Requires at least: 6.6
 Tested up to: 6.9
 Stable tag: 1.1.8
 Requires PHP: 8.1

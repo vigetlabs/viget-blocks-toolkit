@@ -51,9 +51,21 @@ updates:
       # WordPress rather than latest. Move them when the floor moves.
       - dependency-name: "@wordpress/block-editor"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/blocks"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "@wordpress/components"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/compose"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/data"
+        update-types: ["version-update:semver-major"]
       - dependency-name: "@wordpress/dom-ready"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/edit-post"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/edit-site"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@wordpress/element"
         update-types: ["version-update:semver-major"]
       - dependency-name: "@wordpress/hooks"
         update-types: ["version-update:semver-major"]
