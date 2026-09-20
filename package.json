@@ -1,6 +1,6 @@
 {
   "name": "viget-blocks-toolkit",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "Custom Block support and button icons.",
   "author": "Viget",
   "license": "GPL-2.0-or-later",
@@ -14,7 +14,10 @@
     "packages-update": "wp-scripts packages-update",
     "update-pot": "wp i18n make-pot . languages/viget-blocks-toolkit.pot",
     "format": "prettier \"./src/**/*.{css,ts,tsx,js}\" --check",
-    "format:fix": "prettier \"./src/**/*.{css,ts,tsx,js}\" --write"
+    "format:fix": "prettier \"./src/**/*.{css,ts,tsx,js}\" --write",
+    "version": "node bin/sync-version.js && git add viget-blocks-toolkit.php readme.txt",
+    "postversion": "git push && git push --tags",
+    "release": "npm version"
   },
   "dependencies": {
     "@wordpress/dom-ready": "^4.55.0",

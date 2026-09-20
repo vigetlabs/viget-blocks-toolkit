@@ -2,8 +2,8 @@
 Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
 Requires at least: 6.6
-Tested up to: 6.9
-Stable tag: 1.1.8
+Tested up to: 7.1
+Stable tag: 1.1.9
 Requires PHP: 8.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -29,6 +29,17 @@ No. There are several features of this plugin that can be used without Advanced 
 3. Media Position Example
 
 == Changelog ==
+
+= 1.1.9 =
+
+* Removed the client-specific "IAFF Icon" from the built-in icon library. `assets/icons.json` had been committed from a site where the `vgtbt_block_icons` filter was active, which also dropped the "WordPress" icon from the defaults. The file is now regenerated from the canonical list in `BlockIcons`, restoring "WordPress" and removing "IAFF Icon". Projects that need that icon should add it back via the `vgtbt_block_icons` filter.
+* Added `bin/sync-version.js` and `npm run release -- patch|minor|major`, so the plugin header, `VGTBT_VERSION` and readme.txt `Stable tag` are all driven by `package.json` instead of being hand-maintained in four places.
+* Removed `includes/parts-kit.php`. The Parts Kit integration was removed in 1.0.23 but the file was still shipped; nothing has loaded it since.
+* Bumped `Tested up to` to 7.1.
+* Raised `Requires at least` to 6.6. The externalized `@wordpress/*` packages now target the globals WordPress 6.6 ships, and 5.7 had not been accurate for some time.
+* Updated dependencies: `@wordpress/scripts` 26 to 35, `webpack-remove-empty-scripts` 0.8.4 to 1.1.1, `prettier` and `@wordpress/dom-ready` to latest, `actions/checkout` v4 to v7. The externalized `@wordpress/*` packages moved off their 2021 versions, which drops `npm audit` from 37 advisories to 20 with none critical.
+* Fixed the block stylesheet registration. `@wordpress/scripts` 35 no longer emits an `.asset.php` for CSS-only entries, so `includes/assets.php` was including a file that no longer exists and reading a version off the `false` it returned. The stylesheet is versioned on `VGTBT_VERSION` now.
+* Stylesheets are now also emitted in RTL variants.
 
 = 1.1.8 =
 
