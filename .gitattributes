@@ -18,3 +18,6 @@ build/** linguist-generated=true
 /packages.json export-ignore
 /prettier.config.js export-ignore
 /webpack.config.js export-ignore
+/assets/screenshot-1.png export-ignore
+/assets/screenshot-2.png export-ignore
+/assets/screenshot-3.gif export-ignore
