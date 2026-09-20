@@ -18,25 +18,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build plugin assets
+        run: npm run build
+
       - name: Build plugin ZIP
-        run: |
-          PLUGIN_SLUG="viget-blocks-toolkit"
-          DIST_DIR="dist"
-          PACKAGE_DIR="${DIST_DIR}/${PLUGIN_SLUG}"
-
-          rm -rf "${DIST_DIR}"
-          mkdir -p "${PACKAGE_DIR}"
-
-          rsync -a ./ "${PACKAGE_DIR}/" \
-            --exclude "dist/" \
-            --exclude ".git/" \
-            --exclude ".github/" \
-            --exclude "node_modules/" \
-            --exclude ".cursor/" \
-            --exclude ".DS_Store" \
-            --exclude "*.log"
-
-          (cd "${DIST_DIR}" && zip -r "${PLUGIN_SLUG}.zip" "${PLUGIN_SLUG}")
+        run: npm run plugin-zip
 
       - name: Create GitHub Release
         run: |
@@ -44,7 +39,7 @@ jobs:
             --title "$TAG: $(date '+%Y-%m-%d')" \
             --generate-notes \
             --latest \
-            "dist/viget-blocks-toolkit.zip#Viget Blocks Toolkit"
+            "viget-blocks-toolkit.zip#Viget Blocks Toolkit"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
