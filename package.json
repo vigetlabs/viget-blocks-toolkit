@@ -20,7 +20,7 @@
     "release": "npm version"
   },
   "dependencies": {
-    "@wordpress/dom-ready": "^4.15.0",
+    "@wordpress/dom-ready": "^4.55.0",
     "classnames": "^2.5.1"
   },
   "devDependencies": {
@@ -29,7 +29,7 @@
     "@wordpress/hooks": "^3.58.0",
     "@wordpress/i18n": "^4.58.0",
     "@wordpress/scripts": "^26.19.0",
-    "prettier": "^3.4.2",
+    "prettier": "^3.9.8",
     "webpack-remove-empty-scripts": "^0.8.4"
   }
 }
