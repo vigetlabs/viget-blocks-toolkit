@@ -4,7 +4,7 @@
  * Plugin URI:        https://github.com/vigetlabs/viget-blocks-toolkit
  * Description:       Simplifying Block Registration and other block editor related features.
  * Version:           1.1.9
- * Requires at least: 5.7
+ * Requires at least: 6.6
  * Requires PHP:      8.1
  * Author:            Viget
  * Author URI:        https://viget.com

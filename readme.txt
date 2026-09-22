@@ -1,7 +1,7 @@
 === Viget Blocks Toolkit ===
 Contributors: viget, briandichiara, nathanschmidt
 Tags: blocks,icons,components,editor,acf
-Requires at least: 5.7
+Requires at least: 6.6
 Tested up to: 7.1
 Stable tag: 1.1.9
 Requires PHP: 8.1
@@ -36,6 +36,10 @@ No. There are several features of this plugin that can be used without Advanced 
 * Added `bin/sync-version.js` and `npm run release -- patch|minor|major`, so the plugin header, `VGTBT_VERSION` and readme.txt `Stable tag` are all driven by `package.json` instead of being hand-maintained in four places.
 * Removed `includes/parts-kit.php`. The Parts Kit integration was removed in 1.0.23 but the file was still shipped; nothing has loaded it since.
 * Bumped `Tested up to` to 7.1.
+* Raised `Requires at least` to 6.6. The externalized `@wordpress/*` packages now target the globals WordPress 6.6 ships, and 5.7 had not been accurate for some time.
+* Updated dependencies: `@wordpress/scripts` 26 to 35, `webpack-remove-empty-scripts` 0.8.4 to 1.1.1, `prettier` and `@wordpress/dom-ready` to latest, `actions/checkout` v4 to v7. The externalized `@wordpress/*` packages moved off their 2021 versions, which drops `npm audit` from 37 advisories to 20 with none critical.
+* Fixed the block stylesheet registration. `@wordpress/scripts` 35 no longer emits an `.asset.php` for CSS-only entries, so `includes/assets.php` was including a file that no longer exists and reading a version off the `false` it returned. The stylesheet is versioned on `VGTBT_VERSION` now.
+* Stylesheets are now also emitted in RTL variants.
 
 = 1.1.8 =
 

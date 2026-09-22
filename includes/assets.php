@@ -43,7 +43,6 @@ add_action(
 	function () {
 		$editor_asset_file  = include VGTBT_PLUGIN_PATH . 'build/index.asset.php';
 		$iframe_asset_file  = include VGTBT_PLUGIN_PATH . 'build/iframe-editor.asset.php';
-		$style_asset_file   = include VGTBT_PLUGIN_PATH . 'build/style.asset.php';
 		$dependencies       = array_merge( $editor_asset_file['dependencies'], [ 'wp-blocks', 'wp-dom-ready' ] );
 		$iframe_dependencies = array_merge( $iframe_asset_file['dependencies'], [ 'wp-blocks', 'wp-hooks' ] );
 
@@ -63,11 +62,12 @@ add_action(
 			[ 'in_footer' => true ]
 		);
 
+		// wp-scripts stopped emitting an .asset.php for CSS-only entries, so the plugin version is the cache bust.
 		wp_register_style(
 			'vgtbt-block-styles',
 			VGTBT_PLUGIN_URL . 'build/style.css',
 			[],
-			$style_asset_file['version']
+			VGTBT_VERSION
 		);
 
 		wp_set_script_translations(
