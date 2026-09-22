@@ -54,10 +54,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      # package-lock.json is an npm 11 lock: `npm ci` fails on Node 22 (npm 10.9)
+      # with 41 "Missing ... from lock file" errors. .nvmrc is the source of
+      # truth so CI and humans cannot drift apart on it.
       - name: Use Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
