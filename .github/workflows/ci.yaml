@@ -1,0 +1,77 @@
+name: CI
+
+# Blocks Toolkit was the only one of the four WordPress repos with no CI, which
+# is why dependabot had a pile waiting the moment its config landed and why the
+# broken `build/style.asset.php` include in 1.1.8 reached a release.
+#
+# Deliberately NOT here yet — every one of these is red on `main` today, and a
+# check that is red from its first run gets ignored rather than fixed:
+#
+#   phpcs   1132 errors / 169 warnings
+#   lint:js   99 problems
+#   lint:css  80 problems
+#
+# They are tracked on #30. Add each job here as its batch is cleared, so the
+# suite only ever grows green.
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php:
+    name: PHP Syntax & Composer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          # The plugin header's "Requires PHP". Linting on the floor rather than
+          # on latest is what catches syntax the declared minimum cannot parse.
+          php-version: '8.1'
+          coverage: none
+          tools: composer
+
+      - name: Validate composer.json
+        run: composer validate --no-check-lock
+
+      - name: Lint PHP syntax
+        run: find . -path ./node_modules -prune -o -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
+
+  js:
+    name: JS Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      # build/ is committed so the plugin runs from a checkout and so the release
+      # zip does not need a build step. That only holds if it stays in sync.
+      - name: Fail if build output is stale
+        run: |
+          if ! git diff --quiet -- build; then
+            echo "::error::build/ is out of date - run 'npm run build' and commit the result"
+            git diff --stat -- build
+            exit 1
+          fi
