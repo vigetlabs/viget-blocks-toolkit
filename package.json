@@ -17,7 +17,8 @@
     "format:fix": "prettier \"./src/**/*.{css,ts,tsx,js}\" --write",
     "version": "node bin/sync-version.js && git add viget-blocks-toolkit.php readme.txt",
     "postversion": "git push && git push --tags",
-    "release": "npm version"
+    "release": "npm version",
+    "plugin-zip": "wp-scripts plugin-zip"
   },
   "dependencies": {
     "@wordpress/dom-ready": "^4.55.0",
@@ -37,5 +38,17 @@
     "@wordpress/scripts": "^35.0.0",
     "prettier": "^3.9.8",
     "webpack-remove-empty-scripts": "^1.1.1"
-  }
+  },
+  "files": [
+    "assets/css",
+    "assets/icons.json",
+    "build",
+    "includes",
+    "languages",
+    "src/classes",
+    "views",
+    "viget-blocks-toolkit.php",
+    "readme.txt",
+    "changelog.txt"
+  ]
 }
