@@ -8,6 +8,7 @@
 * Updated dependencies: `@wordpress/scripts` 26 to 35, `webpack-remove-empty-scripts` 0.8.4 to 1.1.1, `prettier` and `@wordpress/dom-ready` to latest, `actions/checkout` v4 to v7. The externalized `@wordpress/*` packages moved off their 2021 versions, which drops `npm audit` from 37 advisories to 20 with none critical.
 * Fixed the block stylesheet registration. `@wordpress/scripts` 35 no longer emits an `.asset.php` for CSS-only entries, so `includes/assets.php` was including a file that no longer exists and reading a version off the `false` it returned. The stylesheet is versioned on `VGTBT_VERSION` now.
 * Stylesheets are now also emitted in RTL variants.
+* Marked `languages/*.pot` as generated in `.gitattributes`, alongside `build/`, so it collapses in pull request diffs and stays out of the repo's language stats.
 * Trimmed both distribution archives to what the plugin actually loads. The release ZIP was built with `rsync` and an exclude list, so `src/` JS and SCSS, `bin/`, `webpack.config.js`, `.phpcs.xml`, the lockfile and 872K of README screenshots were all installed onto sites; it now uses an explicit allowlist and went from 1.1M to 68K. `.gitattributes` had no `export-ignore` rules, so the Composer archive shipped the same extra files.
 
 = 1.1.8 =
