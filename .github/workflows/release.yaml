@@ -21,7 +21,11 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 22
+          # package-lock.json is an npm 11 lock: `npm ci` fails on Node 22
+          # (npm 10.9) with 41 "Missing ... from lock file" errors. Same reason
+          # ci.yaml reads .nvmrc - this file was missed when that landed, and
+          # the v1.1.9 release build failed on it.
+          node-version-file: .nvmrc
           cache: npm
 
       - name: Install dependencies
