@@ -30,7 +30,7 @@ No. There are several features of this plugin that can be used without Advanced 
 
 == Changelog ==
 
-= 1.1.10 =
+= 1.2.0 =
 
 * Fixed a bare `align` class on ACF blocks with no alignment set. ACF registers `align` with an empty default, and core's align support turns any set value into `align{value}`. The empty default is now removed, so a block only gets an `align*` class when it has an alignment. A default set in block.json is kept.
 
