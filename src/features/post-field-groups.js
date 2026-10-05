@@ -16,7 +16,7 @@ import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { BlockControls, useBlockProps } from '@wordpress/block-editor';
 import { Notice, ToolbarButton, ToolbarGroup } from '@wordpress/components';
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 import {
 	createPortal,
 	useEffect,
@@ -265,7 +265,9 @@ function FieldsPanel({ groups }) {
 			<div {...blockProps} />
 			{createPortal(
 				<div ref={panelRef} className="vgtbt-post-fields-panel" />,
-				document.body,
+				// Inside the editor root, where ACF looks for fields to validate.
+				document.querySelector('#wpbody-content > .block-editor') ||
+					document.body,
 			)}
 		</>
 	);
@@ -310,13 +312,40 @@ function PostFieldGroupsEdit({ BlockEdit, groups, props }) {
 	);
 	const [mode, setMode] = useState(() => modes.get(clientId) || 'preview');
 	const isEditing = 'edit' === mode;
+	const { selectBlock } = useDispatch('core/block-editor');
 
-	const toggle = () => {
-		const next = isEditing ? 'preview' : 'edit';
-
+	const changeMode = (next) => {
 		modes.set(clientId, next);
 		setMode(next);
 	};
+
+	const toggle = () => changeMode(isEditing ? 'preview' : 'edit');
+
+	// In Preview the fields sit in their hidden meta box, so show them when ACF flags one.
+	useEffect(() => {
+		const { acf } = window;
+
+		if (!isOwner || !acf) {
+			return;
+		}
+
+		// ACF fires this before it marks the fields, so check once it has.
+		const showErrors = () =>
+			setTimeout(() => {
+				const hasError = groups.some((key) =>
+					document.querySelector(`#acf-${key} .acf-error`),
+				);
+
+				if (hasError) {
+					changeMode('edit');
+					selectBlock(clientId);
+				}
+			});
+
+		acf.addAction('validation_failure', showErrors);
+
+		return () => acf.removeAction('validation_failure', showErrors);
+	}, [isOwner, groups, clientId]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	let edit = (
 		<BlockEdit
