@@ -53,7 +53,10 @@ function MediaPositionEdit({ BlockEdit, props, transformations }) {
 	const { attributes, setAttributes, clientId } = props;
 	const className = attributes.className || '';
 	const classes = className.split(' ');
-	const currentPosition = attributes.mediaPosition || 'left';
+	// The class is what's saved, so it's the source of truth after a reload.
+	const currentPosition = classes.includes('has-media-on-the-right')
+		? 'right'
+		: 'left';
 
 	const { replaceInnerBlocks } = useDispatch('core/block-editor');
 	const { getBlocks } = useSelect((select) => ({
@@ -176,6 +179,11 @@ function MediaPositionEdit({ BlockEdit, props, transformations }) {
 	};
 
 	const setMediaPosition = (position) => {
+		// Transforms reverse the order, so applying the current side again would flip it.
+		if (position === currentPosition) {
+			return;
+		}
+
 		const newClasses = classes.filter(
 			(c) => !['has-media-on-the-left', 'has-media-on-the-right'].includes(c),
 		);
@@ -193,10 +201,7 @@ function MediaPositionEdit({ BlockEdit, props, transformations }) {
 		);
 
 		// Update attributes and blocks together
-		setAttributes({
-			className: newClasses.join(' ').trim(),
-			mediaPosition: position,
-		});
+		setAttributes({ className: newClasses.join(' ').trim() });
 		replaceInnerBlocks(clientId, transformedBlocks, false);
 	};
 

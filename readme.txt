@@ -40,6 +40,10 @@ No. There are several features of this plugin that can be used without Advanced 
 * License is GPL-2.0-or-later everywhere, and the plugin ships a `LICENSE` file. `composer.json` said MIT.
 * CI now runs PHPCS, `lint:js` and `lint:css` on every pull request. All three are clean.
 * The changelog lives in `readme.txt` only. `changelog.txt` is gone.
+* Fixed Breakpoint Visibility writing `data-visibility-*` twice on static blocks, and its CSS overriding a block's own display (a flex or grid block hidden at one breakpoint lost its layout at the others). Custom breakpoints only hide now, too.
+* Fixed `navigation-submenu` icons in the default open-on-hover mode, where the icon landed in the chevron toggle instead of the label.
+* Fixed Media Position showing Left after a reload when the media was on the right, and flipping the layout again when the active side was clicked.
+* Fixed the Navigation block's slug sync marking its template part as changed every time the Site Editor loaded.
 
 = 1.1.9 =
 

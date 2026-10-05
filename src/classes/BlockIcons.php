@@ -253,15 +253,10 @@ class BlockIcons {
 				$p->add_class( $icon_class );
 			}
 		} elseif ( 'core/navigation-submenu' === $block['blockName'] ) {
-			$tag_name = 'button';
-			if ( $p->next_tag(
-				[
-					'tag_name'   => $tag_name,
-					'class_name' => 'wp-block-navigation-item__content',
-				]
-			) ) {
+			// The label is an <a> when the submenu opens on hover, a <button> when it opens on click.
+			if ( $p->next_tag( [ 'class_name' => 'wp-block-navigation-item__content' ] ) ) {
+				$tag_name = strtolower( $p->get_tag() );
 				$p->add_class( $icon_class );
-
 			}
 		} elseif ( $p->next_tag() ) {
 			$p->add_class( $icon_class );
@@ -285,10 +280,13 @@ class BlockIcons {
 			$element = '$2';
 		}
 
+		// Only the submenu's label, not the links in its menu.
+		$limit = 'core/navigation-submenu' === $block['blockName'] ? 1 : -1;
+
 		// Add the SVG icon either to the left of right of the button text.
 		return $position_left
-			? preg_replace( $pattern, '$1' . $markup . $element . '$3', $block_content )
-			: preg_replace( $pattern, '$1' . $element . $markup . '$3', $block_content );
+			? preg_replace( $pattern, '$1' . $markup . $element . '$3', $block_content, $limit )
+			: preg_replace( $pattern, '$1' . $element . $markup . '$3', $block_content, $limit );
 	}
 
 	/**

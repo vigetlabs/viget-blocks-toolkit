@@ -12,7 +12,7 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { useEffect } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
+import { useDispatch, useSelect } from '@wordpress/data';
 
 /**
  * Add the refSlug attribute to core/navigation blocks.
@@ -60,6 +60,8 @@ function syncRefSlugWithRef(BlockEdit) {
 
 		const { attributes, setAttributes } = props;
 		const { refSlug, ref } = attributes;
+		const { __unstableMarkNextChangeAsNotPersistent } =
+			useDispatch('core/block-editor');
 
 		// Get available navigation menus
 		const navigationMenus = useSelect((select) => {
@@ -74,13 +76,20 @@ function syncRefSlugWithRef(BlockEdit) {
 			if (ref && navigationMenus) {
 				const selectedMenu = navigationMenus.find((menu) => menu.id === ref);
 				if (selectedMenu && selectedMenu.slug !== refSlug) {
-					// Update refSlug to match the selected menu's slug
+					// Update refSlug to match the selected menu's slug. It follows `ref`, so it shouldn't dirty the post or add an undo step.
+					__unstableMarkNextChangeAsNotPersistent();
 					setAttributes({
 						refSlug: selectedMenu.slug,
 					});
 				}
 			}
-		}, [ref, navigationMenus, refSlug, setAttributes]);
+		}, [
+			ref,
+			navigationMenus,
+			refSlug,
+			setAttributes,
+			__unstableMarkNextChangeAsNotPersistent,
+		]);
 
 		return <BlockEdit {...props} />;
 	};

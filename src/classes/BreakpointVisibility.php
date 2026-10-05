@@ -39,34 +39,24 @@ class BreakpointVisibility {
 
 				$visibility = $block['attrs']['breakpointVisibility'];
 				$block_id   = uniqid();
-				$attributes = [];
+				$processor  = new \WP_HTML_Tag_Processor( $block_content );
 
-				// Add data-block attribute.
-				$attributes[]  = sprintf( 'data-block="%s"', esc_attr( $block_id ) );
-				$block_content = trim( $block_content );
+				if ( ! $processor->next_tag() ) {
+					return $block_content;
+				}
 
-				// Add standard breakpoint attributes if not using custom.
+				// Static blocks already saved these, so set them rather than appending duplicates.
+				$processor->set_attribute( 'data-block', $block_id );
+
 				if ( empty( $visibility['useCustom'] ) ) {
-					if ( ! empty( $visibility['desktop'] ) ) {
-						$attributes[] = 'data-visibility-desktop="hide"';
-					}
-					if ( ! empty( $visibility['tablet'] ) ) {
-						$attributes[] = 'data-visibility-tablet="hide"';
-					}
-					if ( ! empty( $visibility['mobile'] ) ) {
-						$attributes[] = 'data-visibility-mobile="hide"';
+					foreach ( [ 'desktop', 'tablet', 'mobile' ] as $breakpoint ) {
+						if ( ! empty( $visibility[ $breakpoint ] ) ) {
+							$processor->set_attribute( "data-visibility-{$breakpoint}", 'hide' );
+						}
 					}
 				}
 
-				// Apply attributes to the outermost element.
-				if ( preg_match( '/^<([a-zA-Z0-9\-]+)([^>]*)>/', $block_content, $matches ) >= 0 ) {
-					$block_content = preg_replace(
-						'/^<([a-zA-Z0-9\-]+)([^>]*)>/',
-						sprintf( '<$1$2 %s>', implode( ' ', $attributes ) ),
-						$block_content,
-						1
-					);
-				}
+				$block_content = $processor->get_updated_html();
 
 				if ( ! empty( $visibility['useCustom'] ) ) {
 					$custom = $visibility['customBreakpoint'];
@@ -109,25 +99,12 @@ class BreakpointVisibility {
 		string $action,
 		bool $mobile_first
 	): string {
-		$media_query = $mobile_first
-			? "@media (min-width: {$width}{$unit})"
-			: "@media (max-width: {$width}{$unit})";
+		$condition = $mobile_first ? "(min-width: {$width}{$unit})" : "(max-width: {$width}{$unit})";
 
-		$display         = 'show' === $action ? 'block' : 'none';
-		$initial_display = 'show' === $action ? 'none' : 'block';
+		// Only hide, so the block keeps its own display everywhere else.
+		$media_query = 'show' === $action ? "@media not all and {$condition}" : "@media {$condition}";
 
-		return "
-			/* Base styles */
-			[data-block=\"{$block_id}\"] {
-				display: {$initial_display} !important;
-			}
-			/* Breakpoint-specific styles */
-			{$media_query} {
-				[data-block=\"{$block_id}\"] {
-					display: {$display} !important;
-				}
-			}
-		";
+		return "{$media_query} { [data-block=\"{$block_id}\"] { display: none !important; } }";
 	}
 
 	/**
