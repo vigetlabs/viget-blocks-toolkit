@@ -64,5 +64,8 @@ require_once 'src/classes/Schema/BaseSchema.php';
 require_once 'src/classes/Schema/FAQPageSchema.php';
 require_once 'src/classes/BlockSchema.php';
 
+// Post Field Groups support.
+require_once 'src/classes/PostFieldGroups.php';
+
 // Initialize the plugin.
 vgtbt();

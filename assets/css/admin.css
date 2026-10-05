@@ -1,3 +1,22 @@
 .acf-block-fields.acf-empty-block-fields {
     display: none;
 }
+
+/* ACF and WP toggle postbox display inline. */
+.postbox.vgtbt-is-in-block {
+    display: none !important;
+}
+
+.vgtbt-post-fields-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    box-sizing: border-box;
+    background: #fff;
+    box-shadow: 0 0 0 1px #ddd;
+}
+
+.vgtbt-post-fields-panel:empty {
+    display: none;
+}

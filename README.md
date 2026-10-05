@@ -133,6 +133,23 @@ This is an example of a `block.json` file with all the supported customizations.
 }
 ```
 
+#### `postFieldGroups`
+
+Edit post-level ACF field groups inside a block. List the field group keys under `acf`:
+
+```json
+"acf": {
+  "mode": "preview",
+  "postFieldGroups": [ "group_928a3a640bce8" ]
+}
+```
+
+* Each group must have a `post_type` location rule. Groups that don't show on the current post are skipped.
+* While the block is on the post, the group's meta box is hidden. The block gets an **Edit fields** / **Preview** toolbar toggle. Edit lays the meta box's fields over the block; Preview renders the block with the current unsaved values.
+* Values still save to the post through the meta box, so `get_field( 'name', $post_id )` reads them as usual.
+* The block can only be used once per post (`supports.multiple` is set to `false`). Any extra copy shows a notice in Edit mode.
+* These groups always have **Show in REST API** and every field's **Allow Access to Value in Editor UI** turned on.
+
 #### `blockPattern`
 
 You can set a `blockPattern` attribute default in `block.json` to seed `<InnerBlocks />` from block markup instead of `template.json`.

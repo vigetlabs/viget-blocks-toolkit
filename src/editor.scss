@@ -352,3 +352,8 @@ $vgtbt-toolbar-accent: var(
 div[id^="portal/tooltip-"] {
 	pointer-events: none;
 }
+
+// Post field groups: holds the space for the fields panel laid over it (post-field-groups.js).
+.vgtbt-post-fields-placeholder {
+	min-height: 4rem;
+}
