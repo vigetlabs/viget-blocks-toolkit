@@ -126,6 +126,41 @@ function getFormId(wrapper) {
 }
 
 /**
+ * Hide the Meta Boxes pane while none of its meta boxes are showing.
+ *
+ * @return {Function} Stops watching and shows the pane.
+ */
+function watchMetaBoxPane() {
+	const pane = document.querySelector('.edit-post-meta-boxes-main');
+
+	if (!pane) {
+		return () => {};
+	}
+
+	const sync = () =>
+		pane.classList.toggle(
+			'vgtbt-has-no-meta-boxes',
+			![...pane.querySelectorAll('.postbox')].some(
+				(box) => 'none' !== window.getComputedStyle(box).display,
+			),
+		);
+	const observer = new window.MutationObserver(sync);
+
+	sync();
+	observer.observe(pane, {
+		attributes: true,
+		attributeFilter: ['class', 'style', 'hidden'],
+		childList: true,
+		subtree: true,
+	});
+
+	return () => {
+		observer.disconnect();
+		pane.classList.remove('vgtbt-has-no-meta-boxes');
+	};
+}
+
+/**
  * Whether this is the first block on the post using any of these field groups.
  *
  * @param {string}   clientId Block client id.
@@ -167,6 +202,7 @@ function useFieldValues(isOwner, groups) {
 			return;
 		}
 
+		const unwatchPane = watchMetaBoxPane();
 		const $wrappers = jQuery(wrappers);
 		const update = () =>
 			setValues(JSON.stringify(acf.serialize($wrappers, 'acf')));
@@ -187,6 +223,7 @@ function useFieldValues(isOwner, groups) {
 			acf.removeAction('append', queue);
 			acf.removeAction('remove', queue);
 			wrappers.forEach(unwrapFields);
+			unwatchPane();
 		};
 	}, [isOwner, groups]);
 

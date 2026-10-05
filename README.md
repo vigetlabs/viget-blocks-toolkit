@@ -145,7 +145,7 @@ Edit post-level ACF field groups inside a block. List the field group keys under
 ```
 
 * Each group must have a `post_type` location rule. Groups that don't show on the current post are skipped.
-* While the block is on the post, the group's meta box is hidden. The block gets an **Edit fields** / **Preview** toolbar toggle. Edit lays the meta box's fields over the block; Preview renders the block with the current unsaved values.
+* While the block is on the post, the group's meta box is hidden, along with the Meta Boxes pane if nothing else is showing in it. The block gets an **Edit fields** / **Preview** toolbar toggle. Edit lays the meta box's fields over the block; Preview renders the block with the current unsaved values.
 * Values still save to the post through the meta box, so `get_field( 'name', $post_id )` reads them as usual.
 * ACF validation covers the fields in either mode. If a save fails on one of them while the block is in Preview, it switches to Edit and is selected so the error shows.
 * The block can only be used once per post (`supports.multiple` is set to `false`). Any extra copy shows a notice in Edit mode.
