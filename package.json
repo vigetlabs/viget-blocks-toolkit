@@ -49,6 +49,7 @@
     "views",
     "viget-blocks-toolkit.php",
     "readme.txt",
+    "uninstall.php",
     "LICENSE"
   ]
 }
