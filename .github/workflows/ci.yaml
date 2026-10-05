@@ -1,19 +1,5 @@
 name: CI
 
-# Blocks Toolkit was the only one of the four WordPress repos with no CI, which
-# is why dependabot had a pile waiting the moment its config landed and why the
-# broken `build/style.asset.php` include in 1.1.8 reached a release.
-#
-# Deliberately NOT here yet — every one of these is red on `main` today, and a
-# check that is red from its first run gets ignored rather than fixed:
-#
-#   phpcs   1132 errors / 169 warnings
-#   lint:js   99 problems
-#   lint:css  80 problems
-#
-# They are tracked on #30. Add each job here as its batch is cleared, so the
-# suite only ever grows green.
-
 on:
   pull_request:
   push:
@@ -47,8 +33,35 @@ jobs:
       - name: Lint PHP syntax
         run: find . -path ./node_modules -prune -o -name '*.php' -print0 | xargs -0 -n1 -P4 php -l
 
+  phpcs:
+    name: PHP Coding Standards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: composer, cs2pr
+
+      - name: Install PHP_CodeSniffer + WordPress Coding Standards
+        run: |
+          composer global config --no-plugins allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          composer global require --no-progress \
+            "squizlabs/php_codesniffer:^3.9" \
+            "wp-coding-standards/wpcs:^3.0" \
+            "phpcsstandards/phpcsutils:^1.0" \
+            "phpcsstandards/phpcsextra:^1.2"
+          echo "$(composer global config bin-dir --absolute)" >> "$GITHUB_PATH"
+
+      - name: Run PHPCS
+        run: phpcs --standard=.phpcs.xml -q --report=checkstyle . | cs2pr
+
   js:
-    name: JS Build
+    name: JS/CSS Lint & Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -65,6 +78,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Lint JS
+        run: npm run lint:js
+
+      - name: Lint CSS
+        run: npm run lint:css
 
       - name: Build
         run: npm run build
