@@ -38,7 +38,7 @@ class BlockSchema {
 	 */
 	private function register_schema_handlers(): void {
 		// Register FAQPage schema handler.
-		$faq_handler = new FAQPageSchema();
+		$faq_handler             = new FAQPageSchema();
 		$this->schema_handlers[] = $faq_handler;
 		$faq_handler->register_hooks();
 
@@ -91,13 +91,13 @@ class BlockSchema {
 				continue;
 			}
 
-			$json = wp_json_encode( $schema_data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
+			// JSON_HEX_TAG escapes < and >, so content can't close the script tag early.
+			$json = wp_json_encode( $schema_data, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT );
 			printf(
 				'<script type="application/ld+json" id="vgtbt-schema-%s">%s</script>' . "\n",
 				esc_attr( $schema_data['@type'] ),
-				$json
+				$json // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON, escaped above.
 			);
 		}
 	}
 }
-

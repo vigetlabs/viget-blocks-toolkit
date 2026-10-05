@@ -41,9 +41,9 @@ function vgtbt_is_iframed_editor_asset_pass(): bool {
 add_action(
 	'init',
 	function () {
-		$editor_asset_file  = include VGTBT_PLUGIN_PATH . 'build/index.asset.php';
-		$iframe_asset_file  = include VGTBT_PLUGIN_PATH . 'build/iframe-editor.asset.php';
-		$dependencies       = array_merge( $editor_asset_file['dependencies'], [ 'wp-blocks', 'wp-dom-ready' ] );
+		$editor_asset_file   = include VGTBT_PLUGIN_PATH . 'build/index.asset.php';
+		$iframe_asset_file   = include VGTBT_PLUGIN_PATH . 'build/iframe-editor.asset.php';
+		$dependencies        = array_merge( $editor_asset_file['dependencies'], [ 'wp-blocks', 'wp-dom-ready' ] );
 		$iframe_dependencies = array_merge( $iframe_asset_file['dependencies'], [ 'wp-blocks', 'wp-hooks' ] );
 
 		wp_register_script(
@@ -121,7 +121,7 @@ add_action(
 
 		$editor_css_path = VGTBT_PLUGIN_PATH . 'build/editor.css';
 		if ( file_exists( $editor_css_path ) ) {
-			$editor_css = file_get_contents( $editor_css_path );
+			$editor_css = file_get_contents( $editor_css_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file.
 			if ( false !== $editor_css ) {
 				wp_add_inline_style( 'vgtbt-block-styles', $editor_css );
 			}

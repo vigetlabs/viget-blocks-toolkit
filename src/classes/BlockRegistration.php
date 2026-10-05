@@ -245,7 +245,7 @@ class BlockRegistration {
 							'className'    => 'acf-block-inner__container acf-block-content-only-wrapper',
 							'templateLock' => 'contentOnly',
 							'metadata'     => [
-								'name' => __( 'Content Wrapper', 'viget-blocks-toolkit' )
+								'name' => __( 'Content Wrapper', 'viget-blocks-toolkit' ),
 							],
 							'lock'         => [
 								'move'   => true,
@@ -346,7 +346,7 @@ class BlockRegistration {
 		$group = glob( trailingslashit( $path ) . '**/block.json' );
 
 		foreach ( $group as $block_path ) {
-			$block = json_decode( file_get_contents( $block_path ), true );
+			$block = json_decode( file_get_contents( $block_path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file.
 
 			$block['path'] = dirname( $block_path );
 			$block['url']  = self::path_to_url( $block['path'] );
@@ -388,7 +388,7 @@ class BlockRegistration {
 			return false;
 		}
 
-		$block = json_decode( file_get_contents( $block_path ), true );
+		$block = json_decode( file_get_contents( $block_path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file.
 
 		$block['path'] = dirname( $block_path );
 		$block['url']  = self::path_to_url( $block['path'] );
@@ -419,7 +419,7 @@ class BlockRegistration {
 			$json_path = $block['path'] . '/template.json';
 
 			if ( file_exists( $json_path ) ) {
-				$json = json_decode( file_get_contents( $json_path ), true );
+				$json = json_decode( file_get_contents( $json_path ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file.
 				if ( ! empty( $json['template'] ) ) {
 					$template = $json['template'];
 				}
@@ -881,7 +881,7 @@ class BlockRegistration {
 	 *
 	 * @return false|string
 	 */
-	public static function get_block_location( string $block_name, string $return = 'directory' ): false|string {
+	public static function get_block_location( string $block_name, string $return = 'directory' ): false|string { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.returnFound -- Public API; renaming would break named arguments.
 		if ( str_contains( $block_name, '/' ) && ! str_starts_with( $block_name, 'acf/' ) ) {
 			return false;
 		}

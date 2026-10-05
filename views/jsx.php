@@ -25,7 +25,7 @@ $has_container = isset( $block['supports']['innerContainer'] ) && true === $bloc
 $inner = [
 	'template' => ! empty( $block['template'] )
 		? $block['template']
-		: ( $block_template ?? [] )
+		: ( $block_template ?? [] ),
 ];
 
 // Get the block attributes.
@@ -37,7 +37,7 @@ $block_attrs = ob_get_clean();
 printf(
 	'<%s %s>',
 	esc_html( $tag ),
-	$block_attrs
+	$block_attrs // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- block_attrs() escapes each attribute.
 );
 
 // Open the container if it is supported.

@@ -40,16 +40,16 @@ class NavigationSlugHandler {
 			'render_block_data',
 			[
 				$this,
-				'resolve_navigation_slug'
+				'resolve_navigation_slug',
 			]
 		);
 
-		// Hook into navigation post updates to keep references in sync
+		// Hook into navigation post updates to keep references in sync.
 		add_action(
 			'post_updated',
 			[
 				$this,
-				'handle_navigation_update'
+				'handle_navigation_update',
 			],
 			10,
 			3
@@ -64,12 +64,12 @@ class NavigationSlugHandler {
 	 * @return array Modified block data.
 	 */
 	public function resolve_navigation_slug( $parsed_block ) {
-		// Only process core/navigation blocks
+		// Only process core/navigation blocks.
 		if ( empty( $parsed_block['blockName'] ) || 'core/navigation' !== $parsed_block['blockName'] ) {
 			return $parsed_block;
 		}
 
-		// Check if refSlug attribute exists
+		// Check if refSlug attribute exists.
 		if ( empty( $parsed_block['attrs']['refSlug'] ) ) {
 			return $parsed_block;
 		}
@@ -78,11 +78,11 @@ class NavigationSlugHandler {
 		$navigation_post = $this->get_navigation_by_slug( $slug );
 
 		if ( $navigation_post ) {
-			// Update both ref and refSlug with current values to keep them in sync
+			// Update both ref and refSlug with current values to keep them in sync.
 			$parsed_block['attrs']['ref']     = $navigation_post->ID;
 			$parsed_block['attrs']['refSlug'] = $navigation_post->post_name;
 		} else {
-			// Slug not found - remove refSlug to prevent stale data, keep ref as fallback
+			// Slug not found - remove refSlug to prevent stale data, keep ref as fallback.
 			unset( $parsed_block['attrs']['refSlug'] );
 		}
 
@@ -97,7 +97,7 @@ class NavigationSlugHandler {
 	 * @return WP_Post|null The navigation post or null if not found.
 	 */
 	private function get_navigation_by_slug( string $slug ): ?WP_Post {
-		// Check cache first
+		// Check cache first.
 		if ( isset( self::$slug_cache[ $slug ] ) ) {
 			return self::$slug_cache[ $slug ];
 		}
@@ -114,7 +114,7 @@ class NavigationSlugHandler {
 
 		$result = ! empty( $navigation ) ? $navigation[0] : null;
 
-		// Cache the result
+		// Cache the result.
 		self::$slug_cache[ $slug ] = $result;
 
 		return $result;
@@ -128,17 +128,17 @@ class NavigationSlugHandler {
 	 * @param WP_Post $post_before Post object before the update.
 	 */
 	public function handle_navigation_update( $post_id, $post_after, $post_before ) {
-		// Only process wp_navigation posts
+		// Only process wp_navigation posts.
 		if ( 'wp_navigation' !== $post_after->post_type ) {
 			return;
 		}
 
-		// Check if the slug (post_name) changed
+		// Check if the slug (post_name) changed.
 		if ( $post_after->post_name !== $post_before->post_name ) {
 			$this->update_navigation_references( $post_before->post_name, $post_after->post_name, $post_id );
 		}
 
-		// Clear cache for this navigation
+		// Clear cache for this navigation.
 		unset( self::$slug_cache[ $post_after->post_name ] );
 		if ( $post_after->post_name !== $post_before->post_name ) {
 			unset( self::$slug_cache[ $post_before->post_name ] );
@@ -153,13 +153,13 @@ class NavigationSlugHandler {
 	 * @param int    $post_id The navigation post ID.
 	 */
 	private function update_navigation_references( $old_slug, $new_slug, $post_id ) {
-		// Find template parts and patterns that reference the old slug
+		// Find template parts and patterns that reference the old slug.
 		$template_parts = get_posts(
 			[
 				'post_type'      => 'wp_template_part',
 				'post_status'    => 'publish',
 				'posts_per_page' => -1,
-				'meta_query'     => [
+				'meta_query'     => [ // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query -- Runs only when a navigation's slug changes.
 					[
 						'key'     => '_wp_template_part_area',
 						'compare' => 'EXISTS',
@@ -181,29 +181,29 @@ class NavigationSlugHandler {
 		foreach ( $posts_to_update as $post_to_update ) {
 			$content = $post_to_update->post_content;
 
-			// Look for navigation blocks with the old slug
+			// Look for navigation blocks with the old slug.
 			$pattern = '/<!-- wp:navigation\s+({[^}]*"refSlug":"' . preg_quote( $old_slug, '/' ) . '"[^}]*})\s*\/-->/';
 
 			if ( ! preg_match( $pattern, $content, $matches ) ) {
 				continue;
 			}
 
-			// Parse the attributes
+			// Parse the attributes.
 			$attributes = json_decode( $matches[1], true );
 
 			if ( ! $attributes || ! isset( $attributes['refSlug'] ) ) {
 				continue;
 			}
 
-			// Update both refSlug and ref
+			// Update both refSlug and ref.
 			$attributes['refSlug'] = $new_slug;
 			$attributes['ref']     = $post_id;
 
-			// Replace the old block with updated attributes
+			// Replace the old block with updated attributes.
 			$new_block   = '<!-- wp:navigation ' . wp_json_encode( $attributes ) . ' /-->';
 			$new_content = preg_replace( $pattern, $new_block, $content );
 
-			// Update the post
+			// Update the post.
 			wp_update_post(
 				[
 					'ID'           => $post_to_update->ID,

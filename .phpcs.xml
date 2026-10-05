@@ -26,6 +26,9 @@
     <!-- Exclude the Node Modules directory. -->
     <exclude-pattern>/node_modules/*</exclude-pattern>
 
+    <!-- Exclude generated build output. -->
+    <exclude-pattern>/build/*</exclude-pattern>
+
     <!-- Exclude minified Javascript files. -->
     <exclude-pattern>*.min.js</exclude-pattern>
 
@@ -34,6 +37,9 @@
 
     <!-- Check up to 8 files simultaneously. -->
     <arg name="parallel" value="8"/>
+
+    <!-- PHP only. JS and CSS are linted by wp-scripts. -->
+    <arg name="extensions" value="php"/>
 
 
     <!--
@@ -137,9 +143,17 @@
     -->
     <rule ref="WordPress.WP.GlobalVariablesOverride">
         <exclude-pattern>/path/to/Tests/*Test\.php</exclude-pattern>
+        <!-- Views are required into a method's scope, so their variables aren't globals. -->
+        <exclude-pattern>/views/*</exclude-pattern>
+    </rule>
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <!-- Views are required into a method's scope, so their variables aren't globals. -->
+        <exclude-pattern>/views/*</exclude-pattern>
     </rule>
     <rule ref="WordPress.Files.FileName">
         <exclude-pattern>/path/to/Tests/*Test\.php</exclude-pattern>
+        <!-- src/classes uses PSR-4 style names, one class per file named after the class. -->
+        <exclude-pattern>/src/classes/*</exclude-pattern>
     </rule>
 
 </ruleset>

@@ -61,8 +61,6 @@ class Block extends Template {
 		foreach ( $inner_blocks as $inner_block ) {
 			$this->add( $inner_block );
 		}
-
-		return $this;
 	}
 
 	/**
