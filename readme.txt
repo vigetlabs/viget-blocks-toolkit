@@ -34,6 +34,12 @@ No. There are several features of this plugin that can be used without Advanced 
 
 * Added `postFieldGroups` to ACF block.json settings. A block lists post-level ACF field groups, and its Edit view shows their fields in place of their meta box, with a live Preview of the unsaved values. See the README.
 * Fixed a bare `align` class on ACF blocks with no alignment set. ACF registers `align` with an empty default, and core's align support turns any set value into `align{value}`. The empty default is now removed, so a block only gets an `align*` class when it has an alignment. A default set in block.json is kept.
+* The GitHub updater is namespaced as `Viget\BlocksToolkit\GitHub_Plugin_Updater`, so it can't collide with another plugin's global class. Its release cache is now `vgtbt_github_updater_*`.
+* Added `uninstall.php`, which removes the updater's release cache and each site's icon checksum and block ID transients.
+* The FAQPage schema JSON escapes `<` and `>`, so accordion content can't close its `<script>` tag early.
+* License is GPL-2.0-or-later everywhere, and the plugin ships a `LICENSE` file. `composer.json` said MIT.
+* CI now runs PHPCS, `lint:js` and `lint:css` on every pull request. All three are clean.
+* The changelog lives in `readme.txt` only. `changelog.txt` is gone.
 
 = 1.1.9 =
 
