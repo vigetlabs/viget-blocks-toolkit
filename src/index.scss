@@ -1,4 +1,5 @@
 *[class*="has-icon__"] {
+
 	&.wp-block-read-more,
 	&.wp-block-query-pagination-next,
 	&.wp-block-query-pagination-previous,
@@ -15,8 +16,8 @@
 		}
 
 		svg {
-			color: currentColor;
-			fill: currentColor;
+			color: currentcolor;
+			fill: currentcolor;
 			height: 0.7em;
 			width: 1em;
 		}
@@ -25,11 +26,14 @@
 
 /* Desktop (1024px and up) */
 @media screen {
+
 	[data-visibility-desktop="hide"] {
 		display: inherit !important;
 	}
 }
+
 @media (min-width: 1024px) {
+
 	[data-visibility-desktop="hide"] {
 		display: none !important;
 	}
@@ -37,11 +41,14 @@
 
 /* Tablet (768px to 1023px) */
 @media screen {
+
 	[data-visibility-tablet="hide"] {
 		display: inherit !important;
 	}
 }
+
 @media (min-width: 768px) and (max-width: 1023px) {
+
 	[data-visibility-tablet="hide"] {
 		display: none !important;
 	}
@@ -49,11 +56,14 @@
 
 /* Mobile (up to 767px) */
 @media screen {
+
 	[data-visibility-mobile="hide"] {
 		display: inherit !important;
 	}
 }
+
 @media (max-width: 767px) {
+
 	[data-visibility-mobile="hide"] {
 		display: none !important;
 	}
@@ -61,6 +71,7 @@
 
 /* Handle combinations */
 @media screen {
+
 	[data-visibility-desktop="hide"][data-visibility-tablet="hide"],
 	[data-visibility-desktop="hide"][data-visibility-mobile="hide"],
 	[data-visibility-tablet="hide"][data-visibility-mobile="hide"] {
@@ -70,6 +81,7 @@
 
 /* Desktop + Tablet */
 @media (min-width: 768px) {
+
 	[data-visibility-desktop="hide"][data-visibility-tablet="hide"] {
 		display: none !important;
 	}
@@ -77,6 +89,7 @@
 
 /* Desktop + Mobile */
 @media (max-width: 767px), (min-width: 1024px) {
+
 	[data-visibility-desktop="hide"][data-visibility-mobile="hide"] {
 		display: none !important;
 	}
@@ -84,6 +97,7 @@
 
 /* Tablet + Mobile */
 @media (max-width: 1023px) {
+
 	[data-visibility-tablet="hide"][data-visibility-mobile="hide"] {
 		display: none !important;
 	}
@@ -91,12 +105,14 @@
 
 /* All three */
 @media screen {
+
 	[data-visibility-desktop="hide"][data-visibility-tablet="hide"][data-visibility-mobile="hide"] {
 		display: none !important;
 	}
 }
 
-// Content-only templates: wrap inner blocks in a Group but make it layout-neutral.
+// Content-only templates: wrap inner blocks in a Group but make it
+// layout-neutral.
 .acf-block-content-only-wrapper {
 	display: contents;
 }
