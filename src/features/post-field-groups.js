@@ -265,8 +265,11 @@ function FieldsPanel({ groups }) {
 			<div {...blockProps} />
 			{createPortal(
 				<div ref={panelRef} className="vgtbt-post-fields-panel" />,
-				// Inside the editor root, where ACF looks for fields to validate.
-				document.querySelector('#wpbody-content > .block-editor') ||
+				// Inside ACF's validation root, under the editor's popovers like the block toolbar.
+				document.querySelector(
+					'#wpbody-content > .block-editor .editor-editor-interface',
+				) ||
+					document.querySelector('#wpbody-content > .block-editor') ||
 					document.body,
 			)}
 		</>
