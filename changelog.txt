@@ -1,3 +1,7 @@
+= 1.1.10 =
+
+* Fixed a bare `align` class on ACF blocks with no alignment set. ACF registers `align` with an empty default, and core's align support turns any set value into `align{value}`. The empty default is now removed, so a block only gets an `align*` class when it has an alignment. A default set in block.json is kept.
+
 = 1.1.9 =
 
 * Removed the client-specific "IAFF Icon" from the built-in icon library. `assets/icons.json` had been committed from a site where the `vgtbt_block_icons` filter was active, which also dropped the "WordPress" icon from the defaults. The file is now regenerated from the canonical list in `BlockIcons`, restoring "WordPress" and removing "IAFF Icon". Projects that need that icon should add it back via the `vgtbt_block_icons` filter.
