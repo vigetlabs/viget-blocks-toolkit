@@ -30,6 +30,7 @@ domReady(() => {
 
 	void Promise.all([
 		import('@wordpress/edit-post'),
+		// eslint-disable-next-line import/no-unresolved -- A WordPress global, externalized at build.
 		import('@wordpress/edit-site'),
 	]).then(runUnregister);
 });

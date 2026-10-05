@@ -7,7 +7,7 @@ import {
 	Button,
 	PanelRow,
 	ToggleControl,
-	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis, import/named -- experimental Grid
+	// eslint-disable-next-line @wordpress/no-unsafe-wp-apis -- experimental Grid
 	__experimentalGrid as Grid,
 } from '@wordpress/components';
 
@@ -122,7 +122,7 @@ export function getToolbarIconDisplay(currentIcon) {
 		icon: (
 			<span
 				className="vgtbt-toolbar-icon-trigger__glyph"
-				// eslint-disable-next-line react/no-danger
+
 				dangerouslySetInnerHTML={{
 					__html: def.icon ?? def.value,
 				}}

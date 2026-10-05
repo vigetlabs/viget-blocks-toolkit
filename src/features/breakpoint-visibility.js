@@ -1,4 +1,4 @@
-/* eslint-disable @wordpress/no-unsafe-wp-apis, import/named -- match prior breakpoint controls */
+/* eslint-disable @wordpress/no-unsafe-wp-apis -- match prior breakpoint controls */
 import {
 	Dropdown,
 	PanelBody,
@@ -372,9 +372,15 @@ addFilter(
 			attributes.breakpointVisibility;
 
 		if (!useCustom) {
-			if (desktop) extraProps['data-visibility-desktop'] = 'hide';
-			if (tablet) extraProps['data-visibility-tablet'] = 'hide';
-			if (mobile) extraProps['data-visibility-mobile'] = 'hide';
+			if (desktop) {
+				extraProps['data-visibility-desktop'] = 'hide';
+			}
+			if (tablet) {
+				extraProps['data-visibility-tablet'] = 'hide';
+			}
+			if (mobile) {
+				extraProps['data-visibility-mobile'] = 'hide';
+			}
 		}
 		return extraProps;
 	},

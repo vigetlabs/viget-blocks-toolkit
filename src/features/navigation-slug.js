@@ -4,13 +4,12 @@
  * Adds refSlug attribute to core/navigation blocks for slug-based menu references.
  * Works with the existing WordPress menu selector instead of creating a separate dropdown.
  *
- * @package Viget\BlocksToolkit
+ * @package
  */
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { addFilter } from '@wordpress/hooks';
 import { useEffect } from '@wordpress/element';
 import { useSelect } from '@wordpress/data';

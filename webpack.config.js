@@ -1,22 +1,19 @@
 /**
  * External dependencies
  */
-const RemoveEmptyScriptsPlugin = require( 'webpack-remove-empty-scripts' );
-const path = require( 'path' );
-const defaultConfig = require( '@wordpress/scripts/config/webpack.config' );
+const RemoveEmptyScriptsPlugin = require('webpack-remove-empty-scripts');
+const path = require('path');
+const defaultConfig = require('@wordpress/scripts/config/webpack.config');
 
 module.exports = {
 	...defaultConfig,
 
 	entry: {
-		'index' : path.resolve( process.cwd(), 'src/index.js' ),
-		'iframe-editor' : path.resolve( process.cwd(), 'src/iframe-editor.js' ),
-		'editor' : path.resolve( process.cwd(), 'src/editor.scss' ),
-		'style': path.resolve( process.cwd(), 'src/index.scss' ),
+		index: path.resolve(process.cwd(), 'src/index.js'),
+		'iframe-editor': path.resolve(process.cwd(), 'src/iframe-editor.js'),
+		editor: path.resolve(process.cwd(), 'src/editor.scss'),
+		style: path.resolve(process.cwd(), 'src/index.scss'),
 	},
 
-	plugins: [
-		...defaultConfig.plugins,
-		new RemoveEmptyScriptsPlugin(),
-	],
+	plugins: [...defaultConfig.plugins, new RemoveEmptyScriptsPlugin()],
 };

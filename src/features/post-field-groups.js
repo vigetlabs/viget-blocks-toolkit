@@ -5,7 +5,7 @@
  * fields out of their meta box into a panel laid over the block, so ACF and the
  * meta box save keep working. Preview renders the block with the unsaved values.
  *
- * @package Viget\BlocksToolkit
+ * @package
  */
 
 /**
