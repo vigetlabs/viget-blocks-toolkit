@@ -39,6 +39,7 @@ No. There are several features of this plugin that can be used without Advanced 
 * The FAQPage schema JSON escapes `<` and `>`, so accordion content can't close its `<script>` tag early.
 * License is GPL-2.0-or-later everywhere, and the plugin ships a `LICENSE` file. `composer.json` said MIT.
 * CI now runs PHPCS, `lint:js` and `lint:css` on every pull request. All three are clean.
+* JS is formatted with `wp-prettier` and WordPress's Prettier config, like our other plugins, so it has spaces inside parens again. `format` runs `wp-scripts format`.
 * The changelog lives in `readme.txt` only. `changelog.txt` is gone.
 * Fixed Breakpoint Visibility writing `data-visibility-*` twice on static blocks, and its CSS overriding a block's own display (a flex or grid block hidden at one breakpoint lost its layout at the others). Custom breakpoints only hide now, too.
 * Fixed `navigation-submenu` icons in the default open-on-hover mode, where the icon landed in the chevron toggle instead of the label.
