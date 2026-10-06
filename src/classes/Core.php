@@ -64,8 +64,8 @@ class Core {
 		$this->block_schema            = new BlockSchema();
 		$this->post_field_groups       = new PostFieldGroups();
 
-		// Initialize GitHub updater
-		new \GitHub_Plugin_Updater(
+		// Initialize GitHub updater.
+		new GitHub_Plugin_Updater(
 			VGTBT_PLUGIN_FILE,
 			'vigetlabs',
 			'viget-blocks-toolkit'

@@ -99,7 +99,7 @@ class FAQPageSchema extends BaseSchema {
 	 * Process accordion items to add microdata attributes and extract FAQ data.
 	 *
 	 * @param WP_HTML_Tag_Processor $processor The HTML tag processor.
-	 * @param string                 $html      The original HTML content.
+	 * @param string                $html      The original HTML content.
 	 *
 	 * @return array Array of FAQ items.
 	 */
@@ -126,7 +126,7 @@ class FAQPageSchema extends BaseSchema {
 			$processor->set_attribute( 'itemtype', 'https://schema.org/Answer' );
 
 			$found_text_element = false;
-			$tags_to_try = [ 'p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'span' ];
+			$tags_to_try        = [ 'p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'span' ];
 			foreach ( $tags_to_try as $tag ) {
 				if ( $processor->next_tag( $tag ) ) {
 					$processor->set_attribute( 'itemprop', 'text' );
@@ -238,8 +238,8 @@ class FAQPageSchema extends BaseSchema {
 				$entity['mainEntity'] = $this->faq_items;
 			} else {
 				$entity = [
-					'@context' => 'https://schema.org',
-					'@type'    => 'FAQPage',
+					'@context'   => 'https://schema.org',
+					'@type'      => 'FAQPage',
 					'mainEntity' => $this->faq_items,
 				];
 			}
@@ -267,7 +267,7 @@ class FAQPageSchema extends BaseSchema {
 
 				$has_faqpage = false;
 				if ( isset( $item['@type'] ) ) {
-					$types = \is_array( $item['@type'] ) ? $item['@type'] : [ $item['@type'] ];
+					$types       = \is_array( $item['@type'] ) ? $item['@type'] : [ $item['@type'] ];
 					$has_faqpage = in_array( 'FAQPage', $types, true );
 				}
 
@@ -302,9 +302,13 @@ class FAQPageSchema extends BaseSchema {
 			if ( \count( $types ) === 1 ) {
 				unset( $data['@graph'][ $index ] );
 			} else {
-				$new_types = array_filter( $types, function( $type ) {
-					return 'FAQPage' !== $type;
-				} );
+				$new_types = array_filter(
+					$types,
+					function ( $type ) {
+						return 'FAQPage' !== $type;
+					}
+				);
+
 				$data['@graph'][ $index ]['@type'] = \count( $new_types ) === 1 ? reset( $new_types ) : array_values( $new_types );
 				unset( $data['@graph'][ $index ]['mainEntity'] );
 			}
@@ -346,4 +350,3 @@ class FAQPageSchema extends BaseSchema {
 		return $faq_data;
 	}
 }
-

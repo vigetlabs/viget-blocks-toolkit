@@ -28,12 +28,11 @@ class Template {
 	 *
 	 * @param Block|array|null $block Template block.
 	 *
-	 * @return Template
 	 * @throws Exception Exception thrown when block doesn't exist.
 	 */
 	public function __construct( Block|array|null $block = null ) {
 		if ( ! $block ) {
-			return $this;
+			return;
 		}
 
 		if ( is_array( $block ) ) {
@@ -43,8 +42,6 @@ class Template {
 		} else {
 			$this->add( $block );
 		}
-
-		return $this;
 	}
 
 	/**

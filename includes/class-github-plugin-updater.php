@@ -5,8 +5,14 @@
  * A reusable class for WordPress plugins hosted on GitHub to enable
  * automatic updates from the WordPress dashboard.
  *
+ * Namespaced (rather than a bare global class) so it can't collide with the
+ * same-purpose updater shipped in other Viget plugins (e.g. viget-post-type-taxonomy-sync)
+ * if both are active on the same site.
+ *
  * @package Viget\BlocksToolkit
  */
+
+namespace Viget\BlocksToolkit;
 
 /**
  * GitHub Plugin Updater Class
@@ -218,6 +224,7 @@ class GitHub_Plugin_Updater {
 		$author_profile = ! empty( $release_info->author->html_url ) ? $release_info->author->html_url : sprintf( 'https://github.com/%s', $this->github_owner );
 		$published_at   = ! empty( $release_info->published_at ) ? $release_info->published_at : '';
 		$changelog      = ! empty( $release_info->body ) ? (string) $release_info->body : '';
+		$package_url    = $this->get_package_url( $release_info );
 
 		return (object) [
 			'name'              => $this->plugin_name,
@@ -231,7 +238,7 @@ class GitHub_Plugin_Updater {
 			'sections'          => [
 				'changelog' => $this->format_changelog( $changelog ),
 			],
-			'download_link'     => $this->get_package_url( $release_info ) ?: '',
+			'download_link'     => $package_url ? $package_url : '',
 			'requires'          => $this->plugin_requires_wp,
 			'tested'            => '',
 			'requires_php'      => $this->plugin_requires_php,
@@ -382,7 +389,7 @@ class GitHub_Plugin_Updater {
 
 		$changelog = preg_replace_callback(
 			'/\[([^\]]+)\]\(([^)\s]+)\)/',
-			static function( $matches ) use ( &$link_placeholders ) {
+			static function ( $matches ) use ( &$link_placeholders ) {
 				$placeholder = '__VGTBT_LINK_' . count( $link_placeholders ) . '__';
 
 				$link_placeholders[ $placeholder ] = sprintf(
@@ -406,7 +413,7 @@ class GitHub_Plugin_Updater {
 			);
 		}
 
-		// Convert line breaks to HTML
+		// Convert line breaks to HTML.
 		$changelog = nl2br( $changelog );
 
 		$allowed_tags = [
@@ -427,7 +434,7 @@ class GitHub_Plugin_Updater {
 	 * @return string Transient key.
 	 */
 	private function get_transient_key() {
-		return 'github_updater_' . md5( $this->github_owner . '/' . $this->github_repo );
+		return 'vgtbt_github_updater_' . md5( $this->github_owner . '/' . $this->github_repo );
 	}
 
 	/**

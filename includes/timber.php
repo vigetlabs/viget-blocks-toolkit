@@ -20,7 +20,7 @@ add_action(
 				$functions['inner_blocks'] = [
 					'callable' => 'inner_blocks',
 				];
-				$functions['block_attrs'] = [
+				$functions['block_attrs']  = [
 					'callable' => 'block_attrs',
 				];
 

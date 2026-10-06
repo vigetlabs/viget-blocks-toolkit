@@ -34,6 +34,16 @@ No. There are several features of this plugin that can be used without Advanced 
 
 * Added `postFieldGroups` to ACF block.json settings. A block lists post-level ACF field groups, and its Edit view shows their fields in place of their meta box, with a live Preview of the unsaved values. See the README.
 * Fixed a bare `align` class on ACF blocks with no alignment set. ACF registers `align` with an empty default, and core's align support turns any set value into `align{value}`. The empty default is now removed, so a block only gets an `align*` class when it has an alignment. A default set in block.json is kept.
+* The GitHub updater is namespaced as `Viget\BlocksToolkit\GitHub_Plugin_Updater`, so it can't collide with another plugin's global class. Its release cache is now `vgtbt_github_updater_*`.
+* Added `uninstall.php`, which removes the updater's release cache and each site's icon checksum and block ID transients.
+* The FAQPage schema JSON escapes `<` and `>`, so accordion content can't close its `<script>` tag early.
+* License is GPL-2.0-or-later everywhere, and the plugin ships a `LICENSE` file. `composer.json` said MIT.
+* CI now runs PHPCS, `lint:js` and `lint:css` on every pull request. All three are clean.
+* The changelog lives in `readme.txt` only. `changelog.txt` is gone.
+* Fixed Breakpoint Visibility writing `data-visibility-*` twice on static blocks, and its CSS overriding a block's own display (a flex or grid block hidden at one breakpoint lost its layout at the others). Custom breakpoints only hide now, too.
+* Fixed `navigation-submenu` icons in the default open-on-hover mode, where the icon landed in the chevron toggle instead of the label.
+* Fixed Media Position showing Left after a reload when the media was on the right, and flipping the layout again when the active side was clicked.
+* Fixed the Navigation block's slug sync marking its template part as changed every time the Site Editor loaded.
 
 = 1.1.9 =
 
@@ -45,7 +55,9 @@ No. There are several features of this plugin that can be used without Advanced 
 * Updated dependencies: `@wordpress/scripts` 26 to 35, `webpack-remove-empty-scripts` 0.8.4 to 1.1.1, `prettier` and `@wordpress/dom-ready` to latest, `actions/checkout` v4 to v7. The externalized `@wordpress/*` packages moved off their 2021 versions, which drops `npm audit` from 37 advisories to 20 with none critical.
 * Fixed the block stylesheet registration. `@wordpress/scripts` 35 no longer emits an `.asset.php` for CSS-only entries, so `includes/assets.php` was including a file that no longer exists and reading a version off the `false` it returned. The stylesheet is versioned on `VGTBT_VERSION` now.
 * Stylesheets are now also emitted in RTL variants.
+* Marked `languages/*.pot` as generated in `.gitattributes`, alongside `build/`, so it collapses in pull request diffs and stays out of the repo's language stats.
 * Trimmed both distribution archives to what the plugin actually loads. The release ZIP was built with `rsync` and an exclude list, so `src/` JS and SCSS, `bin/`, `webpack.config.js`, `.phpcs.xml`, the lockfile and 872K of README screenshots were all installed onto sites; it now uses an explicit allowlist and went from 1.1M to 68K. `.gitattributes` had no `export-ignore` rules, so the Composer archive shipped the same extra files.
+* Added CI. Every pull request now runs `composer validate`, a PHP syntax sweep on the 8.1 floor, and an npm build that fails if the committed `build/` is stale. PHPCS and the JS/CSS linters are not wired up yet - they report 1132, 99 and 80 problems against the current toolchain, tracked on #30.
 
 = 1.1.8 =
 

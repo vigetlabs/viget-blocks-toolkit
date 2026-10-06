@@ -15,20 +15,21 @@ import { unregisterBlockVariation } from '@wordpress/blocks';
  * bundle can load inside the iframed block canvas.
  */
 const runUnregister = () => {
-	unregisterVariations.forEach((variation) => {
-		const [coreBlock, variationName] = variation;
-		unregisterBlockVariation(coreBlock, variationName);
-	});
+	unregisterVariations.forEach( ( variation ) => {
+		const [ coreBlock, variationName ] = variation;
+		unregisterBlockVariation( coreBlock, variationName );
+	} );
 };
 
-domReady(() => {
-	if (window.parent !== window) {
+domReady( () => {
+	if ( window.parent !== window ) {
 		runUnregister();
 		return;
 	}
 
-	void Promise.all([
-		import('@wordpress/edit-post'),
-		import('@wordpress/edit-site'),
-	]).then(runUnregister);
-});
+	void Promise.all( [
+		import( '@wordpress/edit-post' ),
+		// eslint-disable-next-line import/no-unresolved -- A WordPress global, externalized at build.
+		import( '@wordpress/edit-site' ),
+	] ).then( runUnregister );
+} );

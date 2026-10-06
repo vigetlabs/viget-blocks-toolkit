@@ -19,9 +19,9 @@ import { IconPickerPanel, isIconToolbarBlock } from './icon-picker-panel';
  * @since 0.1.0
  * @param {Object} settings
  */
-function addAttributes(settings) {
+function addAttributes( settings ) {
 	const iconSettings = window.vgtbtIcons || {};
-	if (!iconSettings.supportedBlocks?.includes(settings.name)) {
+	if ( ! iconSettings.supportedBlocks?.includes( settings.name ) ) {
 		return settings;
 	}
 
@@ -49,7 +49,7 @@ function addAttributes(settings) {
 addFilter(
 	'blocks.registerBlockType',
 	'viget-blocks-toolkit/add-attributes',
-	addAttributes,
+	addAttributes
 );
 
 /**
@@ -59,26 +59,26 @@ addFilter(
  * @since 0.1.0
  * @param {Object} BlockEdit
  */
-function addInspectorControls(BlockEdit) {
-	return (props) => {
-		if (!isIconToolbarBlock(props.name)) {
-			return <BlockEdit {...props} />;
+function addInspectorControls( BlockEdit ) {
+	return ( props ) => {
+		if ( ! isIconToolbarBlock( props.name ) ) {
+			return <BlockEdit { ...props } />;
 		}
 
 		const { attributes, setAttributes } = props;
 
 		return (
 			<>
-				<BlockEdit {...props} />
+				<BlockEdit { ...props } />
 				<InspectorControls>
 					<PanelBody
-						title={__('Icon', 'viget-blocks-toolkit')}
+						title={ __( 'Icon', 'viget-blocks-toolkit' ) }
 						className="button-icon-picker"
-						initialOpen={true}
+						initialOpen={ true }
 					>
 						<IconPickerPanel
-							attributes={attributes}
-							setAttributes={setAttributes}
+							attributes={ attributes }
+							setAttributes={ setAttributes }
 						/>
 					</PanelBody>
 				</InspectorControls>
@@ -90,7 +90,7 @@ function addInspectorControls(BlockEdit) {
 addFilter(
 	'editor.BlockEdit',
 	'viget-blocks-toolkit/add-inspector-controls',
-	addInspectorControls,
+	addInspectorControls
 );
 
 /**
@@ -99,25 +99,25 @@ addFilter(
  * @since 0.1.0
  * @param {Object} BlockListBlock
  */
-function addClasses(BlockListBlock) {
-	return (props) => {
+function addClasses( BlockListBlock ) {
+	return ( props ) => {
 		const { name, attributes } = props;
 
-		if (!isIconToolbarBlock(name) || !attributes?.icon) {
-			return <BlockListBlock {...props} />;
+		if ( ! isIconToolbarBlock( name ) || ! attributes?.icon ) {
+			return <BlockListBlock { ...props } />;
 		}
 
-		const classes = classnames(props?.className, {
-			[`has-icon__${attributes?.icon}`]: attributes?.icon,
+		const classes = classnames( props?.className, {
+			[ `has-icon__${ attributes?.icon }` ]: attributes?.icon,
 			'has-icon-position__left': attributes?.iconPositionLeft,
-		});
+		} );
 
-		return <BlockListBlock {...props} className={classes} />;
+		return <BlockListBlock { ...props } className={ classes } />;
 	};
 }
 
 addFilter(
 	'editor.BlockListBlock',
 	'viget-blocks-toolkit/add-classes',
-	addClasses,
+	addClasses
 );

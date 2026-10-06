@@ -112,12 +112,12 @@ class BlockPatternResolver {
 			}
 
 			if ( 'html' === $extension ) {
-				$content = file_get_contents( $candidate );
+				$content = file_get_contents( $candidate ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file.
 				return false !== $content ? $content : '';
 			}
 
 			if ( 'twig' === $extension && class_exists( '\Timber\Timber' ) ) {
-				$template = file_get_contents( $candidate );
+				$template = file_get_contents( $candidate ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file.
 				if ( false === $template ) {
 					return '';
 				}

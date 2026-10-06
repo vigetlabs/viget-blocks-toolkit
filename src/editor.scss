@@ -1,3 +1,7 @@
+// The editor's accent color.
+$vgtbt-admin-accent: var(--wp-admin-theme-color, #3858e9);
+$vgtbt-accent: var(--wp-components-color-accent, $vgtbt-admin-accent);
+
 // Floating toolbar: icon + responsive dropdowns (breakpoint-visibility.js).
 .vgtbt-toolbar-dropdown__content--icon {
 	min-width: 280px;
@@ -11,9 +15,11 @@
 	max-width: min(240px, 92vw);
 }
 
-// Popover inner shell must stretch to the dropdown min-width (core defaults ~ fit-content).
+// Popover inner shell must stretch to the dropdown min-width
+// (core defaults ~ fit-content).
 .vgtbt-toolbar-dropdown-popover--responsive,
 .vgtbt-toolbar-dropdown-popover--icon {
+
 	.components-popover__content {
 		box-sizing: border-box;
 		width: 100%;
@@ -27,6 +33,7 @@
 
 // Icon grid inside toolbar popover
 .vgtbt-toolbar-dropdown__body--icon {
+
 	.button-icon-picker__grid {
 		width: 100%;
 		padding: 8px;
@@ -50,21 +57,18 @@
 
 		// Avoid “double stroke” look: do not paint stroke on filled SVG icons.
 		svg path {
-			fill: currentColor;
+			fill: currentcolor;
 			stroke: none;
 		}
 
 		&.is-pressed,
 		&[aria-pressed="true"] {
-			background-color: var(
-				--wp-components-color-accent,
-				var(--wp-admin-theme-color, #3858e9)
-			);
+			background-color: $vgtbt-accent;
 			border-color: transparent;
 			color: #fff;
 
 			svg path {
-				fill: currentColor;
+				fill: currentcolor;
 			}
 		}
 	}
@@ -123,7 +127,8 @@
 	}
 }
 
-// Custom breakpoint width + unit (default: single column where grid is used without a width context).
+// Custom breakpoint width + unit (default: single column where grid is used
+// without a width context).
 .vgtbt-toolbar-responsive__grid {
 	display: grid;
 	gap: 8px;
@@ -140,7 +145,7 @@
 // Toolbar trigger: custom SVG (send / selected icon)
 .vgtbt-toolbar-icon-trigger.components-toolbar-button {
 	box-sizing: border-box;
-	color: currentColor;
+	color: currentcolor;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -177,107 +182,101 @@
 
 	&.components-toolbar-button.is-pressed,
 	&.components-toolbar-button[aria-expanded="true"] {
-		background: var(
-			--wp-components-color-accent,
-			var(--wp-admin-theme-color, #3858e9)
-		);
+		background: $vgtbt-accent;
 		color: #fff;
 		padding-block: 2px;
 		padding-inline: 4px;
 
 		.vgtbt-toolbar-icon-trigger__glyph svg path {
-			fill: currentColor;
+			fill: currentcolor;
 		}
 	}
 }
 
 // Responsive toolbar: no full-height blue fill on open/active.
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.is-pressed,
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button.is-pressed,
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"],
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"],
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active {
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active {
 	background: transparent !important;
 	background-color: transparent !important;
 	box-shadow: none !important;
 }
 
-// Icon accent: core + other layers often beat plain `color` on `.components-toolbar-button__icon`.
-// Use !important for configured / open states, then repeat for :hover so hover never loses to those layers.
-$vgtbt-toolbar-accent: var(
-	--wp-components-color-accent,
-	var(--wp-admin-theme-color, #3858e9)
-);
+// Icon accent: core + other layers often beat plain `color` on
+// `.components-toolbar-button__icon`. Use !important for configured / open
+// states, then repeat for :hover so hover never loses to those layers.
 
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
-	.components-toolbar-button__icon,
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
+.components-toolbar-button__icon,
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
-	.components-toolbar-button__icon {
-	color: $vgtbt-toolbar-accent !important;
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
+.components-toolbar-button__icon {
+	color: $vgtbt-accent !important;
 }
 
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
-	.components-toolbar-button__icon::before,
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
+.components-toolbar-button__icon::before,
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
-	.components-toolbar-button__icon::before {
-	color: $vgtbt-toolbar-accent !important;
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
+.components-toolbar-button__icon::before {
+	color: $vgtbt-accent !important;
 }
 
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
-	.components-toolbar-button__icon
-	svg,
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
+.components-toolbar-button__icon
+svg,
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
-	.components-toolbar-button__icon
-	svg {
-	fill: $vgtbt-toolbar-accent !important;
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
+.components-toolbar-button__icon
+svg {
+	fill: $vgtbt-accent !important;
 }
 
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active
-	> svg,
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button.vgtbt-toolbar-responsive-trigger--active > svg,
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"]
-	> svg {
-	fill: $vgtbt-toolbar-accent !important;
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button[aria-expanded="true"] > svg {
+	fill: $vgtbt-accent !important;
 }
 
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover
-	.components-toolbar-button__icon,
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover
+.components-toolbar-button__icon,
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover
-	.components-toolbar-button__icon::before {
-	color: $vgtbt-toolbar-accent !important;
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover
+.components-toolbar-button__icon::before {
+	color: $vgtbt-accent !important;
 }
 
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover
-	.components-toolbar-button__icon
-	svg,
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover
+.components-toolbar-button__icon
+svg,
 .block-editor-block-contextual-toolbar
-	.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover > svg {
-	fill: $vgtbt-toolbar-accent !important;
+.vgtbt-toolbar-responsive-trigger.components-toolbar-button:hover > svg {
+	fill: $vgtbt-accent !important;
 }
 
 .vgtbt-toolbar-icon-trigger__glyph--send svg path {
-	fill: currentColor;
+	fill: currentcolor;
 }
 
 // Add icons to Button blocks and style appropriately.
 *[class*="has-icon__"] {
+
 	&.wp-block-read-more,
 	&.wp-block-query-pagination-next,
 	&.wp-block-query-pagination-previous,
 	> .wp-block-button__link,
 	.wp-block-post-excerpt__more-link,
 	> .wp-block-navigation-item__content {
+
 		&::after {
 			content: "";
 		}
@@ -286,7 +285,7 @@ $vgtbt-toolbar-accent: var(
 		&::after,
 		&::before {
 			display: inline-block;
-			background-color: currentColor;
+			background-color: currentcolor;
 			-webkit-mask-size: contain;
 			mask-size: contain;
 			-webkit-mask-position: center;
@@ -299,15 +298,18 @@ $vgtbt-toolbar-accent: var(
 	}
 
 	&.has-icon-position__left {
+
 		&.wp-block-read-more,
 		&.wp-block-query-pagination-next,
 		&.wp-block-query-pagination-previous,
 		> .wp-block-button__link,
 		.wp-block-post-excerpt__more-link,
 		> .wp-block-navigation-item__content {
+
 			&::before {
 				content: "";
 			}
+
 			&::after {
 				display: none;
 			}
@@ -317,7 +319,9 @@ $vgtbt-toolbar-accent: var(
 
 // Style "Icon Settings" panel.
 .button-icon-picker {
+
 	.components-panel__row {
+
 		&:not(:nth-child(2)) {
 			margin-top: 16px;
 		}
@@ -353,7 +357,8 @@ div[id^="portal/tooltip-"] {
 	pointer-events: none;
 }
 
-// Post field groups: holds the space for the fields panel laid over it (post-field-groups.js).
+// Post field groups: holds the space for the fields panel laid over it
+// (post-field-groups.js).
 .vgtbt-post-fields-placeholder {
 	min-height: 4rem;
 }

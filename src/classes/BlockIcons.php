@@ -94,7 +94,7 @@ class BlockIcons {
 	public function get_icons( bool $from_file = true ): array {
 		if ( $from_file ) {
 			$path = $this->get_icons_file_path();
-			return file_exists( $path ) ? json_decode( file_get_contents( $path ), true ) : [];
+			return file_exists( $path ) ? json_decode( file_get_contents( $path ), true ) : []; // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file.
 		}
 
 		$icons = [
@@ -253,15 +253,10 @@ class BlockIcons {
 				$p->add_class( $icon_class );
 			}
 		} elseif ( 'core/navigation-submenu' === $block['blockName'] ) {
-			$tag_name = 'button';
-			if ( $p->next_tag(
-				[
-					'tag_name'   => $tag_name,
-					'class_name' => 'wp-block-navigation-item__content',
-				]
-			) ) {
+			// The label is an <a> when the submenu opens on hover, a <button> when it opens on click.
+			if ( $p->next_tag( [ 'class_name' => 'wp-block-navigation-item__content' ] ) ) {
+				$tag_name = strtolower( $p->get_tag() );
 				$p->add_class( $icon_class );
-
 			}
 		} elseif ( $p->next_tag() ) {
 			$p->add_class( $icon_class );
@@ -285,10 +280,13 @@ class BlockIcons {
 			$element = '$2';
 		}
 
+		// Only the submenu's label, not the links in its menu.
+		$limit = 'core/navigation-submenu' === $block['blockName'] ? 1 : -1;
+
 		// Add the SVG icon either to the left of right of the button text.
 		return $position_left
-			? preg_replace( $pattern, '$1' . $markup . $element . '$3', $block_content )
-			: preg_replace( $pattern, '$1' . $element . $markup . '$3', $block_content );
+			? preg_replace( $pattern, '$1' . $markup . $element . '$3', $block_content, $limit )
+			: preg_replace( $pattern, '$1' . $element . $markup . '$3', $block_content, $limit );
 	}
 
 	/**
@@ -308,7 +306,6 @@ class BlockIcons {
 						'supportedBlocks' => $this->get_supported_blocks(),
 					]
 				);
-
 			},
 			20
 		);
@@ -423,7 +420,7 @@ class BlockIcons {
 			'init',
 			function () {
 				$icons    = $this->get_icons( false );
-				$checksum = md5( json_encode( $icons ) );
+				$checksum = md5( wp_json_encode( $icons ) );
 				$path     = $this->get_icons_file_path( true );
 
 				if ( file_exists( $path ) && get_transient( self::ICONS_CHECKSUM ) === $checksum ) {
@@ -451,7 +448,8 @@ class BlockIcons {
 					wp_mkdir_p( dirname( $path ) );
 				}
 
-				if ( file_put_contents( $path, json_encode( $json, JSON_PRETTY_PRINT ) ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Writes the plugin's own icons.json.
+				if ( file_put_contents( $path, wp_json_encode( $json, JSON_PRETTY_PRINT ) ) ) {
 					set_transient( self::ICONS_CHECKSUM, $checksum );
 				}
 			}

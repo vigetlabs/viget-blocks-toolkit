@@ -293,7 +293,7 @@ if ( ! function_exists( 'get_block_fields' ) ) {
 
 					// Fields may not be loaded yet.
 					if ( empty( $field_group['fields'] ) ) {
-						$group  = json_decode( file_get_contents( $field_group['local_file'] ), true );
+						$group  = json_decode( file_get_contents( $field_group['local_file'] ), true ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file.
 						$fields = array_merge( $fields, $group['fields'] );
 					} else {
 						$fields = array_merge( $fields, $field_group['fields'] );

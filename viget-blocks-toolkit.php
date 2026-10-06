@@ -32,7 +32,7 @@ define( 'VGTBT_PLUGIN_URL', plugin_dir_url( VGTBT_PLUGIN_FILE ) );
 require_once 'includes/helpers.php';
 
 // Plugin updater.
-require_once 'includes/updater.php';
+require_once 'includes/class-github-plugin-updater.php';
 
 // Timber functions.
 require_once 'includes/timber.php';

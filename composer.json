@@ -12,7 +12,7 @@
   ],
   "type": "wordpress-plugin",
   "homepage": "https://github.com/vigetlabs/viget-blocks-toolkit",
-  "license": "MIT",
+  "license": "GPL-2.0-or-later",
   "authors": [
     {
       "name": "Viget",

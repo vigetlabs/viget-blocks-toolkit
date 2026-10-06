@@ -6,6 +6,7 @@ import { InspectorControls } from '@wordpress/block-editor';
 import { PanelBody, ToggleControl } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { createHigherOrderComponent } from '@wordpress/compose';
+import { createInterpolateElement } from '@wordpress/element';
 
 /**
  * Add FAQ Schema attribute to core/accordion block.
@@ -51,36 +52,39 @@ const withFaqSchemaControl = createHigherOrderComponent( ( BlockEdit ) => {
 
 		// Only add controls to core/accordion block.
 		if ( name !== 'core/accordion' ) {
-			return <BlockEdit {...props} />;
+			return <BlockEdit { ...props } />;
 		}
 
 		const { useFaqSchema } = attributes;
 
 		// Create help text with link to Schema.org
-		const helpText = (
-			<>
-				{ __(
-					'Add FAQPage Schema markup from ',
-					'viget-blocks-toolkit'
-				) }
-				<a
-					href="https://schema.org/FAQPage"
-					target="_blank"
-					rel="noopener noreferrer"
-				>
-					Schema.org
-				</a>
-				{ __( ' to this accordion.', 'viget-blocks-toolkit' ) }
-			</>
+		const helpText = createInterpolateElement(
+			__(
+				'Add FAQPage Schema markup from <a>Schema.org</a> to this accordion.',
+				'viget-blocks-toolkit'
+			),
+			{
+				a: (
+					// eslint-disable-next-line jsx-a11y/anchor-has-content -- Content comes from the translated string.
+					<a
+						href="https://schema.org/FAQPage"
+						target="_blank"
+						rel="noopener noreferrer"
+					/>
+				),
+			}
 		);
 
 		return (
 			<>
-				<BlockEdit {...props} />
+				<BlockEdit { ...props } />
 				<InspectorControls>
 					<PanelBody title={ __( 'Schema', 'viget-blocks-toolkit' ) }>
 						<ToggleControl
-							label={ __( 'FAQPage Schema', 'viget-blocks-toolkit' ) }
+							label={ __(
+								'FAQPage Schema',
+								'viget-blocks-toolkit'
+							) }
 							checked={ useFaqSchema || false }
 							onChange={ ( value ) =>
 								setAttributes( { useFaqSchema: value } )
@@ -101,4 +105,3 @@ addFilter(
 	withFaqSchemaControl,
 	9
 );
-

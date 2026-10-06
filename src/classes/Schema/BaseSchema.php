@@ -136,4 +136,3 @@ abstract class BaseSchema {
 		$this->rank_math_processed = true;
 	}
 }
-
