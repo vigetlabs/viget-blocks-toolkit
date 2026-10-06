@@ -22,3 +22,6 @@ import './features/navigation-slug';
 
 // Block Schema Support
 import './features/block-schema';
+
+// Post Field Groups Support
+import './features/post-field-groups';

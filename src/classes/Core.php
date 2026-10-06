@@ -48,6 +48,13 @@ class Core {
 	public ?BlockSchema $block_schema = null;
 
 	/**
+	 * Post Field Groups
+	 *
+	 * @var ?PostFieldGroups
+	 */
+	public ?PostFieldGroups $post_field_groups = null;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -55,6 +62,7 @@ class Core {
 		$this->bp_visibility           = new BreakpointVisibility();
 		$this->navigation_slug_handler = new NavigationSlugHandler();
 		$this->block_schema            = new BlockSchema();
+		$this->post_field_groups       = new PostFieldGroups();
 
 		// Initialize GitHub updater
 		new \GitHub_Plugin_Updater(
