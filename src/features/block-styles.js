@@ -16,21 +16,23 @@ import { unregisterBlockStyle } from '@wordpress/blocks';
  * which does not enqueue those handles.
  */
 const runUnregister = () => {
-	unregisterStyles.forEach((style) => {
-		const styles = Array.isArray(style[1]) ? style[1] : [style[1]];
-		unregisterBlockStyle(style[0], styles);
-	});
+	unregisterStyles.forEach( ( style ) => {
+		const styles = Array.isArray( style[ 1 ] )
+			? style[ 1 ]
+			: [ style[ 1 ] ];
+		unregisterBlockStyle( style[ 0 ], styles );
+	} );
 };
 
-domReady(() => {
-	if (window.parent !== window) {
+domReady( () => {
+	if ( window.parent !== window ) {
 		runUnregister();
 		return;
 	}
 
-	void Promise.all([
-		import('@wordpress/edit-post'),
+	void Promise.all( [
+		import( '@wordpress/edit-post' ),
 		// eslint-disable-next-line import/no-unresolved -- A WordPress global, externalized at build.
-		import('@wordpress/edit-site'),
-	]).then(runUnregister);
-});
+		import( '@wordpress/edit-site' ),
+	] ).then( runUnregister );
+} );

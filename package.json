@@ -13,8 +13,7 @@
     "start": "wp-scripts start",
     "packages-update": "wp-scripts packages-update",
     "update-pot": "wp i18n make-pot . languages/viget-blocks-toolkit.pot",
-    "format": "prettier \"./src/**/*.{css,ts,tsx,js}\" --check",
-    "format:fix": "prettier \"./src/**/*.{css,ts,tsx,js}\" --write",
+    "format": "wp-scripts format",
     "version": "node bin/sync-version.js && git add viget-blocks-toolkit.php readme.txt",
     "postversion": "git push && git push --tags",
     "release": "npm version",
@@ -36,7 +35,7 @@
     "@wordpress/hooks": "^4.55.0",
     "@wordpress/i18n": "^5.26.0",
     "@wordpress/scripts": "^35.0.0",
-    "prettier": "^3.9.8",
+    "prettier": "npm:wp-prettier@^3.9.6",
     "webpack-remove-empty-scripts": "^1.1.1"
   },
   "files": [

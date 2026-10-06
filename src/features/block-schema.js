@@ -15,8 +15,8 @@ import { createInterpolateElement } from '@wordpress/element';
  * @param {string} name     Block name.
  * @return {Object} Modified block settings.
  */
-function addFaqSchemaAttribute(settings, name) {
-	if (name !== 'core/accordion') {
+function addFaqSchemaAttribute( settings, name ) {
+	if ( name !== 'core/accordion' ) {
 		return settings;
 	}
 
@@ -40,19 +40,19 @@ function addFaqSchemaAttribute(settings, name) {
 addFilter(
 	'blocks.registerBlockType',
 	'viget-blocks-toolkit/add-faq-schema-attribute',
-	addFaqSchemaAttribute,
+	addFaqSchemaAttribute
 );
 
 /**
  * Add FAQ Schema toggle control to accordion block settings.
  */
-const withFaqSchemaControl = createHigherOrderComponent((BlockEdit) => {
-	return (props) => {
+const withFaqSchemaControl = createHigherOrderComponent( ( BlockEdit ) => {
+	return ( props ) => {
 		const { attributes, setAttributes, name } = props;
 
 		// Only add controls to core/accordion block.
-		if (name !== 'core/accordion') {
-			return <BlockEdit {...props} />;
+		if ( name !== 'core/accordion' ) {
+			return <BlockEdit { ...props } />;
 		}
 
 		const { useFaqSchema } = attributes;
@@ -61,7 +61,7 @@ const withFaqSchemaControl = createHigherOrderComponent((BlockEdit) => {
 		const helpText = createInterpolateElement(
 			__(
 				'Add FAQPage Schema markup from <a>Schema.org</a> to this accordion.',
-				'viget-blocks-toolkit',
+				'viget-blocks-toolkit'
 			),
 			{
 				a: (
@@ -72,31 +72,36 @@ const withFaqSchemaControl = createHigherOrderComponent((BlockEdit) => {
 						rel="noopener noreferrer"
 					/>
 				),
-			},
+			}
 		);
 
 		return (
 			<>
-				<BlockEdit {...props} />
+				<BlockEdit { ...props } />
 				<InspectorControls>
-					<PanelBody title={__('Schema', 'viget-blocks-toolkit')}>
+					<PanelBody title={ __( 'Schema', 'viget-blocks-toolkit' ) }>
 						<ToggleControl
-							label={__('FAQPage Schema', 'viget-blocks-toolkit')}
-							checked={useFaqSchema || false}
-							onChange={(value) => setAttributes({ useFaqSchema: value })}
-							help={helpText}
+							label={ __(
+								'FAQPage Schema',
+								'viget-blocks-toolkit'
+							) }
+							checked={ useFaqSchema || false }
+							onChange={ ( value ) =>
+								setAttributes( { useFaqSchema: value } )
+							}
+							help={ helpText }
 						/>
 					</PanelBody>
 				</InspectorControls>
 			</>
 		);
 	};
-}, 'withFaqSchemaControl');
+}, 'withFaqSchemaControl' );
 
 // Use priority 9 to ensure this runs before breakpoint-visibility (priority 10)
 addFilter(
 	'editor.BlockEdit',
 	'viget-blocks-toolkit/with-faq-schema-control',
 	withFaqSchemaControl,
-	9,
+	9
 );

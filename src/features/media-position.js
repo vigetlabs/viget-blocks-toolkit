@@ -8,33 +8,34 @@ import { __ } from '@wordpress/i18n';
 import { getBlockSupport } from '@wordpress/blocks';
 import { useDispatch, useSelect } from '@wordpress/data';
 
-const MediaPosition = (BlockEdit) => {
-	return (props) => {
+const MediaPosition = ( BlockEdit ) => {
+	return ( props ) => {
 		// Early return if block doesn't support attributes
-		if (!props.attributes || typeof props.attributes !== 'object') {
-			return <BlockEdit {...props} />;
+		if ( ! props.attributes || typeof props.attributes !== 'object' ) {
+			return <BlockEdit { ...props } />;
 		}
 
 		const mediaPositionSupport = getBlockSupport(
 			props.name,
 			'mediaPosition',
-			false,
+			false
 		);
 
 		// Support either `transformations` or `transforms` (block.json schema uses `supports.*` and
 		// different projects may name this key differently).
 		const transformations =
-			mediaPositionSupport?.transformations || mediaPositionSupport?.transforms;
+			mediaPositionSupport?.transformations ||
+			mediaPositionSupport?.transforms;
 
-		if (!Array.isArray(transformations) || !transformations.length) {
-			return <BlockEdit {...props} />;
+		if ( ! Array.isArray( transformations ) || ! transformations.length ) {
+			return <BlockEdit { ...props } />;
 		}
 
 		return (
 			<MediaPositionEdit
-				BlockEdit={BlockEdit}
-				props={props}
-				transformations={transformations}
+				BlockEdit={ BlockEdit }
+				props={ props }
+				transformations={ transformations }
 			/>
 		);
 	};
@@ -49,80 +50,85 @@ const MediaPosition = (BlockEdit) => {
  * @param {Array}    root.transformations Transformation rules from block supports.
  * @return {Element} Block edit with the toolbar.
  */
-function MediaPositionEdit({ BlockEdit, props, transformations }) {
+function MediaPositionEdit( { BlockEdit, props, transformations } ) {
 	const { attributes, setAttributes, clientId } = props;
 	const className = attributes.className || '';
-	const classes = className.split(' ');
+	const classes = className.split( ' ' );
 	// The class is what's saved, so it's the source of truth after a reload.
-	const currentPosition = classes.includes('has-media-on-the-right')
+	const currentPosition = classes.includes( 'has-media-on-the-right' )
 		? 'right'
 		: 'left';
 
-	const { replaceInnerBlocks } = useDispatch('core/block-editor');
-	const { getBlocks } = useSelect((select) => ({
-		getBlocks: select('core/block-editor').getBlocks,
-	}));
+	const { replaceInnerBlocks } = useDispatch( 'core/block-editor' );
+	const { getBlocks } = useSelect( ( select ) => ( {
+		getBlocks: select( 'core/block-editor' ).getBlocks,
+	} ) );
 
-	const findTransformationRule = (blockName, rules) => {
-		return rules.find((t) => Object.keys(t)[0] === blockName)?.[blockName];
+	const findTransformationRule = ( blockName, rules ) => {
+		return rules.find( ( t ) => Object.keys( t )[ 0 ] === blockName )?.[
+			blockName
+		];
 	};
 
 	const transformBlock = (
 		block,
 		rules,
 		parentInnerBlocks = null,
-		newPosition,
+		newPosition
 	) => {
 		const positionToUse = newPosition || currentPosition;
 
 		let newBlock = { ...block };
-		let newInnerBlocks = [...block.innerBlocks];
+		let newInnerBlocks = [ ...block.innerBlocks ];
 
 		// Helper function to apply attribute transformations
-		const applyAttributes = (currentAttrs, transformRules) => {
+		const applyAttributes = ( currentAttrs, transformRules ) => {
 			// Create a new attributes object that includes all current attributes
 			const newAttrs = { ...currentAttrs };
 
 			// Process each transformation rule
-			Object.entries(transformRules).forEach(([attr, values]) => {
+			Object.entries( transformRules ).forEach( ( [ attr, values ] ) => {
 				// If the value is an object but doesn't have position keys, it's a nested attribute
-				if (typeof values === 'object' && !values[positionToUse]) {
-					newAttrs[attr] = applyAttributes(newAttrs[attr] || {}, values);
+				if ( typeof values === 'object' && ! values[ positionToUse ] ) {
+					newAttrs[ attr ] = applyAttributes(
+						newAttrs[ attr ] || {},
+						values
+					);
 				} else {
 					// Get the new value for the current position
-					const newValue = values[positionToUse];
-					if (newValue !== undefined) {
-						newAttrs[attr] = newValue;
+					const newValue = values[ positionToUse ];
+					if ( newValue !== undefined ) {
+						newAttrs[ attr ] = newValue;
 					}
 				}
-			});
+			} );
 
 			return newAttrs;
 		};
 
 		// First check for root level transformations
-		const rootRule = findTransformationRule(block.name, rules);
+		const rootRule = findTransformationRule( block.name, rules );
 
-		if (rootRule) {
-			if (rootRule.attributes) {
+		if ( rootRule ) {
+			if ( rootRule.attributes ) {
 				newBlock.attributes = applyAttributes(
 					newBlock.attributes,
-					rootRule.attributes,
+					rootRule.attributes
 				);
 			}
 
-			if (rootRule.reverse) {
+			if ( rootRule.reverse ) {
 				newInnerBlocks = newInnerBlocks.reverse();
 			}
 
-			if (rootRule.innerBlocks) {
-				newInnerBlocks = newInnerBlocks.map((innerBlock) =>
+			if ( rootRule.innerBlocks ) {
+				newInnerBlocks = newInnerBlocks.map( ( innerBlock ) =>
 					transformBlock(
 						innerBlock,
 						rules,
 						rootRule.innerBlocks,
-						positionToUse,
-					),
+						positionToUse
+					)
 				);
 				return {
 					...newBlock,
@@ -132,17 +138,17 @@ function MediaPositionEdit({ BlockEdit, props, transformations }) {
 		}
 
 		// Check for parent-specific transformations
-		if (parentInnerBlocks) {
+		if ( parentInnerBlocks ) {
 			const innerBlockRule = parentInnerBlocks.find(
-				(t) => Object.keys(t)[0] === block.name,
-			)?.[block.name];
+				( t ) => Object.keys( t )[ 0 ] === block.name
+			)?.[ block.name ];
 
-			if (innerBlockRule) {
-				if (innerBlockRule.attributes) {
+			if ( innerBlockRule ) {
+				if ( innerBlockRule.attributes ) {
 					// Apply the transformations and ensure we're setting the new attributes
 					const transformedAttributes = applyAttributes(
 						newBlock.attributes,
-						innerBlockRule.attributes,
+						innerBlockRule.attributes
 					);
 					newBlock = {
 						...newBlock,
@@ -150,14 +156,14 @@ function MediaPositionEdit({ BlockEdit, props, transformations }) {
 					};
 				}
 
-				if (innerBlockRule.innerBlocks) {
-					newInnerBlocks = newInnerBlocks.map((innerBlock) =>
+				if ( innerBlockRule.innerBlocks ) {
+					newInnerBlocks = newInnerBlocks.map( ( innerBlock ) =>
 						transformBlock(
 							innerBlock,
 							rules,
 							innerBlockRule.innerBlocks,
-							positionToUse,
-						),
+							positionToUse
+						)
 					);
 					return {
 						...newBlock,
@@ -168,8 +174,8 @@ function MediaPositionEdit({ BlockEdit, props, transformations }) {
 		}
 
 		// Continue traversing children with root transformations
-		newInnerBlocks = newInnerBlocks.map((innerBlock) =>
-			transformBlock(innerBlock, rules, null, positionToUse),
+		newInnerBlocks = newInnerBlocks.map( ( innerBlock ) =>
+			transformBlock( innerBlock, rules, null, positionToUse )
 		);
 
 		return {
@@ -178,31 +184,35 @@ function MediaPositionEdit({ BlockEdit, props, transformations }) {
 		};
 	};
 
-	const setMediaPosition = (position) => {
+	const setMediaPosition = ( position ) => {
 		// Transforms reverse the order, so applying the current side again would flip it.
-		if (position === currentPosition) {
+		if ( position === currentPosition ) {
 			return;
 		}
 
 		const newClasses = classes.filter(
-			(c) => !['has-media-on-the-left', 'has-media-on-the-right'].includes(c),
+			( c ) =>
+				! [
+					'has-media-on-the-left',
+					'has-media-on-the-right',
+				].includes( c )
 		);
-		newClasses.push(`has-media-on-the-${position}`);
+		newClasses.push( `has-media-on-the-${ position }` );
 
 		// Get the blocks BEFORE updating attributes
-		const innerBlocks = getBlocks(clientId);
-		if (!innerBlocks?.length) {
+		const innerBlocks = getBlocks( clientId );
+		if ( ! innerBlocks?.length ) {
 			return;
 		}
 
 		// Transform blocks using the new position value
-		const transformedBlocks = innerBlocks.map((block) =>
-			transformBlock(block, transformations, null, position),
+		const transformedBlocks = innerBlocks.map( ( block ) =>
+			transformBlock( block, transformations, null, position )
 		);
 
 		// Update attributes and blocks together
-		setAttributes({ className: newClasses.join(' ').trim() });
-		replaceInnerBlocks(clientId, transformedBlocks, false);
+		setAttributes( { className: newClasses.join( ' ' ).trim() } );
+		replaceInnerBlocks( clientId, transformedBlocks, false );
 	};
 
 	return (
@@ -211,21 +221,21 @@ function MediaPositionEdit({ BlockEdit, props, transformations }) {
 				<ToolbarGroup>
 					<ToolbarButton
 						icon="align-pull-left"
-						title={__('Show media on left')}
-						onClick={() => setMediaPosition('left')}
-						isActive={currentPosition === 'left'}
+						title={ __( 'Show media on left' ) }
+						onClick={ () => setMediaPosition( 'left' ) }
+						isActive={ currentPosition === 'left' }
 					/>
 					<ToolbarButton
 						icon="align-pull-right"
-						title={__('Show media on right')}
-						onClick={() => setMediaPosition('right')}
-						isActive={currentPosition === 'right'}
+						title={ __( 'Show media on right' ) }
+						onClick={ () => setMediaPosition( 'right' ) }
+						isActive={ currentPosition === 'right' }
 					/>
 				</ToolbarGroup>
 			</BlockControls>
-			<BlockEdit {...props} />
+			<BlockEdit { ...props } />
 		</>
 	);
 }
 
-addFilter('editor.BlockEdit', 'acf-bt/media-position', MediaPosition);
+addFilter( 'editor.BlockEdit', 'acf-bt/media-position', MediaPosition );
