@@ -3,8 +3,6 @@
  *
  * Adds refSlug attribute to core/navigation blocks for slug-based menu references.
  * Works with the existing WordPress menu selector instead of creating a separate dropdown.
- *
- * @package
  */
 
 /**
@@ -20,8 +18,8 @@ import { useSelect } from '@wordpress/data';
  * @param {Object} settings Block settings.
  * @return {Object} Modified block settings.
  */
-function addRefSlugAttribute(settings) {
-	if ('core/navigation' !== settings.name) {
+function addRefSlugAttribute( settings ) {
+	if ( 'core/navigation' !== settings.name ) {
 		return settings;
 	}
 
@@ -43,7 +41,7 @@ function addRefSlugAttribute(settings) {
 addFilter(
 	'blocks.registerBlockType',
 	'viget-blocks-toolkit/navigation-ref-slug-attribute',
-	addRefSlugAttribute,
+	addRefSlugAttribute
 );
 
 /**
@@ -52,42 +50,48 @@ addFilter(
  * @param {Object} BlockEdit Block edit component.
  * @return {Object} Enhanced block edit component.
  */
-function syncRefSlugWithRef(BlockEdit) {
-	return (props) => {
-		if (props.name !== 'core/navigation') {
-			return <BlockEdit {...props} />;
+function syncRefSlugWithRef( BlockEdit ) {
+	return ( props ) => {
+		if ( props.name !== 'core/navigation' ) {
+			return <BlockEdit { ...props } />;
 		}
 
 		const { attributes, setAttributes } = props;
 		const { refSlug, ref } = attributes;
 
 		// Get available navigation menus
-		const navigationMenus = useSelect((select) => {
-			return select('core').getEntityRecords('postType', 'wp_navigation', {
-				status: 'publish',
-				per_page: -1,
-			});
-		}, []);
+		const navigationMenus = useSelect( ( select ) => {
+			return select( 'core' ).getEntityRecords(
+				'postType',
+				'wp_navigation',
+				{
+					status: 'publish',
+					per_page: -1,
+				}
+			);
+		}, [] );
 
 		// Sync refSlug when ref changes (user selects menu through existing interface)
-		useEffect(() => {
-			if (ref && navigationMenus) {
-				const selectedMenu = navigationMenus.find((menu) => menu.id === ref);
-				if (selectedMenu && selectedMenu.slug !== refSlug) {
+		useEffect( () => {
+			if ( ref && navigationMenus ) {
+				const selectedMenu = navigationMenus.find(
+					( menu ) => menu.id === ref
+				);
+				if ( selectedMenu && selectedMenu.slug !== refSlug ) {
 					// Update refSlug to match the selected menu's slug
-					setAttributes({
+					setAttributes( {
 						refSlug: selectedMenu.slug,
-					});
+					} );
 				}
 			}
-		}, [ref, navigationMenus, refSlug, setAttributes]);
+		}, [ ref, navigationMenus, refSlug, setAttributes ] );
 
-		return <BlockEdit {...props} />;
+		return <BlockEdit { ...props } />;
 	};
 }
 
 addFilter(
 	'editor.BlockEdit',
 	'viget-blocks-toolkit/navigation-ref-slug-sync',
-	syncRefSlugWithRef,
+	syncRefSlugWithRef
 );

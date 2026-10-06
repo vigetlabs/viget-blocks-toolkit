@@ -46,89 +46,103 @@ const DEFAULT_BREAKPOINT_VISIBILITY = {
  * @param {Function} props.updateVisibility
  * @param {Function} props.updateCustomBreakpoint
  */
-function ResponsivePanelFields({
+function ResponsivePanelFields( {
 	visibility,
 	updateVisibility,
 	updateCustomBreakpoint,
-}) {
+} ) {
 	return (
 		<>
 			<ToggleControl
-				label={__('Hide on Desktop', 'viget-blocks-toolkit')}
-				checked={visibility.desktop}
-				onChange={(value) => updateVisibility('desktop', value)}
-				disabled={visibility.useCustom}
+				label={ __( 'Hide on Desktop', 'viget-blocks-toolkit' ) }
+				checked={ visibility.desktop }
+				onChange={ ( value ) => updateVisibility( 'desktop', value ) }
+				disabled={ visibility.useCustom }
 			/>
 			<ToggleControl
-				label={__('Hide on Tablet', 'viget-blocks-toolkit')}
-				checked={visibility.tablet}
-				onChange={(value) => updateVisibility('tablet', value)}
-				disabled={visibility.useCustom}
+				label={ __( 'Hide on Tablet', 'viget-blocks-toolkit' ) }
+				checked={ visibility.tablet }
+				onChange={ ( value ) => updateVisibility( 'tablet', value ) }
+				disabled={ visibility.useCustom }
 			/>
 			<ToggleControl
-				label={__('Hide on Mobile', 'viget-blocks-toolkit')}
-				checked={visibility.mobile}
-				onChange={(value) => updateVisibility('mobile', value)}
-				disabled={visibility.useCustom}
+				label={ __( 'Hide on Mobile', 'viget-blocks-toolkit' ) }
+				checked={ visibility.mobile }
+				onChange={ ( value ) => updateVisibility( 'mobile', value ) }
+				disabled={ visibility.useCustom }
 			/>
 
 			<hr />
 
 			<ToggleControl
-				label={__('Use Custom Breakpoint', 'viget-blocks-toolkit')}
-				checked={visibility.useCustom}
-				onChange={(value) => updateVisibility('useCustom', value)}
+				label={ __( 'Use Custom Breakpoint', 'viget-blocks-toolkit' ) }
+				checked={ visibility.useCustom }
+				onChange={ ( value ) => updateVisibility( 'useCustom', value ) }
 			/>
 
-			{visibility.useCustom && (
+			{ visibility.useCustom && (
 				<>
 					<div className="vgtbt-toolbar-responsive__grid">
 						<NumberControl
-							label={__('Breakpoint Width', 'viget-blocks-toolkit')}
-							value={visibility.customBreakpoint.width}
-							onChange={(value) => updateCustomBreakpoint('width', value)}
-							min={0}
-							step={1}
+							label={ __(
+								'Breakpoint Width',
+								'viget-blocks-toolkit'
+							) }
+							value={ visibility.customBreakpoint.width }
+							onChange={ ( value ) =>
+								updateCustomBreakpoint( 'width', value )
+							}
+							min={ 0 }
+							step={ 1 }
 						/>
 						<SelectControl
-							label={__('Unit', 'viget-blocks-toolkit')}
-							value={visibility.customBreakpoint.unit}
-							options={[
+							label={ __( 'Unit', 'viget-blocks-toolkit' ) }
+							value={ visibility.customBreakpoint.unit }
+							options={ [
 								{ label: 'px', value: 'px' },
 								{ label: '%', value: '%' },
 								{ label: 'rem', value: 'rem' },
 								{ label: 'vw', value: 'vw' },
 								{ label: 'vh', value: 'vh' },
-							]}
-							onChange={(value) => updateCustomBreakpoint('unit', value)}
+							] }
+							onChange={ ( value ) =>
+								updateCustomBreakpoint( 'unit', value )
+							}
 						/>
 					</div>
 					<ToggleGroupControl
-						label={__('Visibility Action', 'viget-blocks-toolkit')}
-						value={visibility.customBreakpoint.action}
-						onChange={(value) => updateCustomBreakpoint('action', value)}
+						label={ __(
+							'Visibility Action',
+							'viget-blocks-toolkit'
+						) }
+						value={ visibility.customBreakpoint.action }
+						onChange={ ( value ) =>
+							updateCustomBreakpoint( 'action', value )
+						}
 						isBlock
 					>
 						<ToggleGroupControlOption
 							value="show"
-							label={__('Show', 'viget-blocks-toolkit')}
+							label={ __( 'Show', 'viget-blocks-toolkit' ) }
 						/>
 						<ToggleGroupControlOption
 							value="hide"
-							label={__('Hide', 'viget-blocks-toolkit')}
+							label={ __( 'Hide', 'viget-blocks-toolkit' ) }
 						/>
 					</ToggleGroupControl>
 					<ToggleControl
-						label={__('Mobile First', 'viget-blocks-toolkit')}
-						help={__(
+						label={ __( 'Mobile First', 'viget-blocks-toolkit' ) }
+						help={ __(
 							'When enabled, applies to screens smaller than breakpoint',
-							'viget-blocks-toolkit',
-						)}
-						checked={visibility.customBreakpoint.mobileFirst}
-						onChange={(value) => updateCustomBreakpoint('mobileFirst', value)}
+							'viget-blocks-toolkit'
+						) }
+						checked={ visibility.customBreakpoint.mobileFirst }
+						onChange={ ( value ) =>
+							updateCustomBreakpoint( 'mobileFirst', value )
+						}
 					/>
 				</>
-			)}
+			) }
 		</>
 	);
 }
@@ -165,34 +179,35 @@ const responsiveToolbarDropdownProps = {
 /**
  * Add breakpoint visibility controls to block
  */
-const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
-	return (props) => {
-		if (excludeBlocks.includes(props.name) || !props.attributes) {
-			return <BlockEdit {...props} />;
+const withBreakpointVisibility = createHigherOrderComponent( ( BlockEdit ) => {
+	return ( props ) => {
+		if ( excludeBlocks.includes( props.name ) || ! props.attributes ) {
+			return <BlockEdit { ...props } />;
 		}
 
 		const { attributes, setAttributes } = props;
 
 		const showToolbarControls = useSelect(
-			(select) => {
-				const { getBlockParents, getBlock } = select('core/block-editor');
-				const parents = getBlockParents(props.clientId) || [];
-				for (const parentId of parents) {
-					const parent = getBlock(parentId);
-					if (parent?.attributes?.templateLock === 'contentOnly') {
+			( select ) => {
+				const { getBlockParents, getBlock } =
+					select( 'core/block-editor' );
+				const parents = getBlockParents( props.clientId ) || [];
+				for ( const parentId of parents ) {
+					const parent = getBlock( parentId );
+					if ( parent?.attributes?.templateLock === 'contentOnly' ) {
 						return true;
 					}
 
 					const parentType = parent?.name
-						? select('core/blocks').getBlockType(parent.name)
+						? select( 'core/blocks' ).getBlockType( parent.name )
 						: null;
-					if (parentType?.supports?.contentRole) {
+					if ( parentType?.supports?.contentRole ) {
 						return true;
 					}
 				}
 				return false;
 			},
-			[props.clientId],
+			[ props.clientId ]
 		);
 
 		const visibility = attributes.breakpointVisibility || {
@@ -208,27 +223,27 @@ const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
 			visibility.tablet ||
 			visibility.mobile;
 
-		const [isPanelOpen, setIsPanelOpen] = useState(isVisibilitySet);
+		const [ isPanelOpen, setIsPanelOpen ] = useState( isVisibilitySet );
 
-		const updateVisibility = (key, value) => {
-			setAttributes({
+		const updateVisibility = ( key, value ) => {
+			setAttributes( {
 				breakpointVisibility: {
 					...visibility,
-					[key]: value,
+					[ key ]: value,
 				},
-			});
+			} );
 		};
 
-		const updateCustomBreakpoint = (key, value) => {
-			setAttributes({
+		const updateCustomBreakpoint = ( key, value ) => {
+			setAttributes( {
 				breakpointVisibility: {
 					...visibility,
 					customBreakpoint: {
 						...visibility.customBreakpoint,
-						[key]: value,
+						[ key ]: value,
 					},
 				},
-			});
+			} );
 		};
 
 		const visibilityClassName = isVisibilitySet
@@ -237,51 +252,52 @@ const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
 
 		const blockProps = {
 			...props,
-			className: `${props.className || ''} ${visibilityClassName}`.trim(),
+			className:
+				`${ props.className || '' } ${ visibilityClassName }`.trim(),
 			'data-visibility': isVisibilitySet ? 'true' : 'false',
 		};
 
 		const showIconToolbar =
-			showToolbarControls && isIconToolbarBlock(props.name);
+			showToolbarControls && isIconToolbarBlock( props.name );
 		const { icon: currentIcon } = attributes;
-		const iconDisplay = getToolbarIconDisplay(currentIcon);
+		const iconDisplay = getToolbarIconDisplay( currentIcon );
 
 		return (
 			<>
-				<BlockEdit {...blockProps} />
+				<BlockEdit { ...blockProps } />
 				<BlockControls>
 					<ToolbarGroup>
-						{showIconToolbar && (
+						{ showIconToolbar && (
 							<Dropdown
-								{...iconToolbarDropdownProps}
-								renderToggle={({ isOpen, onToggle }) => (
+								{ ...iconToolbarDropdownProps }
+								renderToggle={ ( { isOpen, onToggle } ) => (
 									<ToolbarButton
-										label={iconDisplay.label}
-										onClick={onToggle}
-										aria-expanded={isOpen}
+										label={ iconDisplay.label }
+										onClick={ onToggle }
+										aria-expanded={ isOpen }
 										className={
 											currentIcon
 												? 'vgtbt-toolbar-icon-trigger vgtbt-toolbar-icon-trigger--has-selection'
 												: 'vgtbt-toolbar-icon-trigger'
 										}
 									>
-										{iconDisplay.icon}
+										{ iconDisplay.icon }
 									</ToolbarButton>
-								)}
-								renderContent={() => (
+								) }
+								renderContent={ () => (
 									<div className="vgtbt-toolbar-dropdown__body vgtbt-toolbar-dropdown__body--icon">
 										<IconPickerPanel
-											attributes={attributes}
-											setAttributes={setAttributes}
+											attributes={ attributes }
+											setAttributes={ setAttributes }
 										/>
 									</div>
-								)}
+								) }
 							/>
-						)}
-						{showToolbarControls && (
+						) }
+						{ showToolbarControls && (
 							<Dropdown
-								{...responsiveToolbarDropdownProps}
-								renderToggle={({ isOpen, onToggle }) => (
+								{ ...responsiveToolbarDropdownProps }
+								renderToggle={ ( { isOpen, onToggle } ) => (
 									<ToolbarButton
 										className={
 											isVisibilitySet || isOpen
@@ -289,41 +305,48 @@ const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
 												: 'vgtbt-toolbar-responsive-trigger'
 										}
 										icon="smartphone"
-										label={__('Responsive', 'viget-blocks-toolkit')}
-										onClick={onToggle}
-										aria-expanded={isOpen}
+										label={ __(
+											'Responsive',
+											'viget-blocks-toolkit'
+										) }
+										onClick={ onToggle }
+										aria-expanded={ isOpen }
 									/>
-								)}
-								renderContent={() => (
+								) }
+								renderContent={ () => (
 									<div className="vgtbt-toolbar-dropdown__body vgtbt-toolbar-dropdown__body--responsive">
 										<ResponsivePanelFields
-											visibility={visibility}
-											updateVisibility={updateVisibility}
-											updateCustomBreakpoint={updateCustomBreakpoint}
+											visibility={ visibility }
+											updateVisibility={
+												updateVisibility
+											}
+											updateCustomBreakpoint={
+												updateCustomBreakpoint
+											}
 										/>
 									</div>
-								)}
+								) }
 							/>
-						)}
+						) }
 					</ToolbarGroup>
 				</BlockControls>
 				<InspectorControls>
 					<PanelBody
-						title={__('Responsive', 'viget-blocks-toolkit')}
-						opened={isPanelOpen}
-						onToggle={() => setIsPanelOpen(!isPanelOpen)}
+						title={ __( 'Responsive', 'viget-blocks-toolkit' ) }
+						opened={ isPanelOpen }
+						onToggle={ () => setIsPanelOpen( ! isPanelOpen ) }
 					>
 						<ResponsivePanelFields
-							visibility={visibility}
-							updateVisibility={updateVisibility}
-							updateCustomBreakpoint={updateCustomBreakpoint}
+							visibility={ visibility }
+							updateVisibility={ updateVisibility }
+							updateCustomBreakpoint={ updateCustomBreakpoint }
 						/>
 					</PanelBody>
 				</InspectorControls>
 			</>
 		);
 	};
-}, 'withBreakpointVisibility');
+}, 'withBreakpointVisibility' );
 
 /**
  * Add visibility attributes to blocks
@@ -331,8 +354,11 @@ const withBreakpointVisibility = createHigherOrderComponent((BlockEdit) => {
 addFilter(
 	'blocks.registerBlockType',
 	'viget-blocks-toolkit/breakpoint-visibility-attributes',
-	(settings) => {
-		if (excludeBlocks.includes(settings.name) || !settings.attributes) {
+	( settings ) => {
+		if (
+			excludeBlocks.includes( settings.name ) ||
+			! settings.attributes
+		) {
 			return settings;
 		}
 
@@ -347,14 +373,14 @@ addFilter(
 			},
 		};
 		return settings;
-	},
+	}
 );
 
 // Apply the breakpoint visibility to all blocks
 addFilter(
 	'editor.BlockEdit',
 	'viget-blocks-toolkit/with-breakpoint-visibility',
-	withBreakpointVisibility,
+	withBreakpointVisibility
 );
 
 /**
@@ -363,25 +389,25 @@ addFilter(
 addFilter(
 	'blocks.getSaveContent.extraProps',
 	'viget-blocks-toolkit/breakpoint-visibility-attributes',
-	(extraProps, blockType, attributes) => {
-		if (!attributes.breakpointVisibility) {
+	( extraProps, blockType, attributes ) => {
+		if ( ! attributes.breakpointVisibility ) {
 			return extraProps;
 		}
 
 		const { useCustom, desktop, tablet, mobile } =
 			attributes.breakpointVisibility;
 
-		if (!useCustom) {
-			if (desktop) {
-				extraProps['data-visibility-desktop'] = 'hide';
+		if ( ! useCustom ) {
+			if ( desktop ) {
+				extraProps[ 'data-visibility-desktop' ] = 'hide';
 			}
-			if (tablet) {
-				extraProps['data-visibility-tablet'] = 'hide';
+			if ( tablet ) {
+				extraProps[ 'data-visibility-tablet' ] = 'hide';
 			}
-			if (mobile) {
-				extraProps['data-visibility-mobile'] = 'hide';
+			if ( mobile ) {
+				extraProps[ 'data-visibility-mobile' ] = 'hide';
 			}
 		}
 		return extraProps;
-	},
+	}
 );
