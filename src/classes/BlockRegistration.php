@@ -58,6 +58,9 @@ class BlockRegistration {
 		// Disable inner blocks wrapper.
 		self::disable_inner_blocks_wrap();
 
+		// Stop core rendering a bare "align" class.
+		self::remove_empty_align_default();
+
 		// Allow for core block style de-registration.
 		self::unregister_block_styles();
 
@@ -917,6 +920,30 @@ class BlockRegistration {
 				return false;
 			},
 			10,
+			2
+		);
+	}
+
+	/**
+	 * Remove the empty `align` default ACF gives every block.
+	 *
+	 * Core's align support adds `align{$value}` whenever the attribute is set, so
+	 * the empty default renders a bare `align` class. A default set in block.json
+	 * is kept.
+	 *
+	 * @return void
+	 */
+	private static function remove_empty_align_default(): void {
+		add_filter(
+			'register_block_type_args',
+			function ( array $args, string $name ): array {
+				if ( str_starts_with( $name, 'acf/' ) && '' === ( $args['attributes']['align']['default'] ?? null ) ) {
+					unset( $args['attributes']['align']['default'] );
+				}
+
+				return $args;
+			},
+			20,
 			2
 		);
 	}
