@@ -30,6 +30,13 @@ No. There are several features of this plugin that can be used without Advanced 
 
 == Changelog ==
 
+= 1.2.1 =
+
+* Fixed the Breakpoint Visibility "Mobile First" help text. Mobile First uses `min-width`, so it applies at or above the breakpoint.
+* RTL locales load `build/style-rtl.css` and `build/editor-rtl.css`. Both shipped in 1.1.9 and were never used.
+* `uninstall.php` deletes each site's generated `uploads/viget-blocks-toolkit/icons.json` and the pre-1.2.0 `github_updater_*` release cache.
+* Fixed `uninstall.php` fataling on single sites, where `switch_to_blog()` doesn't exist. It also covers every site on a network with more than 100 sites now.
+
 = 1.2.0 =
 
 * Added `postFieldGroups` to ACF block.json settings. A block lists post-level ACF field groups, and its Edit view shows their fields in place of their meta box, with a live Preview of the unsaved values. See the README.

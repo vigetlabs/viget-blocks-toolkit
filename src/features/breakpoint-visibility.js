@@ -133,7 +133,7 @@ function ResponsivePanelFields( {
 					<ToggleControl
 						label={ __( 'Mobile First', 'viget-blocks-toolkit' ) }
 						help={ __(
-							'When enabled, applies to screens smaller than breakpoint',
+							'When enabled, applies to screens at or above the breakpoint',
 							'viget-blocks-toolkit'
 						) }
 						checked={ visibility.customBreakpoint.mobileFirst }

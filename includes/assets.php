@@ -69,6 +69,7 @@ add_action(
 			[],
 			VGTBT_VERSION
 		);
+		wp_style_add_data( 'vgtbt-block-styles', 'rtl', 'replace' );
 
 		wp_set_script_translations(
 			'vgtbt-editor-scripts',
@@ -119,7 +120,7 @@ add_action(
 			return;
 		}
 
-		$editor_css_path = VGTBT_PLUGIN_PATH . 'build/editor.css';
+		$editor_css_path = VGTBT_PLUGIN_PATH . ( is_rtl() ? 'build/editor-rtl.css' : 'build/editor.css' );
 		if ( file_exists( $editor_css_path ) ) {
 			$editor_css = file_get_contents( $editor_css_path ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Local file.
 			if ( false !== $editor_css ) {

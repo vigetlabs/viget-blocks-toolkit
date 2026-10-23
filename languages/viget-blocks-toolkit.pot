@@ -209,7 +209,7 @@ msgstr ""
 
 #: build/index.js:1
 #: src/features/breakpoint-visibility.js:123
-msgid "When enabled, applies to screens smaller than breakpoint"
+msgid "When enabled, applies to screens at or above the breakpoint"
 msgstr ""
 
 #: build/index.js:1
