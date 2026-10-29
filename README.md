@@ -238,6 +238,17 @@ $block['sync'] // Whether render-time pattern sync is enabled.
 $block['slug'] // The slug of the block, without the `acf/` prefix.
 ```
 
+## Block Icons
+
+Icons are sized relative to the text, `1em` wide and `0.7em` tall. Set `--vgtbt-icon-width` and `--vgtbt-icon-height` on the block to change that.
+
+```css
+.is-style-icon-only {
+	--vgtbt-icon-width: 20px;
+	--vgtbt-icon-height: 20px;
+}
+```
+
 ## Breakpoint Visibility
 
 This block settings panel is available on any supported block in the Full Site Editor and in post block editor. It allows you to set visibility for each block at different breakpoints, so blocks can be hidden or shown based on the screen size. There is a setting to also specify a breakpoint and whether the block should be hidden or shown at that breakpoint.

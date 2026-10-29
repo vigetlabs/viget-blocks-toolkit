@@ -18,8 +18,8 @@
 		svg {
 			color: currentcolor;
 			fill: currentcolor;
-			height: 0.7em;
-			width: 1em;
+			height: var(--vgtbt-icon-height, 0.7em);
+			width: var(--vgtbt-icon-width, 1em);
 		}
 	}
 }
