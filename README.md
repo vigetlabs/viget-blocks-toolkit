@@ -244,22 +244,24 @@ This block settings panel is available on any supported block in the Full Site E
 
 When a parent block is using `templateLock: "contentOnly"`, quick visibility and icon controls remain available in block toolbar controls.
 
-Themes can add breakpoints next to Desktop, Tablet, and Mobile with the `vgtbt_breakpoint_visibility_breakpoints` filter. Each one gets a toggle, and hides its blocks while a `selector` (for an ancestor, like a class a script adds to `html`) or a `media` query applies, or both.
+The `vgtbt_breakpoint_visibility_breakpoints` filter changes the breakpoints. Each one gets a toggle, and hides its blocks while a `selector` (for an ancestor, like a class a script adds to `html`) or a `media` query applies, or both. Themes can add their own, and change the label or `media` of Desktop (1024px and up), Tablet (768px-1023px), and Mobile (up to 767px).
+
+`hidden` takes a toggle out of the panel. Blocks that already use it keep hiding, and the toggle still shows on them so it can be turned off. Desktop, Tablet, and Mobile can't be removed or renamed, since static blocks save their attributes.
 
 ```php
 add_filter(
 	'vgtbt_breakpoint_visibility_breakpoints',
-	fn( array $breakpoints ): array => [
-		...$breakpoints,
-		'mobile-menu' => [
+	function ( array $breakpoints ): array {
+		$breakpoints['mobile']['media']  = '(max-width: 599px)';
+		$breakpoints['tablet']['hidden'] = true;
+
+		$breakpoints['mobile-menu'] = [
 			'label'    => __( 'Hide with the Mobile Menu', 'my-theme' ),
 			'selector' => 'html.has-mobile-menu',
-		],
-		'wide' => [
-			'label' => __( 'Hide on Wide Screens', 'my-theme' ),
-			'media' => '(min-width: 1440px)',
-		],
-	]
+		];
+
+		return $breakpoints;
+	}
 );
 ```
 
