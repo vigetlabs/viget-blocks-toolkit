@@ -19,8 +19,86 @@ class BreakpointVisibility {
 		// Add block breakpoint visibility CSS.
 		self::breakpoint_visibility();
 
+		// Hide blocks at the breakpoints themes add.
+		add_action( 'enqueue_block_assets', [ $this, 'add_breakpoint_css' ], 20 );
+
 		// Localize JS vars.
 		$this->localize_js_vars();
+	}
+
+	/**
+	 * Get the breakpoints themes add to the built-in Desktop, Tablet, and Mobile.
+	 *
+	 * Each one is a slug, a toggle label, and when it applies: a `selector` for an ancestor
+	 * (like a class a script adds to `html`), a `media` query, or both.
+	 *
+	 * @return array<string, array{label: string, selector: string, media: string}>
+	 */
+	public static function get_breakpoints(): array {
+		/**
+		 * Filters the extra breakpoints in the Breakpoint Visibility panel.
+		 *
+		 * @param array $breakpoints Breakpoints by slug, each with `label`, and `selector` and/or `media`.
+		 */
+		$breakpoints = apply_filters( 'vgtbt_breakpoint_visibility_breakpoints', [] );
+		$valid       = [];
+
+		foreach ( (array) $breakpoints as $slug => $breakpoint ) {
+			$slug     = sanitize_key( $slug );
+			$selector = self::sanitize_css_value( $breakpoint['selector'] ?? '' );
+			$media    = self::sanitize_css_value( $breakpoint['media'] ?? '' );
+
+			// The built-in breakpoints keep their own CSS.
+			if ( ! $slug || in_array( $slug, [ 'desktop', 'tablet', 'mobile', 'usecustom', 'custombreakpoint' ], true ) || ( ! $selector && ! $media ) ) {
+				continue;
+			}
+
+			$valid[ $slug ] = [
+				'label'    => (string) ( $breakpoint['label'] ?? $slug ),
+				'selector' => $selector,
+				'media'    => $media,
+			];
+		}
+
+		return $valid;
+	}
+
+	/**
+	 * Add the CSS that hides blocks at the extra breakpoints.
+	 *
+	 * @return void
+	 */
+	public function add_breakpoint_css(): void {
+		$css = '';
+
+		foreach ( self::get_breakpoints() as $slug => $breakpoint ) {
+			$rule = "[data-visibility-{$slug}=\"hide\"] { display: none !important; }";
+
+			if ( $breakpoint['selector'] ) {
+				$rule = ":where({$breakpoint['selector']}) {$rule}";
+			}
+
+			if ( $breakpoint['media'] ) {
+				$rule = "@media {$breakpoint['media']} { {$rule} }";
+			}
+
+			$css .= $rule . "\n";
+		}
+
+		if ( $css ) {
+			wp_add_inline_style( 'vgtbt-block-styles', $css );
+		}
+	}
+
+	/**
+	 * Strip characters that would let a filtered value escape its rule or the style tag.
+	 *
+	 * @param mixed $value Filtered value.
+	 *
+	 * @return string
+	 */
+	private static function sanitize_css_value( mixed $value ): string {
+		return is_string( $value ) ? trim( str_replace( [ '{', '}', ';', '<', '*/' ], '', $value ) ) : '';
 	}
 
 	/**
@@ -49,7 +127,7 @@ class BreakpointVisibility {
 				$processor->set_attribute( 'data-block', $block_id );
 
 				if ( empty( $visibility['useCustom'] ) ) {
-					foreach ( [ 'desktop', 'tablet', 'mobile' ] as $breakpoint ) {
+					foreach ( [ 'desktop', 'tablet', 'mobile', ...array_keys( self::get_breakpoints() ) ] as $breakpoint ) {
 						if ( ! empty( $visibility[ $breakpoint ] ) ) {
 							$processor->set_attribute( "data-visibility-{$breakpoint}", 'hide' );
 						}
@@ -121,6 +199,14 @@ class BreakpointVisibility {
 					'vgtbtBreakpointVisibility',
 					[
 						'excludeBlocks' => $this->get_exclude_blocks(),
+						'breakpoints'   => array_map(
+							fn( string $slug, array $breakpoint ): array => [
+								'slug'  => $slug,
+								'label' => $breakpoint['label'],
+							],
+							array_keys( self::get_breakpoints() ),
+							self::get_breakpoints()
+						),
 					]
 				);
 			},

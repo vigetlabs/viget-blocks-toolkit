@@ -244,6 +244,25 @@ This block settings panel is available on any supported block in the Full Site E
 
 When a parent block is using `templateLock: "contentOnly"`, quick visibility and icon controls remain available in block toolbar controls.
 
+Themes can add breakpoints next to Desktop, Tablet, and Mobile with the `vgtbt_breakpoint_visibility_breakpoints` filter. Each one gets a toggle, and hides its blocks while a `selector` (for an ancestor, like a class a script adds to `html`) or a `media` query applies, or both.
+
+```php
+add_filter(
+	'vgtbt_breakpoint_visibility_breakpoints',
+	fn( array $breakpoints ): array => [
+		...$breakpoints,
+		'mobile-menu' => [
+			'label'    => __( 'Hide with the Mobile Menu', 'my-theme' ),
+			'selector' => 'html.has-mobile-menu',
+		],
+		'wide' => [
+			'label' => __( 'Hide on Wide Screens', 'my-theme' ),
+			'media' => '(min-width: 1440px)',
+		],
+	]
+);
+```
+
 ## Main Helper Functions
 
 ### `vgtbt()`

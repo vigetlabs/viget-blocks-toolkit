@@ -25,6 +25,9 @@ import {
 
 const excludeBlocks = window.vgtbtBreakpointVisibility?.excludeBlocks || [];
 
+// Breakpoints the theme adds with vgtbt_breakpoint_visibility_breakpoints. PHP writes their attributes.
+const extraBreakpoints = window.vgtbtBreakpointVisibility?.breakpoints || [];
+
 const DEFAULT_BREAKPOINT_VISIBILITY = {
 	useCustom: false,
 	desktop: false,
@@ -71,6 +74,15 @@ function ResponsivePanelFields( {
 				onChange={ ( value ) => updateVisibility( 'mobile', value ) }
 				disabled={ visibility.useCustom }
 			/>
+			{ extraBreakpoints.map( ( { slug, label } ) => (
+				<ToggleControl
+					key={ slug }
+					label={ label }
+					checked={ !! visibility[ slug ] }
+					onChange={ ( value ) => updateVisibility( slug, value ) }
+					disabled={ visibility.useCustom }
+				/>
+			) ) }
 
 			<hr />
 
@@ -221,7 +233,8 @@ const withBreakpointVisibility = createHigherOrderComponent( ( BlockEdit ) => {
 			visibility.useCustom ||
 			visibility.desktop ||
 			visibility.tablet ||
-			visibility.mobile;
+			visibility.mobile ||
+			extraBreakpoints.some( ( { slug } ) => visibility[ slug ] );
 
 		const [ isPanelOpen, setIsPanelOpen ] = useState( isVisibilitySet );
 
