@@ -20,7 +20,7 @@
     "plugin-zip": "wp-scripts plugin-zip"
   },
   "dependencies": {
-    "@wordpress/dom-ready": "^4.55.0",
+    "@wordpress/dom-ready": "^4.56.0",
     "classnames": "^2.5.1"
   },
   "devDependencies": {
@@ -28,8 +28,8 @@
     "@wordpress/blocks": "^13.10.0",
     "@wordpress/components": "^28.13.0",
     "@wordpress/compose": "^7.46.0",
-    "@wordpress/data": "^10.55.0",
-    "@wordpress/edit-post": "^8.55.0",
+    "@wordpress/data": "^10.56.0",
+    "@wordpress/edit-post": "^8.56.0",
     "@wordpress/edit-site": "^6.50.0",
     "@wordpress/element": "^6.46.0",
     "@wordpress/hooks": "^4.55.0",
