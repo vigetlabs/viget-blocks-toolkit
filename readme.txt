@@ -30,12 +30,15 @@ No. There are several features of this plugin that can be used without Advanced 
 
 == Changelog ==
 
-= 1.2.1 =
+= 1.3.0 =
 
+* Added the `vgtbt_breakpoint_visibility_breakpoints` filter. Themes can add their own Breakpoint Visibility toggles, by `selector`, `media` query, or both, and change or hide Desktop, Tablet, and Mobile. See the README.
+* Block Icons are sized with `--vgtbt-icon-width` and `--vgtbt-icon-height`, so an "icon only" style that sets `font-size: 0` no longer collapses them. Default sizes don't change.
 * Fixed the Breakpoint Visibility "Mobile First" help text. Mobile First uses `min-width`, so it applies at or above the breakpoint.
 * RTL locales load `build/style-rtl.css` and `build/editor-rtl.css`. Both shipped in 1.1.9 and were never used.
 * `uninstall.php` deletes each site's generated `uploads/viget-blocks-toolkit/icons.json` and the pre-1.2.0 `github_updater_*` release cache.
 * Fixed `uninstall.php` fataling on single sites, where `switch_to_blog()` doesn't exist. It also covers every site on a network with more than 100 sites now.
+* Updated to @wordpress/scripts 36, clearing the outstanding dependency advisories.
 
 = 1.2.0 =
 
