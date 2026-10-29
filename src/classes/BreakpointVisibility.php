@@ -19,8 +19,126 @@ class BreakpointVisibility {
 		// Add block breakpoint visibility CSS.
 		self::breakpoint_visibility();
 
+		// Hide blocks at each breakpoint.
+		add_action( 'enqueue_block_assets', [ $this, 'add_breakpoint_css' ], 20 );
+
 		// Localize JS vars.
 		$this->localize_js_vars();
+	}
+
+	/**
+	 * Get the built-in breakpoints.
+	 *
+	 * @return array<string, array{label: string, media: string}>
+	 */
+	public static function get_default_breakpoints(): array {
+		return [
+			'desktop' => [
+				'label' => __( 'Hide on Desktop', 'viget-blocks-toolkit' ),
+				'media' => '(min-width: 1024px)',
+			],
+			'tablet'  => [
+				'label' => __( 'Hide on Tablet', 'viget-blocks-toolkit' ),
+				'media' => '(min-width: 768px) and (max-width: 1023px)',
+			],
+			'mobile'  => [
+				'label' => __( 'Hide on Mobile', 'viget-blocks-toolkit' ),
+				'media' => '(max-width: 767px)',
+			],
+		];
+	}
+
+	/**
+	 * Get the breakpoints in the Breakpoint Visibility panel: Desktop, Tablet, Mobile, and any a theme adds.
+	 *
+	 * Each one is a toggle label, and when it applies: a `selector` for an ancestor (like a class a
+	 * script adds to `html`), a `media` query, or both. `hidden` takes its toggle out of the panel.
+	 *
+	 * The built-ins can't be removed or renamed. Static blocks save their attributes, so those blocks
+	 * would stop validating. A built-in missing from the filter, or left without a condition, keeps its default.
+	 *
+	 * @return array<string, array{label: string, selector: string, media: string, hidden: bool, builtin: bool}>
+	 */
+	public static function get_breakpoints(): array {
+		$defaults = self::get_default_breakpoints();
+
+		/**
+		 * Filters the breakpoints in the Breakpoint Visibility panel.
+		 *
+		 * @param array $breakpoints Breakpoints by slug, each with `label`, `selector` and/or `media`, and `hidden`.
+		 */
+		$breakpoints = [ ...$defaults, ...(array) apply_filters( 'vgtbt_breakpoint_visibility_breakpoints', $defaults ) ];
+		$valid       = [];
+
+		foreach ( $breakpoints as $slug => $breakpoint ) {
+			$slug    = sanitize_key( $slug );
+			$builtin = isset( $defaults[ $slug ] );
+
+			// These are the panel's own attribute keys.
+			if ( ! $slug || in_array( $slug, [ 'usecustom', 'custombreakpoint' ], true ) ) {
+				continue;
+			}
+
+			$breakpoint = [ ...( $defaults[ $slug ] ?? [] ), ...(array) $breakpoint ];
+			$selector   = self::sanitize_css_value( $breakpoint['selector'] ?? '' );
+			$media      = self::sanitize_css_value( $breakpoint['media'] ?? '' );
+
+			if ( $builtin && ! $selector && ! $media ) {
+				$media = $defaults[ $slug ]['media'];
+			}
+
+			if ( ! $selector && ! $media ) {
+				continue;
+			}
+
+			$valid[ $slug ] = [
+				'label'    => (string) ( $breakpoint['label'] ?? $slug ),
+				'selector' => $selector,
+				'media'    => $media,
+				'hidden'   => ! empty( $breakpoint['hidden'] ),
+				'builtin'  => $builtin,
+			];
+		}
+
+		return $valid;
+	}
+
+	/**
+	 * Add the CSS that hides blocks at each breakpoint.
+	 *
+	 * @return void
+	 */
+	public function add_breakpoint_css(): void {
+		$css = '';
+
+		foreach ( self::get_breakpoints() as $slug => $breakpoint ) {
+			$rule = "[data-visibility-{$slug}=\"hide\"] { display: none !important; }";
+
+			if ( $breakpoint['selector'] ) {
+				$rule = ":where({$breakpoint['selector']}) {$rule}";
+			}
+
+			if ( $breakpoint['media'] ) {
+				$rule = "@media {$breakpoint['media']} { {$rule} }";
+			}
+
+			$css .= $rule . "\n";
+		}
+
+		if ( $css ) {
+			wp_add_inline_style( 'vgtbt-block-styles', $css );
+		}
+	}
+
+	/**
+	 * Strip characters that would let a filtered value escape its rule or the style tag.
+	 *
+	 * @param mixed $value Filtered value.
+	 *
+	 * @return string
+	 */
+	private static function sanitize_css_value( mixed $value ): string {
+		return is_string( $value ) ? trim( str_replace( [ '{', '}', ';', '<', '*/' ], '', $value ) ) : '';
 	}
 
 	/**
@@ -49,7 +167,7 @@ class BreakpointVisibility {
 				$processor->set_attribute( 'data-block', $block_id );
 
 				if ( empty( $visibility['useCustom'] ) ) {
-					foreach ( [ 'desktop', 'tablet', 'mobile' ] as $breakpoint ) {
+					foreach ( array_keys( self::get_breakpoints() ) as $breakpoint ) {
 						if ( ! empty( $visibility[ $breakpoint ] ) ) {
 							$processor->set_attribute( "data-visibility-{$breakpoint}", 'hide' );
 						}
@@ -121,6 +239,16 @@ class BreakpointVisibility {
 					'vgtbtBreakpointVisibility',
 					[
 						'excludeBlocks' => $this->get_exclude_blocks(),
+						'breakpoints'   => array_map(
+							fn( string $slug, array $breakpoint ): array => [
+								'slug'    => $slug,
+								'label'   => $breakpoint['label'],
+								'hidden'  => $breakpoint['hidden'],
+								'builtin' => $breakpoint['builtin'],
+							],
+							array_keys( self::get_breakpoints() ),
+							self::get_breakpoints()
+						),
 					]
 				);
 			},
