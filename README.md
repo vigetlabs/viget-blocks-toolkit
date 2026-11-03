@@ -149,6 +149,7 @@ Edit post-level ACF field groups inside a block. List the field group keys under
 * Values still save to the post through the meta box, so `get_field( 'name', $post_id )` reads them as usual.
 * ACF validation covers the fields in either mode. If a save fails on one of them while the block is in Preview, it switches to Edit and is selected so the error shows.
 * The block can only be used once per post (`supports.multiple` is set to `false`). Any extra copy shows a notice in Edit mode.
+* A copy inside a synced pattern can't be edited there, so it renders as usual and leaves the fields in their meta box.
 * These groups always have **Show in REST API** and every field's **Allow Access to Value in Editor UI** turned on.
 
 #### `blockPattern`

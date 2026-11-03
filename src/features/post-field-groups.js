@@ -159,7 +159,23 @@ function watchMetaBoxPane() {
 }
 
 /**
- * Whether this is the first block on the post using any of these field groups.
+ * Whether a block is inside a synced pattern, where it can't be edited.
+ *
+ * @param {Function} select   Registry select.
+ * @param {string}   clientId Block client id.
+ * @return {boolean} Whether it's in a synced pattern.
+ */
+function isInSyncedPattern( select, clientId ) {
+	return (
+		select( 'core/block-editor' ).getBlockParentsByBlockName(
+			clientId,
+			'core/block'
+		).length > 0
+	);
+}
+
+/**
+ * Whether this is the first block on the post using any of these field groups, outside synced patterns.
  *
  * @param {string}   clientId Block client id.
  * @param {string[]} groups   Field group keys.
@@ -170,10 +186,11 @@ function useIsOwner( clientId, groups ) {
 		( select ) => {
 			const { getClientIdsWithDescendants, getBlockName } =
 				select( 'core/block-editor' );
-			const owner = getClientIdsWithDescendants().find( ( id ) =>
-				( blockGroups[ getBlockName( id ) ] || [] ).some( ( key ) =>
-					groups.includes( key )
-				)
+			const owner = getClientIdsWithDescendants().find(
+				( id ) =>
+					( blockGroups[ getBlockName( id ) ] || [] ).some( ( key ) =>
+						groups.includes( key )
+					) && ! isInSyncedPattern( select, id )
 			);
 
 			return owner === clientId;
@@ -435,13 +452,41 @@ addFilter(
 			: settings
 );
 
+/**
+ * A block in a synced pattern renders as usual, and leaves the fields in their meta box.
+ *
+ * @param {Object}   props           Props.
+ * @param {Function} props.BlockEdit Original block edit component.
+ * @param {string[]} props.groups    Field group keys.
+ * @param {Object}   props.props     Block edit props.
+ * @return {Element} Block edit.
+ */
+function PostFieldGroupsBlock( { BlockEdit, groups, props } ) {
+	const inPattern = useSelect(
+		( select ) => isInSyncedPattern( select, props.clientId ),
+		[ props.clientId ]
+	);
+
+	if ( inPattern ) {
+		return <BlockEdit { ...props } />;
+	}
+
+	return (
+		<PostFieldGroupsEdit
+			BlockEdit={ BlockEdit }
+			groups={ groups }
+			props={ props }
+		/>
+	);
+}
+
 addFilter(
 	'editor.BlockEdit',
 	'viget-blocks-toolkit/post-field-groups',
 	createHigherOrderComponent(
 		( BlockEdit ) => ( props ) =>
 			blockGroups[ props.name ]?.length ? (
-				<PostFieldGroupsEdit
+				<PostFieldGroupsBlock
 					BlockEdit={ BlockEdit }
 					groups={ blockGroups[ props.name ] }
 					props={ props }
