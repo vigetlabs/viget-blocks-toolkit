@@ -10,8 +10,9 @@
 
 namespace Viget\BlocksToolkit;
 
-use WP_Block_Template;
 use WP_Post;
+use WP_REST_Response;
+use WP_REST_Templates_Controller;
 
 /**
  * Class NavigationSlugHandler
@@ -47,27 +48,13 @@ class NavigationSlugHandler {
 
 		// Resolve slug references in templates and template parts, so the editor loads the same menus the front end renders.
 		add_filter(
-			'get_block_templates',
+			'rest_request_after_callbacks',
 			[
 				$this,
-				'resolve_templates_navigation_slugs',
-			]
-		);
-
-		add_filter(
-			'get_block_template',
-			[
-				$this,
-				'resolve_template_navigation_slugs',
-			]
-		);
-
-		add_filter(
-			'get_block_file_template',
-			[
-				$this,
-				'resolve_template_navigation_slugs',
-			]
+				'resolve_rest_template_navigation_slugs',
+			],
+			10,
+			2
 		);
 
 		// Hook into navigation post updates to keep references in sync.
@@ -116,38 +103,36 @@ class NavigationSlugHandler {
 	}
 
 	/**
-	 * Resolve navigation slug references in a list of templates or template parts.
+	 * Resolve navigation slug references in template and template part REST responses.
 	 *
-	 * @param array $templates Block templates.
+	 * Theme files and saved copies hold the menu IDs of whoever saved them, which differ between environments and
+	 * sites. The editor loads menus by `ref`, so it gets the ID that matches `refSlug` here.
 	 *
-	 * @return array
+	 * @param WP_REST_Response|WP_Error|mixed $response Result to send to the client.
+	 * @param array                           $handler  Route handler used for the request.
+	 *
+	 * @return WP_REST_Response|WP_Error|mixed
 	 */
-	public function resolve_templates_navigation_slugs( $templates ) {
-		if ( ! is_array( $templates ) ) {
-			return $templates;
+	public function resolve_rest_template_navigation_slugs( $response, $handler ) {
+		if ( ! $response instanceof WP_REST_Response || ! is_array( $handler['callback'] ?? null ) || ! $handler['callback'][0] instanceof WP_REST_Templates_Controller ) {
+			return $response;
 		}
 
-		return array_map( [ $this, 'resolve_template_navigation_slugs' ], $templates );
-	}
+		$data = $response->get_data();
 
-	/**
-	 * Resolve navigation slug references in a template or template part.
-	 *
-	 * Theme files hold the menu IDs of whoever saved them, which differ between environments and sites. The editor
-	 * loads menus by `ref`, so it gets the ID that matches `refSlug` here.
-	 *
-	 * @param WP_Block_Template|null $template Block template.
-	 *
-	 * @return WP_Block_Template|null
-	 */
-	public function resolve_template_navigation_slugs( $template ) {
-		if ( ! $template instanceof WP_Block_Template || empty( $template->content ) ) {
-			return $template;
+		if ( isset( $data['content']['raw'] ) ) {
+			$data['content']['raw'] = $this->resolve_content_navigation_slugs( $data['content']['raw'] );
+		} elseif ( wp_is_numeric_array( $data ) ) {
+			foreach ( $data as $index => $template ) {
+				if ( isset( $template['content']['raw'] ) ) {
+					$data[ $index ]['content']['raw'] = $this->resolve_content_navigation_slugs( $template['content']['raw'] );
+				}
+			}
 		}
 
-		$template->content = $this->resolve_content_navigation_slugs( $template->content );
+		$response->set_data( $data );
 
-		return $template;
+		return $response;
 	}
 
 	/**
