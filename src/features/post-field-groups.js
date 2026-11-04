@@ -126,7 +126,7 @@ function getFormId( wrapper ) {
 /**
  * Hide the Meta Boxes pane while none of its meta boxes are showing.
  *
- * @return {Function} Stops watching and shows the pane.
+ * @return {() => void} Stops watching and shows the pane.
  */
 function watchMetaBoxPane() {
 	const pane = document.querySelector( '.edit-post-meta-boxes-main' );
@@ -161,8 +161,8 @@ function watchMetaBoxPane() {
 /**
  * Whether a block is inside a synced pattern, where it can't be edited.
  *
- * @param {Function} select   Registry select.
- * @param {string}   clientId Block client id.
+ * @param {(store: string) => Object} select   Registry select.
+ * @param {string}                    clientId Block client id.
  * @return {boolean} Whether it's in a synced pattern.
  */
 function isInSyncedPattern( select, clientId ) {
@@ -353,10 +353,10 @@ function NotOwnerNotice() {
 /**
  * Edit/Preview toggle around the block.
  *
- * @param {Object}   props           Props.
- * @param {Function} props.BlockEdit Original block edit component.
- * @param {string[]} props.groups    Field group keys.
- * @param {Object}   props.props     Block edit props.
+ * @param {Object}                     props           Props.
+ * @param {(props: Object) => Element} props.BlockEdit Original block edit component.
+ * @param {string[]}                   props.groups    Field group keys.
+ * @param {Object}                     props.props     Block edit props.
  * @return {Element} Block edit.
  */
 function PostFieldGroupsEdit( { BlockEdit, groups, props } ) {
@@ -455,10 +455,10 @@ addFilter(
 /**
  * A block in a synced pattern renders as usual, and leaves the fields in their meta box.
  *
- * @param {Object}   props           Props.
- * @param {Function} props.BlockEdit Original block edit component.
- * @param {string[]} props.groups    Field group keys.
- * @param {Object}   props.props     Block edit props.
+ * @param {Object}                     props           Props.
+ * @param {(props: Object) => Element} props.BlockEdit Original block edit component.
+ * @param {string[]}                   props.groups    Field group keys.
+ * @param {Object}                     props.props     Block edit props.
  * @return {Element} Block edit.
  */
 function PostFieldGroupsBlock( { BlockEdit, groups, props } ) {
