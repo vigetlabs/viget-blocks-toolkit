@@ -276,6 +276,14 @@ add_filter(
 );
 ```
 
+## Navigation Menus by Slug
+
+Picking a menu in a Navigation block also saves its slug as `refSlug`. Menu IDs differ between environments and sites, so the front end renders the menu with that slug, and templates and template parts load in the editor with `ref` set to its ID. When no menu has the slug, `ref` stays as it is.
+
+```html
+<!-- wp:navigation {"ref":186,"refSlug":"footer-contact"} /-->
+```
+
 ## Main Helper Functions
 
 ### `vgtbt()`

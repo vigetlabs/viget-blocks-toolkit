@@ -11,6 +11,8 @@
 namespace Viget\BlocksToolkit;
 
 use WP_Post;
+use WP_REST_Response;
+use WP_REST_Templates_Controller;
 
 /**
  * Class NavigationSlugHandler
@@ -18,7 +20,7 @@ use WP_Post;
 class NavigationSlugHandler {
 
 	/**
-	 * Cache for navigation slug lookups to avoid repeated queries.
+	 * Cache for navigation slug lookups to avoid repeated queries, keyed by site ID, then slug.
 	 *
 	 * @var array
 	 */
@@ -42,6 +44,17 @@ class NavigationSlugHandler {
 				$this,
 				'resolve_navigation_slug',
 			]
+		);
+
+		// Resolve slug references in templates and template parts, so the editor loads the same menus the front end renders.
+		add_filter(
+			'rest_request_after_callbacks',
+			[
+				$this,
+				'resolve_rest_template_navigation_slugs',
+			],
+			10,
+			2
 		);
 
 		// Hook into navigation post updates to keep references in sync.
@@ -90,6 +103,74 @@ class NavigationSlugHandler {
 	}
 
 	/**
+	 * Resolve navigation slug references in template and template part REST responses.
+	 *
+	 * Theme files and saved copies hold the menu IDs of whoever saved them, which differ between environments and
+	 * sites. The editor loads menus by `ref`, so it gets the ID that matches `refSlug` here.
+	 *
+	 * @param WP_REST_Response|WP_Error|mixed $response Result to send to the client.
+	 * @param array                           $handler  Route handler used for the request.
+	 *
+	 * @return WP_REST_Response|WP_Error|mixed
+	 */
+	public function resolve_rest_template_navigation_slugs( $response, $handler ) {
+		if ( ! $response instanceof WP_REST_Response || ! is_array( $handler['callback'] ?? null ) || ! $handler['callback'][0] instanceof WP_REST_Templates_Controller ) {
+			return $response;
+		}
+
+		$data = $response->get_data();
+
+		if ( isset( $data['content']['raw'] ) ) {
+			$data['content']['raw'] = $this->resolve_content_navigation_slugs( $data['content']['raw'] );
+		} elseif ( wp_is_numeric_array( $data ) ) {
+			foreach ( $data as $index => $template ) {
+				if ( isset( $template['content']['raw'] ) ) {
+					$data[ $index ]['content']['raw'] = $this->resolve_content_navigation_slugs( $template['content']['raw'] );
+				}
+			}
+		}
+
+		$response->set_data( $data );
+
+		return $response;
+	}
+
+	/**
+	 * Set each slug-referenced navigation block's `ref` to the ID of the menu with that slug.
+	 *
+	 * @param string $content Block markup.
+	 *
+	 * @return string
+	 */
+	private function resolve_content_navigation_slugs( string $content ): string {
+		if ( ! str_contains( $content, '"refSlug"' ) ) {
+			return $content;
+		}
+
+		return (string) preg_replace_callback(
+			'/<!--\s+wp:navigation\s+(\{.*?\})\s+(\/?)-->/s',
+			function ( array $matches ): string {
+				$attributes = json_decode( $matches[1], true );
+
+				if ( ! is_array( $attributes ) || empty( $attributes['refSlug'] ) ) {
+					return $matches[0];
+				}
+
+				$navigation_post = $this->get_navigation_by_slug( $attributes['refSlug'] );
+
+				if ( ! $navigation_post || (int) ( $attributes['ref'] ?? 0 ) === $navigation_post->ID ) {
+					return $matches[0];
+				}
+
+				$attributes['ref'] = $navigation_post->ID;
+
+				return '<!-- wp:navigation ' . serialize_block_attributes( $attributes ) . ' ' . $matches[2] . '-->';
+			},
+			$content
+		);
+	}
+
+	/**
 	 * Get navigation post by slug with caching.
 	 *
 	 * @param string $slug The navigation post slug.
@@ -97,9 +178,11 @@ class NavigationSlugHandler {
 	 * @return WP_Post|null The navigation post or null if not found.
 	 */
 	private function get_navigation_by_slug( string $slug ): ?WP_Post {
-		// Check cache first.
-		if ( isset( self::$slug_cache[ $slug ] ) ) {
-			return self::$slug_cache[ $slug ];
+		$site_id = get_current_blog_id();
+
+		// Check cache first. Lookups are per site, since each site has its own menus.
+		if ( isset( self::$slug_cache[ $site_id ] ) && array_key_exists( $slug, self::$slug_cache[ $site_id ] ) ) {
+			return self::$slug_cache[ $site_id ][ $slug ];
 		}
 
 		$navigation = get_posts(
@@ -115,7 +198,7 @@ class NavigationSlugHandler {
 		$result = ! empty( $navigation ) ? $navigation[0] : null;
 
 		// Cache the result.
-		self::$slug_cache[ $slug ] = $result;
+		self::$slug_cache[ $site_id ][ $slug ] = $result;
 
 		return $result;
 	}
@@ -139,9 +222,11 @@ class NavigationSlugHandler {
 		}
 
 		// Clear cache for this navigation.
-		unset( self::$slug_cache[ $post_after->post_name ] );
+		$site_id = get_current_blog_id();
+
+		unset( self::$slug_cache[ $site_id ][ $post_after->post_name ] );
 		if ( $post_after->post_name !== $post_before->post_name ) {
-			unset( self::$slug_cache[ $post_before->post_name ] );
+			unset( self::$slug_cache[ $site_id ][ $post_before->post_name ] );
 		}
 	}
 
