@@ -9,11 +9,16 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { addFilter } from '@wordpress/hooks';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { BlockControls, useBlockProps } from '@wordpress/block-editor';
-import { Notice, ToolbarButton, ToolbarGroup } from '@wordpress/components';
+import {
+	Button,
+	Notice,
+	ToolbarButton,
+	ToolbarGroup,
+} from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import {
 	createPortal,
@@ -51,8 +56,13 @@ function wrapFields( key ) {
 		inside.append( wrapper );
 	}
 
+	if ( ! inside.querySelector( ':scope > .vgtbt-post-fields-notice' ) ) {
+		const notice = document.createElement( 'div' );
+		notice.className = 'vgtbt-post-fields-notice';
+		inside.prepend( notice );
+	}
+
 	wrapper.vgtbtInside = inside;
-	postbox.classList.add( 'vgtbt-is-in-block' );
 
 	return wrapper;
 }
@@ -66,10 +76,10 @@ function unwrapFields( wrapper ) {
 	const { vgtbtInside: inside } = wrapper;
 
 	returnFields( wrapper );
+	inside.querySelector( ':scope > .vgtbt-post-fields-notice' )?.remove();
 	inside.append( ...wrapper.childNodes );
 	wrapper.remove();
 	wrapper.vgtbtRemoved = true;
-	inside.closest( '.postbox' )?.classList.remove( 'vgtbt-is-in-block' );
 }
 
 /**
@@ -124,42 +134,23 @@ function getFormId( wrapper ) {
 }
 
 /**
- * Hide the Meta Boxes pane while none of its meta boxes are showing.
+ * Whether a block is inside a synced pattern, where it can't be edited.
  *
- * @return {Function} Stops watching and shows the pane.
+ * @param {(store: string) => Object} select   Registry select.
+ * @param {string}                    clientId Block client id.
+ * @return {boolean} Whether it's in a synced pattern.
  */
-function watchMetaBoxPane() {
-	const pane = document.querySelector( '.edit-post-meta-boxes-main' );
-
-	if ( ! pane ) {
-		return () => {};
-	}
-
-	const sync = () =>
-		pane.classList.toggle(
-			'vgtbt-has-no-meta-boxes',
-			! [ ...pane.querySelectorAll( '.postbox' ) ].some(
-				( box ) => 'none' !== window.getComputedStyle( box ).display
-			)
-		);
-	const observer = new window.MutationObserver( sync );
-
-	sync();
-	observer.observe( pane, {
-		attributes: true,
-		attributeFilter: [ 'class', 'style', 'hidden' ],
-		childList: true,
-		subtree: true,
-	} );
-
-	return () => {
-		observer.disconnect();
-		pane.classList.remove( 'vgtbt-has-no-meta-boxes' );
-	};
+function isInSyncedPattern( select, clientId ) {
+	return (
+		select( 'core/block-editor' ).getBlockParentsByBlockName(
+			clientId,
+			'core/block'
+		).length > 0
+	);
 }
 
 /**
- * Whether this is the first block on the post using any of these field groups.
+ * Whether this is the first block on the post using any of these field groups, outside synced patterns.
  *
  * @param {string}   clientId Block client id.
  * @param {string[]} groups   Field group keys.
@@ -170,10 +161,11 @@ function useIsOwner( clientId, groups ) {
 		( select ) => {
 			const { getClientIdsWithDescendants, getBlockName } =
 				select( 'core/block-editor' );
-			const owner = getClientIdsWithDescendants().find( ( id ) =>
-				( blockGroups[ getBlockName( id ) ] || [] ).some( ( key ) =>
-					groups.includes( key )
-				)
+			const owner = getClientIdsWithDescendants().find(
+				( id ) =>
+					( blockGroups[ getBlockName( id ) ] || [] ).some( ( key ) =>
+						groups.includes( key )
+					) && ! isInSyncedPattern( select, id )
 			);
 
 			return owner === clientId;
@@ -187,10 +179,11 @@ function useIsOwner( clientId, groups ) {
  *
  * @param {boolean}  isOwner Whether this block owns the fields.
  * @param {string[]} groups  Field group keys.
- * @return {string} Serialized field values.
+ * @return {{values: string, notices: HTMLElement[]}} Serialized field values, and the meta box notice containers.
  */
 function useFieldValues( isOwner, groups ) {
 	const [ values, setValues ] = useState( '' );
+	const [ notices, setNotices ] = useState( [] );
 
 	useEffect( () => {
 		const { acf, jQuery } = window;
@@ -202,7 +195,6 @@ function useFieldValues( isOwner, groups ) {
 			return;
 		}
 
-		const unwatchPane = watchMetaBoxPane();
 		const $wrappers = jQuery( wrappers );
 		const update = () =>
 			setValues( JSON.stringify( acf.serialize( $wrappers, 'acf' ) ) );
@@ -213,6 +205,13 @@ function useFieldValues( isOwner, groups ) {
 		};
 
 		update();
+		setNotices(
+			wrappers.map( ( wrapper ) =>
+				wrapper.vgtbtInside.querySelector(
+					':scope > .vgtbt-post-fields-notice'
+				)
+			)
+		);
 		$wrappers.on( 'change keyup', queue );
 		acf.addAction( 'append', queue );
 		acf.addAction( 'remove', queue );
@@ -222,22 +221,24 @@ function useFieldValues( isOwner, groups ) {
 			$wrappers.off( 'change keyup', queue );
 			acf.removeAction( 'append', queue );
 			acf.removeAction( 'remove', queue );
+			setNotices( [] );
 			wrappers.forEach( unwrapFields );
-			unwatchPane();
 		};
 	}, [ isOwner, groups ] );
 
-	return values;
+	return { values, notices };
 }
 
 /**
  * Edit mode: a placeholder in the canvas with the fields laid over it.
  *
- * @param {Object}   props        Props.
- * @param {string[]} props.groups Field group keys.
+ * @param {Object}   props          Props.
+ * @param {string}   props.clientId Block client id.
+ * @param {string[]} props.groups   Field group keys.
  * @return {Element} Placeholder and panel.
  */
-function FieldsPanel( { groups } ) {
+function FieldsPanel( { clientId, groups } ) {
+	const { selectBlock } = useDispatch( 'core/block-editor' );
 	const placeholderRef = useRef();
 	const panelRef = useRef();
 	const blockProps = useBlockProps( {
@@ -286,16 +287,23 @@ function FieldsPanel( { groups } ) {
 		const scroll = ( event ) =>
 			frame?.contentWindow.scrollBy( event.deltaX, event.deltaY );
 
+		// The panel sits outside the block too, so select the block when it's used, which brings back its toolbar.
+		const select = () => selectBlock( clientId, null );
+
 		follow();
 		panel.addEventListener( 'wheel', scroll, { passive: true } );
+		panel.addEventListener( 'focusin', select );
+		panel.addEventListener( 'mousedown', select );
 
 		return () => {
 			window.cancelAnimationFrame( frameId );
 			panel.removeEventListener( 'wheel', scroll );
+			panel.removeEventListener( 'focusin', select );
+			panel.removeEventListener( 'mousedown', select );
 			observers.forEach( ( observer ) => observer.disconnect() );
 			wrappers.forEach( returnFields );
 		};
-	}, [ groups ] );
+	}, [ clientId, groups ] ); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<>
@@ -312,6 +320,38 @@ function FieldsPanel( { groups } ) {
 					document.body
 			) }
 		</>
+	);
+}
+
+/**
+ * Tells people looking in the meta box which block has its fields open.
+ *
+ * @param {Object}     props          Props.
+ * @param {string}     props.title    Block title.
+ * @param {() => void} props.onSelect Selects the block.
+ * @param {() => void} props.onReturn Moves the fields back to the meta box.
+ * @return {Element} Notice.
+ */
+function MetaBoxNotice( { title, onSelect, onReturn } ) {
+	return (
+		<Notice status="info" isDismissible={ false }>
+			<p>
+				{ sprintf(
+					/* translators: %s: Block title. */
+					__(
+						'These fields are open in the %s block.',
+						'viget-blocks-toolkit'
+					),
+					title
+				) }
+			</p>
+			<Button variant="secondary" onClick={ onSelect }>
+				{ __( 'Go to block', 'viget-blocks-toolkit' ) }
+			</Button>{ ' ' }
+			<Button variant="tertiary" onClick={ onReturn }>
+				{ __( 'Edit here', 'viget-blocks-toolkit' ) }
+			</Button>
+		</Notice>
 	);
 }
 
@@ -336,16 +376,20 @@ function NotOwnerNotice() {
 /**
  * Edit/Preview toggle around the block.
  *
- * @param {Object}   props           Props.
- * @param {Function} props.BlockEdit Original block edit component.
- * @param {string[]} props.groups    Field group keys.
- * @param {Object}   props.props     Block edit props.
+ * @param {Object}                     props           Props.
+ * @param {(props: Object) => Element} props.BlockEdit Original block edit component.
+ * @param {string[]}                   props.groups    Field group keys.
+ * @param {Object}                     props.props     Block edit props.
  * @return {Element} Block edit.
  */
 function PostFieldGroupsEdit( { BlockEdit, groups, props } ) {
 	const { attributes, clientId, context } = props;
 	const isOwner = useIsOwner( clientId, groups );
-	const values = useFieldValues( isOwner, groups );
+	const { values, notices } = useFieldValues( isOwner, groups );
+	const title = useSelect(
+		( select ) => select( 'core/blocks' ).getBlockType( props.name )?.title,
+		[ props.name ]
+	);
 
 	// ACF refetches the preview when the attributes object changes, and sends the context with it.
 	const previewAttributes = useMemo(
@@ -365,32 +409,6 @@ function PostFieldGroupsEdit( { BlockEdit, groups, props } ) {
 
 	const toggle = () => changeMode( isEditing ? 'preview' : 'edit' );
 
-	// In Preview the fields sit in their hidden meta box, so show them when ACF flags one.
-	useEffect( () => {
-		const { acf } = window;
-
-		if ( ! isOwner || ! acf ) {
-			return;
-		}
-
-		// ACF fires this before it marks the fields, so check once it has.
-		const showErrors = () =>
-			setTimeout( () => {
-				const hasError = groups.some( ( key ) =>
-					document.querySelector( `#acf-${ key } .acf-error` )
-				);
-
-				if ( hasError ) {
-					changeMode( 'edit' );
-					selectBlock( clientId );
-				}
-			} );
-
-		acf.addAction( 'validation_failure', showErrors );
-
-		return () => acf.removeAction( 'validation_failure', showErrors );
-	}, [ isOwner, groups, clientId ] ); // eslint-disable-line react-hooks/exhaustive-deps
-
 	let edit = (
 		<BlockEdit
 			{ ...props }
@@ -400,7 +418,11 @@ function PostFieldGroupsEdit( { BlockEdit, groups, props } ) {
 	);
 
 	if ( isEditing ) {
-		edit = isOwner ? <FieldsPanel groups={ groups } /> : <NotOwnerNotice />;
+		edit = isOwner ? (
+			<FieldsPanel clientId={ clientId } groups={ groups } />
+		) : (
+			<NotOwnerNotice />
+		);
 	}
 
 	return (
@@ -419,6 +441,17 @@ function PostFieldGroupsEdit( { BlockEdit, groups, props } ) {
 				</ToolbarGroup>
 			</BlockControls>
 			{ edit }
+			{ isEditing &&
+				notices.map( ( notice ) =>
+					createPortal(
+						<MetaBoxNotice
+							title={ title }
+							onSelect={ () => selectBlock( clientId ) }
+							onReturn={ () => changeMode( 'preview' ) }
+						/>,
+						notice
+					)
+				) }
 		</>
 	);
 }
@@ -435,13 +468,45 @@ addFilter(
 			: settings
 );
 
+/**
+ * A block in a synced pattern, or a copy core disabled for being used more than once,
+ * renders as usual and leaves the fields in their meta box.
+ *
+ * @param {Object}                     props           Props.
+ * @param {(props: Object) => Element} props.BlockEdit Original block edit component.
+ * @param {string[]}                   props.groups    Field group keys.
+ * @param {Object}                     props.props     Block edit props.
+ * @return {Element} Block edit.
+ */
+function PostFieldGroupsBlock( { BlockEdit, groups, props } ) {
+	const isPlain = useSelect(
+		( select ) =>
+			isInSyncedPattern( select, props.clientId ) ||
+			select( 'core/block-editor' ).getBlocksByName( props.name )[ 0 ] !==
+				props.clientId,
+		[ props.clientId, props.name ]
+	);
+
+	if ( isPlain ) {
+		return <BlockEdit { ...props } />;
+	}
+
+	return (
+		<PostFieldGroupsEdit
+			BlockEdit={ BlockEdit }
+			groups={ groups }
+			props={ props }
+		/>
+	);
+}
+
 addFilter(
 	'editor.BlockEdit',
 	'viget-blocks-toolkit/post-field-groups',
 	createHigherOrderComponent(
 		( BlockEdit ) => ( props ) =>
 			blockGroups[ props.name ]?.length ? (
-				<PostFieldGroupsEdit
+				<PostFieldGroupsBlock
 					BlockEdit={ BlockEdit }
 					groups={ blockGroups[ props.name ] }
 					props={ props }

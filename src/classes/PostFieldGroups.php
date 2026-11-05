@@ -34,6 +34,26 @@ class PostFieldGroups {
 		add_filter( 'acf/load_field_group', [ $this, 'enable_field_group_rest' ] );
 		add_filter( 'acf/load_fields', [ $this, 'enable_field_bindings' ], 10, 2 );
 		add_action( 'wp_ajax_acf/ajax/fetch-block', [ $this, 'setup_preview_values' ], 1 );
+		add_filter( 'block_type_metadata', [ $this, 'set_expanded_editor_buttons' ] );
+	}
+
+	/**
+	 * Keep ACF's Edit Block button out of the toolbar, next to the Edit fields toggle.
+	 *
+	 * A block that sets `acf.expandedEditorButtons` keeps its own.
+	 *
+	 * @param array $metadata Block metadata.
+	 *
+	 * @return array
+	 */
+	public function set_expanded_editor_buttons( array $metadata ): array {
+		if ( empty( $metadata['acf']['postFieldGroups'] ) || isset( $metadata['acf']['expandedEditorButtons'] ) ) {
+			return $metadata;
+		}
+
+		$metadata['acf']['expandedEditorButtons'] = [ 'sidebar' ];
+
+		return $metadata;
 	}
 
 	/**

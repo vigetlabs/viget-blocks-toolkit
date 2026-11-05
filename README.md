@@ -145,10 +145,12 @@ Edit post-level ACF field groups inside a block. List the field group keys under
 ```
 
 * Each group must have a `post_type` location rule. Groups that don't show on the current post are skipped.
-* While the block is on the post, the group's meta box is hidden, along with the Meta Boxes pane if nothing else is showing in it. The block gets an **Edit fields** / **Preview** toolbar toggle. Edit lays the meta box's fields over the block; Preview renders the block with the current unsaved values.
+* The block gets an **Edit fields** / **Preview** toolbar toggle. Edit moves the meta box's fields over the block, and the meta box shows a notice naming the block, with **Go to block** and **Edit here** buttons. Preview puts the fields back in the meta box and renders the block with the current unsaved values.
+* ACF's **Edit Block** toolbar button is moved to the sidebar so it isn't confused with **Edit fields**. Set `acf.expandedEditorButtons` to override this.
 * Values still save to the post through the meta box, so `get_field( 'name', $post_id )` reads them as usual.
-* ACF validation covers the fields in either mode. If a save fails on one of them while the block is in Preview, it switches to Edit and is selected so the error shows.
-* The block can only be used once per post (`supports.multiple` is set to `false`). Any extra copy shows a notice in Edit mode.
+* ACF validation covers the fields in either mode, and shows errors wherever the fields are.
+* The block can only be used once per post (`supports.multiple` is set to `false`). Core disables any extra copy, which renders as usual and leaves the fields to the first.
+* A copy inside a synced pattern can't be edited there, so it renders as usual and leaves the fields in their meta box.
 * These groups always have **Show in REST API** and every field's **Allow Access to Value in Editor UI** turned on.
 
 #### `blockPattern`
