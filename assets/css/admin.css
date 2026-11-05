@@ -2,13 +2,13 @@
 	display: none;
 }
 
-/* ACF and WP toggle postbox display inline. */
-.postbox.vgtbt-is-in-block {
-	display: none !important;
+/* Shown in the meta box while a block has its fields open. */
+.vgtbt-post-fields-notice .components-notice {
+	margin: 12px 0;
 }
 
-.edit-post-meta-boxes-main.vgtbt-has-no-meta-boxes {
-	display: none !important;
+.vgtbt-post-fields-notice .components-notice p {
+	margin: 0 0 8px;
 }
 
 .vgtbt-post-fields-panel {
