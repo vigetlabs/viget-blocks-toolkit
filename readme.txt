@@ -30,6 +30,12 @@ No. There are several features of this plugin that can be used without Advanced 
 
 == Changelog ==
 
+= 1.3.1 =
+
+* Fixed Navigation blocks with a `refSlug` showing "Navigation Menu has been deleted or is unavailable" in the editor when the saved `ref` belongs to another environment or site.
+* Fixed `postFieldGroups` fields becoming unreachable in synced patterns and duplicate copies, kept the fields in their meta box in Preview, and moved ACF's Edit Block button to the sidebar.
+* Updated to @wordpress/scripts 37.
+
 = 1.3.0 =
 
 * Added the `vgtbt_breakpoint_visibility_breakpoints` filter. Themes can add their own Breakpoint Visibility toggles, by `selector`, `media` query, or both, and change or hide Desktop, Tablet, and Mobile. See the README.
